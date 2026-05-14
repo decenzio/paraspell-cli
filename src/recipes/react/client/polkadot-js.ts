@@ -1,27 +1,20 @@
 import type { Recipe } from '../../types.js';
 
-export const polkadotApiReactClient: Recipe = {
+export const polkadotJsReactClient: Recipe = {
   id: 'react:client:polkadot-js',
-  description: 'Polkadot JS (PJJS)',
+  description: 'Polkadot JS (PJS)',
   packageJson: {
     dependencies: {
-      'polkadot-js': '^x.y.z',
+      '@paraspell/sdk-pjs': '^13.2.2',
+      '@polkadot/api': '^16.5.6',
+      '@polkadot/extension-dapp': '^0.58.10',
+      '@polkadot/extension-inject': '^0.58.10',
     },
   },
   files: [
-    { type: 'copy', from: 'clients/polkadot-js/src/api.ts', to: 'src/lib/api.ts' },
-    { type: 'copy', from: 'clients/polkadot-js/src/provider.tsx', to: 'src/lib/Provider.tsx' },
-    {
-      type: 'appendAfterMarker',
-      file: 'src/main.tsx',
-      marker: '/* CLI_ROOT */',
-      content: "\nimport { ApiProvider } from './lib/Provider';\n",
-    },
-    {
-      type: 'appendAfterMarker',
-      file: 'src/main.tsx',
-      marker: '<App />',
-      content: '<PolkadotJsProvider><App /></PolkadotJsProvider>',
-    },
+    { type: 'copy', from: 'react/client/papi/wallet/PjsWalletControls.tsx', to: 'src/wallet/PjsWalletControls.tsx' },
+    { type: 'copy', from: 'react/client/papi/wallet/index.ts', to: 'src/wallet/index.ts' },
+    { type: 'copy', from: 'react/client/papi/wallet/usePjsWallet.ts', to: 'src/wallet/usePjsWallet.ts' },
+    { type: 'copy', from: 'react/client/papi/transaction/index.ts', to: 'src/transaction/index.ts' },
   ],
 };

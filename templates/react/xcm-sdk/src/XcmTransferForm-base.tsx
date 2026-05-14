@@ -1,14 +1,12 @@
 import { useState, useEffect, FormEvent, FC } from "react";
-import useCurrencyOptions from "./useCurrencyOptions";
+import useCurrencyOptions from "./useCurrencyOptions-base";
 import {
   CHAINS,
-  EXCHANGE_CHAINS,
   SUBSTRATE_CHAINS,
   TChain,
-  TExchangeChain,
   TSubstrateChain,
 } from "@paraspell/sdk";
-import type { FormValues } from "./types";
+import type { FormValues } from "./types-base";
 
 type Props = {
   onSubmit: (values: FormValues) => void;
@@ -20,19 +18,14 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
   const [originChain, setOriginChain] = useState<TSubstrateChain>("Astar");
   const [destinationChain, setDestinationChain] = useState<TChain>("Hydration");
   const [currencyOptionId, setCurrencyOptionId] = useState("");
-  const [currencyToOptionId, setCurrencyToOptionId] = useState("");
-  const [swapEnabled, setSwapEnabled] = useState(false);
-  const [exchange, setExchange] = useState<TExchangeChain | undefined>(
-    undefined,
-  );
   const [recipient, setRecipient] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
   );
   const [amount, setAmount] = useState("5");
 
   // Get currency options based on the selected chains
-  const { currencyOptions, currencyMap, currencyToOptions, currencyToMap } =
-    useCurrencyOptions(originChain, destinationChain, swapEnabled, exchange);
+  const { currencyOptions, currencyMap} =
+    useCurrencyOptions(originChain, destinationChain);
 
   // Handle form submission
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -45,11 +38,6 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
       amount,
       // Get the selected currency based on the currency option id
       currency: currencyMap[currencyOptionId],
-      /* SWAP FEATURE */
-      swapEnabled,
-      currencyTo: swapEnabled ? currencyToMap[currencyToOptionId] : undefined,
-      /* END SWAP FEATURE */
-      exchange,
     };
 
     // Pass the submitted form values to the parent component
@@ -63,16 +51,6 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
       setCurrencyOptionId(currencyOptions[currencyOptions.length - 1].value);
     }
   }, [currencyOptions]);
-
-  useEffect(() => {
-    // Set default destination currency option if available
-    if (currencyToOptions.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCurrencyToOptionId(
-        currencyToOptions[currencyToOptions.length - 1].value,
-      );
-    }
-  }, [currencyToOptions]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -140,56 +118,6 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
           required
         />
       </label>
-
-      /* SWAP FEATURE */
-      <button
-        type="button"
-        className="secondary"
-        onClick={() => setSwapEnabled((prev) => !prev)}
-      >
-        {swapEnabled ? "- Remove Swap" : "+ Add Swap"}
-      </button>
-
-      {swapEnabled && (
-        <>
-          <label>
-            Exchange
-            <select
-              value={exchange ?? ""}
-              onChange={(e) =>
-                setExchange(
-                  e.target.value
-                    ? (e.target.value as TExchangeChain)
-                    : undefined,
-                )
-              }
-            >
-              <option value="">Auto</option>
-              {EXCHANGE_CHAINS.map((chain) => (
-                <option key={chain} value={chain}>
-                  {chain}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            Currency To
-            <select
-              value={currencyToOptionId}
-              onChange={(e) => setCurrencyToOptionId(e.target.value)}
-              required
-            >
-              {currencyToOptions.map((currency) => (
-                <option key={currency.value} value={currency.value}>
-                  {currency.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </>
-      )}
-      /* END SWAP FEATURE */
 
       <button type="submit" disabled={loading}>
         {loading ? "Submitting..." : "Submit transaction"}

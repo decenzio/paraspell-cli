@@ -1,4 +1,3 @@
-// recipes/swap-extension.react.ts
 import type { Recipe } from '../../types.js';
 
 export const swapExtensionReact: Recipe = {

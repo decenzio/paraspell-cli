@@ -37,5 +37,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "exclude": ["templates"],
+  "exclude": ["templates", "implementation/**"],
 }

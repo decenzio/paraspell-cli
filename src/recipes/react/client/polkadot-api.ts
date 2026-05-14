@@ -5,24 +5,14 @@ export const polkadotApiReactClient: Recipe = {
   description: 'Polkadot API (PAPI) stack for SDK template',
   packageJson: {
     dependencies: {
-      'polkadot-api': '^x.y.z',
-      '@polkadot-api/signer': '^x.y.z',
+      '@paraspell/sdk': '^13.2.2',
+      'polkadot-api': '^2.0.2',
     },
   },
   files: [
-    { type: 'copy', from: 'clients/polkadot-api/src/api.ts', to: 'src/lib/api.ts' },
-    { type: 'copy', from: 'clients/polkadot-api/src/provider.tsx', to: 'src/lib/Provider.tsx' },
-    {
-      type: 'appendAfterMarker',
-      file: 'src/main.tsx',
-      marker: '/* CLI_ROOT */',
-      content: "\nimport { ApiProvider } from './lib/Provider';\n",
-    },
-    {
-      type: 'appendAfterMarker',
-      file: 'src/main.tsx',
-      marker: '<App />',
-      content: '<ApiProvider><App /></ApiProvider>',
-    },
+    { type: 'copy', from: 'react/client/papi/wallet/PapiWalletControls.tsx', to: 'src/wallet/PapiWalletControls.tsx' },
+    { type: 'copy', from: 'react/client/papi/wallet/index.ts', to: 'src/wallet/index.ts' },
+    { type: 'copy', from: 'react/client/papi/wallet/usePapiWallet.ts', to: 'src/wallet/usePapiWallet.ts' },
+    { type: 'copy', from: 'react/client/papi/transaction/index.ts', to: 'src/transaction/index.ts' },
   ],
 };
