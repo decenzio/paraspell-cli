@@ -1,5 +1,6 @@
 import {
   Builder,
+  type TSubstrateChain,
   type TPapiTransaction,
   UnsupportedOperationError,
 } from "@paraspell/sdk";
@@ -10,19 +11,62 @@ import {
 } from "polkadot-api";
 import type { FormValues } from "../types";
 
-export async function buildPapiTransactions(
-  formValues: FormValues,
-  senderAddress: string,
-): Promise<TPapiTransaction[]> {
+/* SNOWBRIDGE_FEATURE */
+import "@paraspell/evm-snowbridge";
+/* END_SNOWBRIDGE_FEATURE */
 
+/* EVM_FEATURE */
+import { isChainEvm } from "../evm";
+import type { WalletClient } from "viem";
+import { submitEvmTransferFromForm } from "./evmTransfer";
+
+export type SubmitOptions =
+  | { kind: "substrate"; signer: PolkadotSigner; senderAddress: string }
+  | { kind: "evm"; walletClient: WalletClient };
+/* END_EVM_FEATURE */
+
+export const submitUsingSdk = async (
+  formValues: FormValues,
+  options: SubmitOptions,
+): Promise<void> => {
   /* GET_FORM_VALUES */
   const { from, to, recipient, amount, swapEnabled, currencyTo, exchange } =
     formValues;
 
-   /* SWAP_FEATURE */
+  /* EVM_FEATURE */
+  if (isChainEvm(from)) {
+    if (options.kind !== "evm") {
+      throw new UnsupportedOperationError(
+        "EVM origin requires a connected MetaMask wallet.",
+      );
+    }
+
+    /* SWAP_FEATURE */
+    if (swapEnabled) {
+      throw new UnsupportedOperationError(
+        "Swap from EVM origins is not supported in this template.",
+      );
+    }
+    /* END SWAP_FEATURE */
+
+    await submitEvmTransferFromForm(formValues, options.walletClient);
+    return;
+  }
+
+  if (options.kind !== "substrate") {
+    throw new UnsupportedOperationError(
+      "Substrate origin requires a Polkadot extension wallet.",
+    );
+  }
+  /* END_EVM_FEATURE */
+
+  const { signer, senderAddress } = options;
+  const substrateFrom = from as TSubstrateChain;
+
+  /* SWAP_FEATURE */
   if (swapEnabled) {
-    const builder = Builder()
-      .from(from)
+    const contexts = await Builder()
+      .from(substrateFrom)
       .to(to)
       .currency({ location: formValues.currency!.location, amount })
       .recipient(recipient)
@@ -30,22 +74,26 @@ export async function buildPapiTransactions(
         currencyTo: { location: currencyTo!.location },
         ...(exchange ? { exchange: [exchange] } : {}),
       })
-      .sender(senderAddress);
+      .sender(senderAddress)
+      .buildAll();
 
-    const contexts = await builder.buildAll();
-    return contexts.map((ctx) => ctx.tx);
+    for (const ctx of contexts) {
+      await submitPapiTransaction(ctx.tx, signer);
+    }
+    return;
   }
+  /* END SWAP_FEATURE */
 
   const tx = await Builder()
-    .from(from)
+    .from(substrateFrom)
     .to(to)
     .currency({ location: formValues.currency!.location, amount })
     .recipient(recipient)
     .sender(senderAddress)
     .build();
 
-  return [tx];
-}
+  await submitPapiTransaction(tx, signer);
+};
 
 export const submitPapiTransaction = async (
   tx: TPapiTransaction,
@@ -70,7 +118,7 @@ export const submitPapiTransaction = async (
           }
         }
       },
-      error: (error) => {
+      error: (error: unknown) => {
         if (error instanceof InvalidTxError) {
           const typedErr = error.error;
           reject(
@@ -88,20 +136,4 @@ export const submitPapiTransaction = async (
       },
     });
   });
-};
-
-export const submitUsingSdk = async (
-  formValues: FormValues,
-  signer: PolkadotSigner,
-  senderAddress: string,
-): Promise<void> => {
-  if (!senderAddress) {
-    alert("No account selected, connect wallet first");
-    return;
-  }
-
-  const txs = await buildPapiTransactions(formValues, senderAddress);
-  for (const tx of txs) {
-    await submitPapiTransaction(tx, signer);
-  }
 };

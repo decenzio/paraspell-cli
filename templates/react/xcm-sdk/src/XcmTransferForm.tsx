@@ -1,23 +1,31 @@
-import { useState, useEffect, FormEvent, FC } from "react";
+import { useState, useEffect, useMemo, FormEvent, FC } from "react";
 import useCurrencyOptions from "./useCurrencyOptions";
 import {
   CHAINS,
   EXCHANGE_CHAINS,
-  SUBSTRATE_CHAINS,
   TChain,
   TExchangeChain,
-  TSubstrateChain,
 } from "@paraspell/sdk";
 import type { FormValues } from "./types";
+/* EVM_FEATURE */
+import { getOriginChainsForWallet } from "./evm";
+/* END_EVM_FEATURE */
 
 type Props = {
   onSubmit: (values: FormValues) => void;
+  originChain: TChain;
+  onOriginChange: (origin: TChain) => void;
+  isEvmOrigin?: boolean;
   loading: boolean;
 };
 
-const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
-  // Prepare states for the form fields
-  const [originChain, setOriginChain] = useState<TSubstrateChain>("Astar");
+const TransferForm: FC<Props> = ({
+  onSubmit,
+  originChain,
+  onOriginChange,
+  isEvmOrigin = false,
+  loading,
+}) => {
   const [destinationChain, setDestinationChain] = useState<TChain>("Hydration");
   const [currencyOptionId, setCurrencyOptionId] = useState("");
   const [currencyToOptionId, setCurrencyToOptionId] = useState("");
@@ -29,6 +37,14 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
   );
   const [amount, setAmount] = useState("5");
+
+  /* EVM_FEATURE */
+  const originChains = useMemo(
+    () => getOriginChainsForWallet(isEvmOrigin),
+    [isEvmOrigin],
+  );
+
+  /* END_EVM_FEATURE */
 
   // Get currency options based on the selected chains
   const { currencyOptions, currencyMap, currencyToOptions, currencyToMap } =
@@ -80,10 +96,11 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
         Origin chain
         <select
           value={originChain}
-          onChange={(e) => setOriginChain(e.target.value as TSubstrateChain)}
+          onChange={(e) => onOriginChange(e.target.value as TChain)}
+          disabled={loading}
           required
         >
-          {SUBSTRATE_CHAINS.map((chain) => (
+          {originChains.map((chain) => (
             <option key={chain} value={chain}>
               {chain}
             </option>
@@ -96,6 +113,7 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
         <select
           value={destinationChain}
           onChange={(e) => setDestinationChain(e.target.value as TChain)}
+          disabled={loading}
           required
         >
           {CHAINS.map((chain) => (

@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import useCurrencyOptions from "./useCurrencyOptions";
 import {
   CHAINS,
   EXCHANGE_CHAINS,
-  SUBSTRATE_CHAINS,
   type TChain,
   type TExchangeChain,
-  type TSubstrateChain,
 } from "@paraspell/sdk";
 import type { FormValues } from "./types";
+import { getOriginChainsForWallet } from "./evm";
 
-defineProps<{
+const props = defineProps<{
   loading: boolean;
+  originChain: TChain;
+  isEvmOrigin?: boolean;
 }>();
 
 const emit = defineEmits<{
   submit: [values: FormValues];
+  originChange: [origin: TChain];
 }>();
 
-const originChain = ref<TSubstrateChain>("Astar");
 const destinationChain = ref<TChain>("Hydration");
 const currencyOptionId = ref("");
 const currencyToOptionId = ref("");
@@ -28,8 +29,15 @@ const exchange = ref<TExchangeChain | undefined>(undefined);
 const recipient = ref("5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96");
 const amount = ref("5");
 
+const originChains = computed(() =>
+  getOriginChainsForWallet(props.isEvmOrigin ?? false),
+);
+
+const from = computed(() => props.originChain);
+const to = computed(() => destinationChain.value);
+
 const { currencyOptions, currencyMap, currencyToOptions, currencyToMap } =
-  useCurrencyOptions(originChain, destinationChain, swapEnabled, exchange);
+  useCurrencyOptions(from, to, swapEnabled, exchange);
 
 watch(
   currencyOptions,
@@ -59,7 +67,7 @@ const onExchangeChange = (e: Event) => {
 const handleSubmit = (e: Event) => {
   e.preventDefault();
   emit("submit", {
-    from: originChain.value,
+    from: props.originChain,
     to: destinationChain.value,
     currencyOptionId: currencyOptionId.value,
     recipient: recipient.value,
@@ -79,11 +87,15 @@ const handleSubmit = (e: Event) => {
     <label>
       Origin chain
       <select
-        v-model="originChain"
+        :value="originChain"
         required
+        :disabled="loading"
+        @change="
+          emit('originChange', ($event.target as HTMLSelectElement).value as TChain)
+        "
       >
         <option
-          v-for="chain in SUBSTRATE_CHAINS"
+          v-for="chain in originChains"
           :key="chain"
           :value="chain"
         >
@@ -97,6 +109,7 @@ const handleSubmit = (e: Event) => {
       <select
         v-model="destinationChain"
         required
+        :disabled="loading"
       >
         <option
           v-for="chain in CHAINS"
@@ -157,7 +170,9 @@ const handleSubmit = (e: Event) => {
           :value="exchange ?? ''"
           @change="onExchangeChange"
         >
-          <option value="">Auto</option>
+          <option value="">
+            Auto
+          </option>
           <option
             v-for="chain in EXCHANGE_CHAINS"
             :key="chain"

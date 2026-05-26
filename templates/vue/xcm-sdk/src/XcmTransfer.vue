@@ -2,88 +2,47 @@
 import { ref } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
+import type { TChain } from "@paraspell/sdk";
+import { getOriginChainsForWallet, isChainEvm } from "./evm";
 import {
-  connectInjectedExtension,
-  getInjectedExtensions,
-  type InjectedExtension,
-  type InjectedPolkadotAccount,
-  type PolkadotSigner,
-} from "polkadot-api/pjs-signer";
-import { Builder } from "@paraspell/sdk";
-import { submitTransaction } from "./utils";
+  useWallet,
+  WalletControls,
+  WalletKindSelector,
+} from "./wallet/pjs";
 
 const errorVisible = ref(false);
 const error = ref<Error | null>(null);
 const loading = ref(false);
-const extensions = ref<string[]>([]);
-const selectedExtension = ref<InjectedExtension | null>(null);
-const accounts = ref<InjectedPolkadotAccount[]>([]);
-const selectedAccount = ref<InjectedPolkadotAccount | undefined>();
+const originChain = ref<TChain>("Astar");
 
-const initAccounts = async () => {
-  const list = getInjectedExtensions();
+const wallet = useWallet();
 
-  if (list.length === 0) {
-    alert("No wallet extension found, install it to connect");
-    throw new Error("No Wallet Extension Found!");
-  }
-
-  extensions.value = list;
+const handleOriginChange = (origin: TChain) => {
+  originChain.value = origin;
+  wallet.setActiveWalletKind(isChainEvm(origin) ? "evm" : "substrate");
 };
 
-const submitUsingSdk = async (
-  formValues: FormValues,
-  signer: PolkadotSigner,
-) => {
-  const { from, to, recipient, amount, swapEnabled, currencyTo, exchange } =
-    formValues;
-
-  if (!selectedAccount.value) {
-    alert("No account selected, connect wallet first");
-    return;
-  }
-
-  if (swapEnabled) {
-    const builder = Builder()
-      .from(from)
-      .to(to)
-      .currency({ location: formValues.currency!.location, amount })
-      .recipient(recipient)
-      .swap({
-        currencyTo: { location: currencyTo!.location },
-        ...(exchange ? { exchange: [exchange] } : {}),
-      })
-      .sender(selectedAccount.value.address);
-
-    const txs = await builder.buildAll();
-
-    for (const txContext of txs) {
-      await submitTransaction(txContext.tx, signer);
-    }
-  } else {
-    const tx = await Builder()
-      .from(from)
-      .to(to)
-      .currency({ location: formValues.currency!.location, amount })
-      .recipient(recipient)
-      .sender(selectedAccount.value.address)
-      .build();
-
-    await submitTransaction(tx, signer);
+const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
+  wallet.setActiveWalletKind(kind);
+  const allowed = getOriginChainsForWallet(kind === "evm");
+  if (!allowed.includes(originChain.value)) {
+    originChain.value = allowed[0];
   }
 };
 
 const onSubmit = async (formValues: FormValues) => {
-  if (!selectedAccount.value || !selectedExtension.value) {
-    alert("No account selected, connect wallet first");
-    return;
-  }
-
   loading.value = true;
-  const signer = selectedAccount.value.polkadotSigner;
+  errorVisible.value = false;
 
   try {
-    await submitUsingSdk(formValues, signer);
+    const mismatch = wallet.getOriginMismatchError(formValues.from);
+    if (mismatch) {
+      error.value = new Error(mismatch);
+      errorVisible.value = true;
+      return;
+    }
+
+    await wallet.submitTransfer(formValues);
     alert("Transaction was successful!");
   } catch (e) {
     error.value = e as Error;
@@ -92,82 +51,27 @@ const onSubmit = async (formValues: FormValues) => {
     loading.value = false;
   }
 };
-
-const onExtensionSelect = async (name: string) => {
-  const injectedExtension = await connectInjectedExtension(name);
-  selectedExtension.value = injectedExtension;
-
-  const accs = injectedExtension.getAccounts();
-  accounts.value = accs;
-
-  if (accs.length > 0) {
-    selectedAccount.value = accs[0];
-  }
-};
-
-const onAccountChange = (address: string) => {
-  selectedAccount.value = accounts.value.find((acc) => acc.address === address);
-};
 </script>
 
 <template>
-  <div>
-    <div class="formHeader">
-      <div v-if="extensions.length > 0">
-        <h4>Select extension:</h4>
-        <select
-          :value="selectedExtension?.name ?? ''"
-          @change="
-            onExtensionSelect(($event.target as HTMLSelectElement).value)
-          "
-        >
-          <option
-            disabled
-            value=""
-          >
-            -- select an option --
-          </option>
-          <option
-            v-for="name in extensions"
-            :key="name"
-            :value="name"
-          >
-            {{ name }}
-          </option>
-        </select>
-      </div>
-      <button
-        v-else
-        type="button"
-        @click="initAccounts"
-      >
-        Connect Wallet
-      </button>
-
-      <div v-if="accounts.length > 0">
-        <h4>Select account:</h4>
-        <select
-          :value="selectedAccount?.address"
-          @change="
-            onAccountChange(($event.target as HTMLSelectElement).value)
-          "
-        >
-          <option
-            v-for="{ name, address } in accounts"
-            :key="address"
-            :value="address"
-          >
-            {{ name }} - {{ address }}
-          </option>
-        </select>
-      </div>
-    </div>
+  <div class="transferLayout">
+    <WalletKindSelector
+      :active-wallet-kind="wallet.activeWalletKind.value"
+      @update:active-wallet-kind="setWalletKind"
+    />
+    <WalletControls :wallet="wallet" />
     <TransferForm
       :loading="loading"
+      :origin-chain="originChain"
+      :is-evm-origin="wallet.activeWalletKind.value === 'evm'"
       @submit="onSubmit"
+      @origin-change="handleOriginChange"
     />
-    <div v-if="errorVisible">
-      <p>{{ error?.message }}</p>
-    </div>
+    <p
+      v-if="errorVisible"
+      class="transferError"
+    >
+      {{ error?.message }}
+    </p>
   </div>
 </template>

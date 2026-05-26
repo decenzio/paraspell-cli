@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.pnpm-store/
 
 # Logs and debug
 *.log
@@ -46,6 +47,10 @@ Thumbs.db
 *.tsbuildinfo
 .turbo/
 .cache/
+
+# Hygen workspace (local installs / generated examples)
+xcm-sdk-hygen/node_modules/
+xcm-sdk-hygen/generated/
 
 # Pack artifacts
 *.tgz

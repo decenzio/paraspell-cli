@@ -1,7 +1,7 @@
-import type { TAssetInfo, TChain, TExchangeChain, TSubstrateChain } from "@paraspell/sdk";
+import type { TAssetInfo, TChain, TExchangeChain } from "@paraspell/sdk";
 
 export type FormValues = {
-  from: TSubstrateChain;
+  from: TChain;
   to: TChain;
   currencyOptionId: string;
   recipient: string;

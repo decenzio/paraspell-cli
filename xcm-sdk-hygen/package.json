@@ -1,0 +1,23 @@
+{
+  "name": "@paraspell/xcm-sdk-hygen",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Hygen generators for ParaSpell XCM SDK templates (React, Vue, Node)",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "generate:react": "node scripts/generate-react.mjs",
+    "generate:vue": "node scripts/generate-vue.mjs",
+    "generate:node": "node scripts/generate-node.mjs",
+    "generate:examples": "node scripts/generate-examples.mjs",
+    "generate:examples:react": "node scripts/generate-examples-react.mjs",
+    "generate:examples:vue": "node scripts/generate-examples-vue.mjs",
+    "generate:examples:node": "node scripts/generate-examples-node.mjs",
+    "bootstrap:react": "node scripts/bootstrap-react-static-templates.mjs",
+    "bootstrap:vue": "node scripts/bootstrap-vue-static-templates.mjs",
+    "bootstrap:node": "node scripts/bootstrap-node-static-templates.mjs",
+    "bootstrap": "npm run bootstrap:react && npm run bootstrap:vue && npm run bootstrap:node"
+  },
+  "dependencies": {
+    "hygen": "^6.2.11"
+  }
+}

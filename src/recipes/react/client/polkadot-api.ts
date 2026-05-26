@@ -5,7 +5,7 @@ export const polkadotApiReactClient: Recipe = {
   description: 'Polkadot API (PAPI) stack for SDK template',
   packageJson: {
     dependencies: {
-      '@paraspell/sdk': '^13.2.2',
+      '@paraspell/sdk': '^13.5.0',
       'polkadot-api': '^2.0.2',
     },
   },

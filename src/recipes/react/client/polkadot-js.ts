@@ -5,7 +5,7 @@ export const polkadotJsReactClient: Recipe = {
   description: 'Polkadot JS (PJS)',
   packageJson: {
     dependencies: {
-      '@paraspell/sdk-pjs': '^13.2.2',
+      '@paraspell/sdk-pjs': '^13.5.0',
       '@polkadot/api': '^16.5.6',
       '@polkadot/extension-dapp': '^0.58.10',
       '@polkadot/extension-inject': '^0.58.10',

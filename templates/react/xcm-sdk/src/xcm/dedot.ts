@@ -1,4 +1,4 @@
-import { UnsupportedOperationError } from "@paraspell/sdk";
+import { UnsupportedOperationError, type TSubstrateChain } from "@paraspell/sdk";
 import {
   Builder,
   createChainClient,
@@ -6,6 +6,10 @@ import {
 } from "@paraspell/sdk-dedot";
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues } from "../types";
+
+/* EVM_FEATURE */
+import { isChainEvm } from "../evm";
+/* END_EVM_FEATURE */
 
 export async function buildTransactions(
   formValues: FormValues,
@@ -16,13 +20,22 @@ export async function buildTransactions(
   const { from, to, recipient, amount, /* SWAP FEATURE */ swapEnabled /* END SWAP FEATURE */, currencyTo, exchange } =
     formValues;
 
-  const client = await createChainClient(from);
+  /* EVM_FEATURE */
+  if (isChainEvm(from)) {
+    throw new UnsupportedOperationError(
+      "EVM origins are submitted via the EVM wallet path.",
+    );
+  }
+  /* END_EVM_FEATURE */
+
+  const substrateFrom = from as TSubstrateChain;
+  const client = await createChainClient(substrateFrom);
 
 
   /* SWAP_FEATURE */
   if (swapEnabled) {
     const builder = Builder(client)
-      .from(from)
+      .from(substrateFrom)
       .to(to)
       .currency({ location: formValues.currency!.location, amount })
       .recipient(recipient)
@@ -38,7 +51,7 @@ export async function buildTransactions(
   /* END SWAP FEATURE */
 
   const tx = await Builder(client)
-    .from(from)
+    .from(substrateFrom)
     .to(to)
     .currency({ location: formValues.currency!.location, amount })
     .recipient(recipient)

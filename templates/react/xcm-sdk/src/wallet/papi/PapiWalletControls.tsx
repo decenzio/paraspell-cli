@@ -27,7 +27,7 @@ PapiWalletControlsProps
   onAccountChange,
 }) => (
   <div className="formHeader">
-    {extensionNames.length > 0 ? (
+    {extensionNames && extensionNames.length > 0 ? (
       <div>
         <h4>Select extension:</h4>
         <select
@@ -49,7 +49,7 @@ PapiWalletControlsProps
         Connect Wallet
       </button>
     )}
-    {accounts.length > 0 && (
+    {accounts && accounts.length > 0 && (
       <div>
         <h4>Select account:</h4>
         <select

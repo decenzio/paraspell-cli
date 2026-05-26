@@ -5,7 +5,7 @@ export const DedotReactClient: Recipe = {
   description: 'Dedot',
   packageJson: {
     dependencies: {
-      '@paraspell/sdk-dedot': '^13.2.2',
+      '@paraspell/sdk-dedot': '^13.5.0',
       'dedot': '^1.3.0',
     },
   },

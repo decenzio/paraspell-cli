@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@galacticcouncil/api-augment": "^0.10.0",
-    "@paraspell/sdk": "^13.2.2",
-    "@paraspell/swap": "^13.2.2",
+    "@paraspell/sdk": "^13.5.0",
+    "@paraspell/swap": "^13.5.0",
     "polkadot-api": "^2.0.2",
     "vue": "^3.5.13"
   },

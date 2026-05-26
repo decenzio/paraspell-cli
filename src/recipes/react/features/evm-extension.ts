@@ -4,7 +4,8 @@ export const swapExtensionReact: Recipe = {
   id: 'react:feature:evm-extension',
   packageJson: {
     dependencies: {
-      '@paraspell/evm': '^1.0.0',
+      '@paraspell/evm': '^13.2.2',
+      viem: '^2.50.4',
     },
   },
   files: [
