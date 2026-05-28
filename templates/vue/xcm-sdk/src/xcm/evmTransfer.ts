@@ -2,6 +2,7 @@ import { Builder } from "@paraspell/sdk-pjs";
 import type { WalletClient } from "viem";
 import type { FormValues } from "../types";
 import { ensureEvmWalletClient, isChainEvm, toSdkEvmFrom } from "../evm";
+import "@paraspell/evm";
 
 import "@paraspell/evm-snowbridge";
 

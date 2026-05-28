@@ -55,11 +55,13 @@ const onSubmit = async (formValues: FormValues) => {
 
 <template>
   <div class="transferLayout">
-    <WalletKindSelector
-      :active-wallet-kind="wallet.activeWalletKind.value"
-      @update:active-wallet-kind="setWalletKind"
-    />
-    <WalletControls :wallet="wallet" />
+    <div class="formHeader">
+      <WalletKindSelector
+        :active-wallet-kind="wallet.activeWalletKind.value"
+        @update:active-wallet-kind="setWalletKind"
+      />
+      <WalletControls :wallet="wallet" />
+    </div>
     <TransferForm
       :loading="loading"
       :origin-chain="originChain"

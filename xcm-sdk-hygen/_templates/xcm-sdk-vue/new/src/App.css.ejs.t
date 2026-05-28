@@ -11,17 +11,34 @@ to: src/App.css
 .header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
   margin-bottom: 1.5em;
   margin-top: 2em;
 }
 
 .formHeader {
-  max-width: 500px;
+  width: min(500px, 100%);
+  max-width: min(500px, calc(100vw - 4rem));
+  margin: 0 auto;
   padding: 20px 20px 48px 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formHeader > div {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formHeader select,
+.formHeader button {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo {

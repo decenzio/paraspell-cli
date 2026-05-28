@@ -5,15 +5,17 @@ export type AssetInfo = {
 };
 
 export type FormValues = {
-  originWsUrl: string;
   from: string;
   to: string;
   currency: AssetInfo;
   recipient: string;
   amount: string;
-  swapEnabled: boolean;
+  originWsUrl?: string;
+  /* SWAP_FEATURE */
+  swapEnabled?: boolean;
   currencyTo?: string;
   exchange?: string;
+  /* END_SWAP_FEATURE */
 };
 
 export type ApiParams = {
@@ -25,10 +27,12 @@ export type ApiParams = {
   };
   recipient: string;
   sender: string;
+  /* SWAP_FEATURE */
   swapOptions?: {
     currencyTo: { symbol: string };
     exchange?: string[];
   };
+  /* END_SWAP_FEATURE */
 };
 
 export type ApiTransaction = {

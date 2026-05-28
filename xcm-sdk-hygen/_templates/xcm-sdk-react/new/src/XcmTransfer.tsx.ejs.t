@@ -88,12 +88,15 @@ const XcmTransfer: FC = () => {
   return (
     <div className="transferLayout">
       <% if (evm) { %>
-      <WalletKindSelector
-        activeWalletKind={wallet.activeWalletKind}
-        setActiveWalletKind={setWalletKind}
-      />
-      <WalletControls wallet={wallet} />
+      <div className="formHeader">
+        <WalletKindSelector
+          activeWalletKind={wallet.activeWalletKind}
+          setActiveWalletKind={setWalletKind}
+        />
+        <WalletControls wallet={wallet} />
+      </div>
       <% } else if (client === 'pjs') { %>
+      <div className="formHeader">
       <PjsWalletControls
         extensionNames={wallet.extensionNames}
         selectedExtensionName={wallet.selectedExtensionName}
@@ -107,7 +110,9 @@ const XcmTransfer: FC = () => {
         }}
         onAccountChange={wallet.selectAccountByAddress}
       />
+      </div>
       <% } else if (client === 'papi') { %>
+      <div className="formHeader">
       <PapiWalletControls
         extensionNames={wallet.extensionNames}
         selectedExtensionName={wallet.selectedExtensionName}
@@ -121,7 +126,9 @@ const XcmTransfer: FC = () => {
         }}
         onAccountChange={wallet.selectAccountByAddress}
       />
+      </div>
       <% } else { %>
+      <div className="formHeader">
       <DedotWalletControls
         extensionNames={wallet.extensionNames}
         selectedExtensionName={wallet.selectedExtensionName}
@@ -135,6 +142,7 @@ const XcmTransfer: FC = () => {
         }}
         onAccountChange={wallet.selectAccountByAddress}
       />
+      </div>
       <% } %>
       <TransferForm
         onSubmit={onSubmit}

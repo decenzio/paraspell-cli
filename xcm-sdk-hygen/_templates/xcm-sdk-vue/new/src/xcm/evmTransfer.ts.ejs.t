@@ -6,6 +6,7 @@ import { Builder } from "<%= sdkPackage %>";
 import type { WalletClient } from "viem";
 import type { FormValues } from "../types";
 import { ensureEvmWalletClient, isChainEvm, toSdkEvmFrom } from "../evm";
+import "@paraspell/evm";
 <% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";
 <% } %>

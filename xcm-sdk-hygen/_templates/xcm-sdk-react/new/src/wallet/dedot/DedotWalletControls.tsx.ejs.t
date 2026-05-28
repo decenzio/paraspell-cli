@@ -26,7 +26,7 @@ DedotWalletControlsProps
   onExtensionChange,
   onAccountChange,
 }) => (
-  <div className="formHeader">
+  <>
     {extensionNames.length > 0 ? (
       <div>
         <h4>Select extension (injectedWeb3):</h4>
@@ -46,7 +46,7 @@ DedotWalletControlsProps
       </div>
     ) : (
       <button type="button" onClick={onConnectClick}>
-        Discover extensions (injectedWeb3)
+        Connect Wallet
       </button>
     )}
     {accounts.length > 0 && (
@@ -64,5 +64,5 @@ DedotWalletControlsProps
         </select>
       </div>
     )}
-  </div>
+  </>
 );

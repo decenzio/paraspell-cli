@@ -13,8 +13,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="formHeader">
-    <div v-if="extensionNames.length > 0">
+  <div v-if="extensionNames.length > 0">
       <h4>Select extension:</h4>
       <select
         :value="selectedExtensionName ?? ''"
@@ -60,6 +59,5 @@ defineProps<{
           {{ name ?? address }} — {{ address }}
         </option>
       </select>
-    </div>
   </div>
 </template>

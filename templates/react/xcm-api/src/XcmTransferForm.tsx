@@ -2,17 +2,24 @@ import axios from "axios";
 import { useState, useMemo, FormEvent, FC, useEffect } from "react";
 import { API_URL } from "./consts";
 import type { AssetInfo, FormValues } from "./types";
+import { filterChainsForWallet } from "./evm";
 
 type Props = {
   onSubmit: (values: FormValues) => void;
   loading: boolean;
+  originChain: string;
+  onOriginChange: (origin: string) => void;
+  isEvmOrigin?: boolean;
 };
 
-const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
-  // Prepare states for the form fields
+const TransferForm: FC<Props> = ({
+  onSubmit,
+  loading,
+  originChain,
+  onOriginChange,
+  isEvmOrigin = false,
+}) => {
   const [chains, setChains] = useState<string[]>([]);
-  const [originWsUrl, setOriginWsUrl] = useState("");
-  const [originChain, setOriginChain] = useState("Astar");
   const [destinationChain, setDestinationChain] = useState("Hydration");
   const [supportedAssets, setSupportedAssets] = useState<AssetInfo[]>([]);
   const [currencyOptionId, setCurrencyOptionId] = useState("");
@@ -31,21 +38,13 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchChains();
+    void fetchChains();
   }, []);
 
-  useEffect(() => {
-    const fetchWsEndpoints = async () => {
-      const response = await axios.get(
-        `${API_URL}/chains/${originChain}/ws-endpoints`,
-      );
-      const endpoints = response.data as string[];
-      if (endpoints.length > 0) {
-        setOriginWsUrl(endpoints[0]);
-      }
-    };
-    fetchWsEndpoints();
-  }, [originChain]);
+  const originChains = useMemo(
+    () => filterChainsForWallet(chains, isEvmOrigin),
+    [chains, isEvmOrigin],
+  );
 
   useEffect(() => {
     const fetchAssets = async () => {
@@ -55,10 +54,9 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
       const assets = response.data as AssetInfo[];
       setSupportedAssets(assets);
     };
-    fetchAssets();
+    void fetchAssets();
   }, [originChain, destinationChain]);
 
-  // Create a map of assets keyed by a unique id
   const currencyMap = useMemo(
     () =>
       supportedAssets.reduce(
@@ -88,23 +86,18 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
     }
   }, [currencyOptions]);
 
-  // Handle form submission
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const transformedValues = {
+    onSubmit({
       from: originChain,
       to: destinationChain,
       recipient,
       amount,
       currency: currencyMap[currencyOptionId],
-      originWsUrl,
       swapEnabled,
       currencyTo: swapEnabled ? currencyTo : undefined,
       exchange: swapEnabled && exchange ? exchange : undefined,
-    };
-
-    // Pass the submitted form values to the parent component
-    onSubmit(transformedValues);
+    });
   };
 
   return (
@@ -113,10 +106,10 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
         Origin chain
         <select
           value={originChain}
-          onChange={(e) => setOriginChain(e.target.value)}
+          onChange={(e) => onOriginChange(e.target.value)}
           required
         >
-          {chains.map((chain) => (
+          {originChains.map((chain) => (
             <option key={chain} value={chain}>
               {chain}
             </option>
@@ -174,35 +167,39 @@ const TransferForm: FC<Props> = ({ onSubmit, loading }) => {
         />
       </label>
 
-      <button
-        type="button"
-        className="secondary"
-        onClick={() => setSwapEnabled((prev) => !prev)}
-      >
-        {swapEnabled ? "- Remove Swap" : "+ Add Swap"}
-      </button>
-
-      {swapEnabled && (
+      {!isEvmOrigin && (
         <>
-          <label>
-            Exchange
-            <input
-              type="text"
-              value={exchange}
-              onChange={(e) => setExchange(e.target.value)}
-              placeholder="Leave empty for auto"
-            />
-          </label>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => setSwapEnabled((prev) => !prev)}
+          >
+            {swapEnabled ? "- Remove Swap" : "+ Add Swap"}
+          </button>
 
-          <label>
-            Currency To
-            <input
-              type="text"
-              value={currencyTo}
-              onChange={(e) => setCurrencyTo(e.target.value)}
-              required
-            />
-          </label>
+          {swapEnabled && (
+            <>
+              <label>
+                Exchange
+                <input
+                  type="text"
+                  value={exchange}
+                  onChange={(e) => setExchange(e.target.value)}
+                  placeholder="Leave empty for auto"
+                />
+              </label>
+
+              <label>
+                Currency To
+                <input
+                  type="text"
+                  value={currencyTo}
+                  onChange={(e) => setCurrencyTo(e.target.value)}
+                  required
+                />
+              </label>
+            </>
+          )}
         </>
       )}
 

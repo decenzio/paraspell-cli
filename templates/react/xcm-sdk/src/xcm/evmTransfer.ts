@@ -4,6 +4,7 @@ import { Builder } from "@paraspell/sdk-pjs";
 import type { WalletClient } from "viem";
 import type { FormValues } from "../types";
 import { ensureEvmWalletClient, isChainEvm, toSdkEvmFrom } from "../evm";
+import "@paraspell/evm";
 
 /* SNOWBRIDGE_FEATURE */
 import "@paraspell/evm-snowbridge";

@@ -5,13 +5,12 @@ export type AssetInfo = {
 };
 
 export type FormValues = {
-  originWsUrl: string;
   from: string;
   to: string;
   currency: AssetInfo;
   recipient: string;
   amount: string;
-  swapEnabled: boolean;
+  swapEnabled?: boolean;
   currencyTo?: string;
   exchange?: string;
 };

@@ -67,11 +67,13 @@ const XcmTransfer: FC = () => {
   return (
     <div>
       {/* EVM_FEATURE */}
-      <WalletKindSelector
-        activeWalletKind={wallet.activeWalletKind}
-        setActiveWalletKind={setWalletKind}
-      />
-      <WalletControls wallet={wallet} />
+      <div className="formHeader">
+        <WalletKindSelector
+          activeWalletKind={wallet.activeWalletKind}
+          setActiveWalletKind={setWalletKind}
+        />
+        <WalletControls wallet={wallet} />
+      </div>
       {/* END_EVM_FEATURE */}
       <TransferForm
         onSubmit={onSubmit}

@@ -10,6 +10,7 @@ import {
   type TxFinalizedPayload,
 } from "polkadot-api";
 import type { FormValues } from "../types";
+import "@paraspell/evm";
 import { isChainEvm } from "../evm";
 import type { WalletClient } from "viem";
 import { submitEvmTransferFromForm } from "./evmTransfer";

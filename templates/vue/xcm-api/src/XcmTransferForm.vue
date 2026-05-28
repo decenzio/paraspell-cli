@@ -3,18 +3,20 @@ import axios from "axios";
 import { ref, computed, watch, onMounted } from "vue";
 import { API_URL } from "./consts";
 import type { AssetInfo, FormValues } from "./types";
+import { filterChainsForWallet } from "./evm";
 
-defineProps<{
+const props = defineProps<{
   loading: boolean;
+  originChain: string;
+  isEvmOrigin?: boolean;
 }>();
 
 const emit = defineEmits<{
   submit: [values: FormValues];
+  originChange: [origin: string];
 }>();
 
 const chains = ref<string[]>([]);
-const originWsUrl = ref("");
-const originChain = ref("Astar");
 const destinationChain = ref("Hydration");
 const supportedAssets = ref<AssetInfo[]>([]);
 const currencyOptionId = ref("");
@@ -35,25 +37,20 @@ onMounted(() => {
   void fetchChains();
 });
 
-watch(
-  originChain,
-  async () => {
-    const response = await axios.get(
-      `${API_URL}/chains/${originChain.value}/ws-endpoints`,
-    );
-    const endpoints = response.data as string[];
-    if (endpoints.length > 0) {
-      originWsUrl.value = endpoints[0];
-    }
-  },
-  { immediate: true },
+const originChains = computed(() =>
+  filterChainsForWallet(chains.value, props.isEvmOrigin ?? false),
 );
 
 watch(
-  [originChain, destinationChain],
+  () => props.originChain,
+  () => {},
+);
+
+watch(
+  [() => props.originChain, destinationChain],
   async () => {
     const response = await axios.get(
-      `${API_URL}/supported-assets?origin=${originChain.value}&destination=${destinationChain.value}`,
+      `${API_URL}/supported-assets?origin=${props.originChain}&destination=${destinationChain.value}`,
     );
     supportedAssets.value = response.data as AssetInfo[];
   },
@@ -88,15 +85,19 @@ watch(
   { immediate: true },
 );
 
+const onOriginSelect = (e: Event) => {
+  const value = (e.target as HTMLSelectElement).value;
+  emit("originChange", value);
+};
+
 const handleSubmit = (e: Event) => {
   e.preventDefault();
   emit("submit", {
-    from: originChain.value,
+    from: props.originChain,
     to: destinationChain.value,
     recipient: recipient.value,
     amount: amount.value,
     currency: currencyMap.value[currencyOptionId.value],
-    originWsUrl: originWsUrl.value,
     swapEnabled: swapEnabled.value,
     currencyTo: swapEnabled.value ? currencyTo.value : undefined,
     exchange: swapEnabled.value && exchange.value ? exchange.value : undefined,
@@ -109,11 +110,12 @@ const handleSubmit = (e: Event) => {
     <label>
       Origin chain
       <select
-        v-model="originChain"
+        :value="originChain"
         required
+        @change="onOriginSelect"
       >
         <option
-          v-for="chain in chains"
+          v-for="chain in originChains"
           :key="chain"
           :value="chain"
         >
@@ -172,32 +174,34 @@ const handleSubmit = (e: Event) => {
       >
     </label>
 
-    <button
-      type="button"
-      class="secondary"
-      @click="swapEnabled = !swapEnabled"
-    >
-      {{ swapEnabled ? "- Remove Swap" : "+ Add Swap" }}
-    </button>
+    <template v-if="!isEvmOrigin">
+      <button
+        type="button"
+        class="secondary"
+        @click="swapEnabled = !swapEnabled"
+      >
+        {{ swapEnabled ? "- Remove Swap" : "+ Add Swap" }}
+      </button>
 
-    <template v-if="swapEnabled">
-      <label>
-        Exchange
-        <input
-          v-model="exchange"
-          type="text"
-          placeholder="Leave empty for auto"
-        >
-      </label>
+      <template v-if="swapEnabled">
+        <label>
+          Exchange
+          <input
+            v-model="exchange"
+            type="text"
+            placeholder="Leave empty for auto"
+          >
+        </label>
 
-      <label>
-        Currency To
-        <input
-          v-model="currencyTo"
-          type="text"
-          required
-        >
-      </label>
+        <label>
+          Currency To
+          <input
+            v-model="currencyTo"
+            type="text"
+            required
+          >
+        </label>
+      </template>
     </template>
 
     <button

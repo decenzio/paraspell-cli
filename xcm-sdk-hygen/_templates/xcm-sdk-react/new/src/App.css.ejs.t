@@ -21,6 +21,7 @@ to: src/App.css
 .header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
   margin-bottom: 1.5em;
   margin-top: 2em;
@@ -35,6 +36,18 @@ to: src/App.css
   flex-direction: column;
   gap: 15px;
   min-width: 0;
+  box-sizing: border-box;
+}
+
+.formHeader > div {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formHeader select,
+.formHeader button {
+  width: 100%;
   box-sizing: border-box;
 }
 

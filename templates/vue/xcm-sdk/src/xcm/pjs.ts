@@ -6,6 +6,7 @@ import {
 } from "@paraspell/sdk-pjs";
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues } from "../types";
+import "@paraspell/evm";
 import { isChainEvm } from "../evm";
 
 import "@paraspell/evm-snowbridge";

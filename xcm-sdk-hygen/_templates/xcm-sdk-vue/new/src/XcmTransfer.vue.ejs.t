@@ -81,12 +81,15 @@ const onSubmit = async (formValues: FormValues) => {
 <template>
   <div class="transferLayout">
     <% if (evm) { %>
-    <WalletKindSelector
-      :active-wallet-kind="wallet.activeWalletKind.value"
-      @update:active-wallet-kind="setWalletKind"
-    />
-    <WalletControls :wallet="wallet" />
+    <div class="formHeader">
+      <WalletKindSelector
+        :active-wallet-kind="wallet.activeWalletKind.value"
+        @update:active-wallet-kind="setWalletKind"
+      />
+      <WalletControls :wallet="wallet" />
+    </div>
     <% } else if (client === 'pjs') { %>
+    <div class="formHeader">
     <PjsWalletControls
       :extension-names="wallet.extensionNames"
       :selected-extension-name="wallet.selectedExtensionName"
@@ -96,7 +99,9 @@ const onSubmit = async (formValues: FormValues) => {
       :on-extension-change="(name: string) => { void wallet.selectExtension(name); }"
       :on-account-change="wallet.selectAccountByAddress"
     />
+    </div>
     <% } else if (client === 'papi') { %>
+    <div class="formHeader">
     <PapiWalletControls
       :extension-names="wallet.extensionNames"
       :selected-extension-name="wallet.selectedExtensionName"
@@ -106,7 +111,9 @@ const onSubmit = async (formValues: FormValues) => {
       :on-extension-change="(name: string) => { void wallet.selectExtension(name); }"
       :on-account-change="wallet.selectAccountByAddress"
     />
+    </div>
     <% } else { %>
+    <div class="formHeader">
     <DedotWalletControls
       :extension-names="wallet.extensionNames"
       :selected-extension-name="wallet.selectedExtensionName"
@@ -116,6 +123,7 @@ const onSubmit = async (formValues: FormValues) => {
       :on-extension-change="(name: string) => { void wallet.selectExtension(name); }"
       :on-account-change="wallet.selectAccountByAddress"
     />
+    </div>
     <% } %>
     <TransferForm
       :loading="loading"

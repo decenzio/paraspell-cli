@@ -7,13 +7,20 @@ const require = createRequire(import.meta.url);
 const { runner, Logger } = require('hygen');
 
 /**
- * @param {import('./frameworks.mjs').Framework} framework
+ * @param {string} framework
  * @param {string} templatesRoot
  * @param {string} cwd
  * @param {string[]} hygenArgs
+ * @param {Record<string, { generator: string }>} [frameworksMap]
  */
-export async function runHygenGenerate(framework, templatesRoot, cwd, hygenArgs) {
-  const { generator } = FRAMEWORKS[framework];
+export async function runHygenGenerate(
+  framework,
+  templatesRoot,
+  cwd,
+  hygenArgs,
+  frameworksMap = FRAMEWORKS,
+) {
+  const { generator } = frameworksMap[framework];
   const args = [generator, 'new', ...hygenArgs];
   const result = await runner(args, {
     templates: templatesRoot,
@@ -28,16 +35,23 @@ export async function runHygenGenerate(framework, templatesRoot, cwd, hygenArgs)
 }
 
 /**
- * @param {import('./frameworks.mjs').Framework} framework
+ * @param {string} framework
  * @param {string} templatesRoot
  * @param {string} outDir
+ * @param {Record<string, { generator: string }>} [frameworksMap]
  */
-export async function copyLogo(framework, templatesRoot, outDir) {
+export async function copyLogo(
+  framework,
+  templatesRoot,
+  outDir,
+  frameworksMap = FRAMEWORKS,
+) {
+  const logoFile = frameworksMap[framework].logoFile ?? 'paraspell.png';
   const logoSrc = path.join(
     templatesRoot,
-    `${FRAMEWORKS[framework].generator}/new/public/paraspell.png`,
+    `${frameworksMap[framework].generator}/new/public/${logoFile}`,
   );
-  const logoDest = path.join(outDir, 'public/paraspell.png');
+  const logoDest = path.join(outDir, 'public', logoFile);
   if (fs.existsSync(logoSrc)) {
     await fs.promises.mkdir(path.dirname(logoDest), { recursive: true });
     await fs.promises.copyFile(logoSrc, logoDest);

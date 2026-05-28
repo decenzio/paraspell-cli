@@ -4,8 +4,8 @@ to: src/XcmTransferForm.tsx
 import { useState, useEffect, useMemo, FormEvent, FC } from "react";
 import useCurrencyOptions from "./useCurrencyOptions";
 import {
-  CHAINS,
-  SUBSTRATE_CHAINS,<% if (swap) { %>
+  CHAINS,<% if (!evm) { %>
+  SUBSTRATE_CHAINS,<% } %><% if (swap) { %>
   EXCHANGE_CHAINS,
   TExchangeChain,<% } %>
   TChain,

@@ -22,7 +22,7 @@ DedotWalletControlsProps
   onExtensionChange,
   onAccountChange,
 }) => (
-  <div className="formHeader">
+  <>
     {extensionNames.length > 0 ? (
       <div>
         <h4>Select extension (injectedWeb3):</h4>
@@ -60,5 +60,5 @@ DedotWalletControlsProps
         </select>
       </div>
     )}
-  </div>
+  </>
 );

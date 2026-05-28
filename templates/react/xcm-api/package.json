@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@paraspell/evm": "13.5.0",
+    "@paraspell/evm-snowbridge": "13.5.0",
+    "@paraspell/sdk": "13.5.0",
     "axios": "^1.15.0",
     "polkadot-api": "^2.0.2",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "viem": "^2.50.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

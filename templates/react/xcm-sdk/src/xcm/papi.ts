@@ -11,12 +11,14 @@ import {
 } from "polkadot-api";
 import type { FormValues } from "../types";
 
+/* EVM_FEATURE */
+import "@paraspell/evm";
+import { isChainEvm } from "../evm";
+/* END_EVM_FEATURE */
+
 /* SNOWBRIDGE_FEATURE */
 import "@paraspell/evm-snowbridge";
 /* END_SNOWBRIDGE_FEATURE */
-
-/* EVM_FEATURE */
-import { isChainEvm } from "../evm";
 import type { WalletClient } from "viem";
 import { submitEvmTransferFromForm } from "./evmTransfer";
 

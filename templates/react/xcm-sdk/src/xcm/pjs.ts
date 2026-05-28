@@ -8,6 +8,7 @@ import type { Signer } from "@polkadot/api/types";
 import type { FormValues } from "../types";
 
 /* EVM_FEATURE */
+import "@paraspell/evm";
 import { isChainEvm } from "../evm";
 /* END_EVM_FEATURE */
 

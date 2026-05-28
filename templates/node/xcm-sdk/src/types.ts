@@ -1,14 +1,10 @@
-import type { TChain, TSubstrateChain } from "@paraspell/sdk";
+import type { TChain, TSymbolSpecifier } from "@paraspell/sdk";
 
 export type TransferParams = {
   from: TChain;
   to: TChain;
   amount: string;
-  currencySymbol: string;
+  currencySymbol: string | TSymbolSpecifier;
   sender: string;
   recipient: string;
-};
-
-export type SubstrateTransferParams = TransferParams & {
-  from: TSubstrateChain;
 };

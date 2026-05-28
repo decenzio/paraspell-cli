@@ -10,6 +10,7 @@ import {
 } from "@paraspell/sdk-dedot";
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues } from "../types";<% if (evm) { %>
+import "@paraspell/evm";
 import { isChainEvm } from "../evm";<% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %>
 
@@ -61,13 +62,7 @@ async function submitTransaction(
   senderAddress: string,
   signer: Signer,
 ): Promise<void> {
-  try {
-    await tx.signAndSend(senderAddress, { signer }).untilFinalized();
-  } catch (error) {
-    throw error instanceof Error
-      ? error
-      : new UnsupportedOperationError(String(error));
-  }
+  await tx.signAndSend(senderAddress, { signer }).untilFinalized();
 }
 
 export const submitUsingSdk = async (

@@ -13,12 +13,7 @@ export function parseArgs(argv, ctx) {
     evm: false,
     swap: false,
     snowbridge: false,
-    out: path.join(
-      ctx.root,
-      'generated',
-      ctx.framework,
-      'my-xcm-app',
-    ),
+    out: path.join(ctx.root, 'generated', 'xcm-sdk', ctx.framework, 'my-xcm-app'),
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -67,7 +62,7 @@ export function printGenerateHelp(framework) {
   const fwFlag = framework
     ? ''
     : '\n  --framework <id>    react | vue | node';
-  console.log(`Usage: node scripts/generate.mjs [options]
+  console.log(`Usage: node scripts/generate-sdk.mjs [options]
 
 Options:${fwFlag}
   --name <string>       package.json name (default: my-xcm-app)

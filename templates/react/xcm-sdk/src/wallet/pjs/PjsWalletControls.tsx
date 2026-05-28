@@ -21,7 +21,7 @@ export const PjsWalletControls: FC<PjsWalletControlsProps> = ({
   onExtensionChange,
   onAccountChange,
 }) => (
-  <div className="formHeader">
+  <>
     {extensionNames.length > 0 ? (
       <div>
         <h4>Select extension:</h4>
@@ -64,5 +64,5 @@ export const PjsWalletControls: FC<PjsWalletControlsProps> = ({
         </select>
       </div>
     )}
-  </div>
+  </>
 );

@@ -5,7 +5,8 @@ skip_if: <%= (!evm).toString() %>
 import { Builder, type TChain, type TEvmChainFrom } from "<%= sdkPackage %>";
 import { createWalletClient, http, type WalletClient, type Chain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { darwinia, moonbeam, moonriver } from "viem/chains";<% if (snowbridge) { %>
+import { darwinia, moonbeam, moonriver } from "viem/chains";
+import "@paraspell/evm";<% if (snowbridge) { %>
 import { mainnet, sepolia } from "viem/chains";
 import "@paraspell/evm-snowbridge";<% } %>
 import type { TransferParams } from "./types.js";
@@ -71,12 +72,14 @@ export async function submitEvmTransfer(params: TransferParams): Promise<string>
   }
 
   const walletClient = getEvmWalletClient(from);
-  const currency = { symbol: currencySymbol, amount };
 
   return await Builder()
     .from(toSdkEvmFrom(from))
     .to(to)
-    .currency(currency)
+    .currency({
+      symbol: currencySymbol,
+      amount,
+    })
     .recipient(recipient)
     .sender(walletClient)
     .signAndSubmit();

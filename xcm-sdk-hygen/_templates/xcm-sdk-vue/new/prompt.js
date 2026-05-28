@@ -19,7 +19,7 @@ module.exports = {
     const { evm } = await prompter.prompt({
       type: 'confirm',
       name: 'evm',
-      message: 'Include EVM extension (MetaMask + EVM origins)?',
+      message: 'Include EVM extension (EVM-supported wallet + EVM origins)?',
       initial: parseBool(args.evm, false),
     });
 

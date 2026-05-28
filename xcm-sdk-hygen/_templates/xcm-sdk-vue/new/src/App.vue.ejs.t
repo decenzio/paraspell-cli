@@ -2,9 +2,11 @@
 to: src/App.vue
 ---
 <script setup lang="ts">
-import "./App.css";
-import XcmTransfer from "./XcmTransfer.vue";<% if (swap) { %>
-import "@paraspell/swap";<% } %>
+import "./App.css";<% if (swap) { %>
+import "@paraspell/swap";<% } %><% if (evm) { %>
+import "@paraspell/evm";<% } %><% if (snowbridge) { %>
+import "@paraspell/evm-snowbridge";<% } %>
+import XcmTransfer from "./XcmTransfer.vue";
 </script>
 
 <template>

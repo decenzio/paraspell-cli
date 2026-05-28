@@ -7,18 +7,19 @@ to: src/index.ts
 } from "@paraspell/sdk-pjs";<% } else { %>import {
   Builder,
   createChainClient,
-} from "@paraspell/sdk-dedot";<% } %><% if (evm) { %>
+} from "@paraspell/sdk-dedot";<% } %>
+import { Native<% if (swap) { %>, Foreign<% } %> } from "@paraspell/sdk";<% if (evm) { %>
 import { isChainEvm, submitEvmTransfer } from "./evm.js";<% } %>
-import type { SubstrateTransferParams, TransferParams } from "./types.js";
+import type { TransferParams } from "./types.js";
 
 const defaults: TransferParams = {
   from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>",
   to: "Hydration",
   amount: "0.1",
-  currencySymbol: "DOT",
+  currencySymbol: <%= snowbridge ? 'Native("ETH")' : evm ? 'Native("GLMR")' : 'Native("DOT")' %>,
   sender: "//Alice",
   recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: "USDC",<% } %>
+  currencyToSymbol: Foreign("USDC"),<% } %>
 };
 
 async function transferAsset(
@@ -30,43 +31,40 @@ async function transferAsset(
     return await submitEvmTransfer(opts);
   }
 
-<% } %>  const substrateOpts = opts as SubstrateTransferParams;
-<% if (client === 'papi') { %>
+<% } %><% if (client === 'papi') { %>
   const builder = Builder()
-    .from(substrateOpts.from)
-    .to(substrateOpts.to)
+    .from(opts.from)
+    .to(opts.to)
     .currency({
-      symbol: substrateOpts.currencySymbol,
-      amount: substrateOpts.amount,
+      symbol: opts.currencySymbol,
+      amount: opts.amount,
     })
-    .recipient(substrateOpts.recipient)
-    .sender(substrateOpts.sender);
+    .recipient(opts.recipient)
+    .sender(opts.sender);
 <% } else { %>
-  const client = await createChainClient(substrateOpts.from);
+  const client = await createChainClient(opts.from);
   const builder = Builder(client)
-    .from(substrateOpts.from)
-    .to(substrateOpts.to)
+    .from(opts.from)
+    .to(opts.to)
     .currency({
-      symbol: substrateOpts.currencySymbol,
-      amount: substrateOpts.amount,
+      symbol: opts.currencySymbol,
+      amount: opts.amount,
     })
-    .recipient(substrateOpts.recipient)
-    .sender(substrateOpts.sender);
+    .recipient(opts.recipient)
+    .sender(opts.sender);
 <% } %>
 <% if (swap) { %>
-  if (substrateOpts.currencyToSymbol) {
+  if (opts.currencyToSymbol) {
     builder.swap({
-      currencyTo: { symbol: substrateOpts.currencyToSymbol },
-      ...(substrateOpts.exchange
-        ? { exchange: [substrateOpts.exchange] }
-        : {}),
+      currencyTo: { symbol: opts.currencyToSymbol },
+      ...(opts.exchange ? { exchange: [opts.exchange] } : {}),
     });
   }
 <% } %>
 
   try {
 <% if (swap) { %>
-    if (substrateOpts.currencyToSymbol) {
+    if (opts.currencyToSymbol) {
       return await builder.signAndSubmitAll();
     }
 <% } %>

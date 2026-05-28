@@ -26,7 +26,7 @@ PapiWalletControlsProps
   onExtensionChange,
   onAccountChange,
 }) => (
-  <div className="formHeader">
+  <>
     {extensionNames && extensionNames.length > 0 ? (
       <div>
         <h4>Select extension:</h4>
@@ -64,5 +64,5 @@ PapiWalletControlsProps
         </select>
       </div>
     )}
-  </div>
+  </>
 );

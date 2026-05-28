@@ -63,17 +63,11 @@ declare global {
 export function getEthereumProvider(): EIP1193Provider {
   if (!window.ethereum) {
     throw new Error(
-      "No EVM wallet found. Install MetaMask or another EIP-1193 provider.",
+      "No EVM wallet found. Install an EVM-supported wallet (EIP-1193 provider).",
     );
   }
   return window.ethereum;
 }
-
-const isUnrecognizedChainError = (error: unknown): boolean =>
-  typeof error === "object" &&
-  error !== null &&
-  "code" in error &&
-  (error as { code: number }).code === 4902;
 
 const getAddEthereumChainParams = (chain: Chain) => ({
   chainId: numberToHex(chain.id),
@@ -103,7 +97,7 @@ export async function switchWalletToOrigin(origin: TChain): Promise<void> {
       params: [{ chainId }],
     });
   } catch (error) {
-    if (!isUnrecognizedChainError(error)) {
+    if ((error as { code?: number }).code !== 4902) {
       throw error;
     }
     await provider.request({
@@ -128,15 +122,12 @@ export async function ensureEvmWalletClient(
   walletClient: WalletClient,
   origin: TChain,
 ): Promise<WalletClient> {
-  const account = walletClient.account;
-  const address =
-    typeof account === "string" ? account : account?.address;
-
-  if (!address) {
+  if (!walletClient.account) {
     throw new Error(
-      "MetaMask wallet has no account. Disconnect and connect again.",
+      "EVM wallet has no account. Disconnect and connect again.",
     );
   }
+  const address = walletClient.account.address;
 
   await switchWalletToOrigin(origin);
 

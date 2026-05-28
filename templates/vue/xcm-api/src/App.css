@@ -14,11 +14,27 @@
 }
 
 .formHeader {
-  max-width: 500px;
+  width: min(500px, 100%);
+  max-width: min(500px, calc(100vw - 4rem));
+  margin: 0 auto;
   padding: 20px 20px 48px 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formHeader > div {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formHeader select,
+.formHeader button {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -129,4 +145,23 @@ button.secondary:hover {
 
 form > label + label {
   margin-top: 10px;
+}
+
+.transferError {
+  display: block;
+  box-sizing: border-box;
+  width: min(500px, 100%);
+  max-width: min(500px, calc(100vw - 4rem));
+  max-height: 12rem;
+  margin: 12px auto 0;
+  padding: 10px 12px;
+  overflow: auto;
+  text-align: left;
+  color: #b42318;
+  background-color: #fef3f2;
+  border: 1px solid #fecdca;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: pre-wrap;
 }

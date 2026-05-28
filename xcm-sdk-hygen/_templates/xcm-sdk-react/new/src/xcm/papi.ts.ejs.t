@@ -13,7 +13,8 @@ import {
   type PolkadotSigner,
   type TxFinalizedPayload,
 } from "polkadot-api";
-import type { FormValues } from "../types";<% if (snowbridge) { %>
+import type { FormValues } from "../types";<% if (evm) { %>
+import "@paraspell/evm";<% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %><% if (evm) { %>
 import { isChainEvm } from "../evm";
 import type { WalletClient } from "viem";
@@ -35,7 +36,7 @@ export const submitUsingSdk = async (
 <% if (evm) { %>  if (isChainEvm(from)) {
     if (options.kind !== "evm") {
       throw new UnsupportedOperationError(
-        "EVM origin requires a connected MetaMask wallet.",
+        "EVM origin requires a connected EVM wallet.",
       );
     }
 
@@ -111,20 +112,15 @@ export const submitPapiTransaction = async (
           }
         }
       },
-      error: (error: unknown) => {
+      error: (error) => {
         if (error instanceof InvalidTxError) {
-          const typedErr = error.error;
           reject(
             new UnsupportedOperationError(
-              `Invalid transaction: ${JSON.stringify(typedErr)}`,
+              `Invalid transaction: ${JSON.stringify(error.error)}`,
             ),
           );
         } else {
-          reject(
-            error instanceof Error
-              ? error
-              : new UnsupportedOperationError(String(error)),
-          );
+          reject(error);
         }
       },
     });

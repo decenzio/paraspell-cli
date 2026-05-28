@@ -1,36 +1,42 @@
-# XCM SDK Hygen generators
+# XCM SDK & XCM API Hygen generators
 
-Single Hygen project for ParaSpell **XCM SDK** templates. Each framework has its own template set under `_templates/` and dedicated npm scripts.
+Hygen project for ParaSpell **XCM SDK** and **XCM API** starter apps. Template sources live under `_templates/`; generated apps are written only to `generated/` (or your `--out` path).
+
+This package root should contain **`_templates/`**, **`scripts/`**, and **`generated/`** only. If you see `src/` or `public/` here, Hygen was run with the wrong working directory — delete those folders (they are gitignored) and always pass `--out`.
 
 ## Layout
 
 ```text
 xcm-sdk-hygen/
 ├── _templates/
-│   ├── xcm-sdk-react/new/    # React (Vite + TSX)
-│   ├── xcm-sdk-vue/new/      # Vue (Vite + SFC)
-│   └── xcm-sdk-node/new/     # Node.js (headless TS)
+│   ├── xcm-sdk-react/new/      # XCM SDK — React (Vite + TSX)
+│   ├── xcm-sdk-vue/new/        # XCM SDK — Vue
+│   ├── xcm-sdk-node/new/       # XCM SDK — Node.js
+│   ├── xcm-api-react/new/      # XCM API — React
+│   ├── xcm-api-vue/new/        # XCM API — Vue
+│   └── xcm-api-node/new/       # XCM API — Node.js
 ├── scripts/
-│   ├── generate.mjs              # Unified CLI (--framework react|vue)
-│   ├── generate-react.mjs
-│   ├── generate-vue.mjs
-│   ├── generate-examples.mjs     # React + Vue examples
-│   ├── generate-examples-react.mjs
-│   ├── generate-examples-vue.mjs
-│   ├── bootstrap-react-static-templates.mjs
-│   └── bootstrap-vue-static-templates.mjs
-└── generated/                    # gitignored
+│   ├── generate-sdk*.mjs       # single SDK app / examples
+│   ├── generate-xcm-api*.mjs   # single XCM API app / examples
+│   ├── bootstrap-sdk-*-templates.mjs
+│   └── bootstrap-xcm-api-*-templates.mjs
+└── generated/                  # gitignored output
 ```
 
-Source kitchen-sink templates (edited by hand):
+Kitchen-sink sources (edit by hand, then bootstrap):
 
-- React: `templates/react/xcm-sdk`
-- Vue: `templates/vue/xcm-sdk`
-- Node: `templates/node/xcm-sdk`
+| Generator | Source |
+|-----------|--------|
+| XCM SDK React | `templates/react/xcm-sdk` |
+| XCM SDK Vue | `templates/vue/xcm-sdk` |
+| XCM SDK Node | `templates/node/xcm-sdk` |
+| XCM API React | `templates/react/xcm-api` |
+| XCM API Vue | `templates/vue/xcm-api` |
+| XCM API Node | `templates/node/xcm-api` |
 
-## Parameters
+## XCM SDK
 
-Same flags for every framework:
+### Parameters
 
 | Flag | Values | Default |
 |------|--------|---------|
@@ -39,29 +45,20 @@ Same flags for every framework:
 | `--swap` | `true` / `false` | `false` |
 | `--snowbridge` | `true` / `false` (requires EVM) | `false` |
 | `--name` | npm package name | `my-xcm-app` |
-| `--out` | output directory | `generated/<framework>/<name>` |
+| `--out` | output directory | `generated/xcm-sdk/<framework>/<name>` |
 
-## Quick start
+### Quick start
 
 ```bash
 cd xcm-sdk-hygen
 npm install
 
-# React (default)
-npm run generate:react -- --name my-app --client pjs --out ./generated/react/my-app
+npm run generate:sdk:react -- --name my-app --client pjs --out ./generated/xcm-sdk/react/my-app
+npm run generate:sdk:vue -- --name my-app --client papi --evm true
+npm run generate:sdk:node -- --name my-app --client pjs --evm true --swap true
 
-# Vue
-npm run generate:vue -- --name my-app --client papi --evm true --out ./generated/vue/my-app
-
-# Node
-npm run generate:node -- --name my-app --client pjs --evm true --swap true --out ./generated/node/my-app
-
-# Unified entry (framework as first arg or --framework)
-npm run generate -- vue --name my-app --client pjs
-npm run generate -- --framework react --name my-app --client pjs
+npm run generate:sdk -- vue --name my-app --client pjs
 ```
-
-Interactive Hygen:
 
 ```bash
 npx hygen xcm-sdk-react new
@@ -69,25 +66,69 @@ npx hygen xcm-sdk-vue new
 npx hygen xcm-sdk-node new
 ```
 
-## Generate all examples
+### SDK examples
 
 ```bash
-npm run generate:examples          # React + Vue + Node
-npm run generate:examples:react    # generated/examples/react/*
-npm run generate:examples:vue      # generated/examples/vue/*
-npm run generate:examples:node     # generated/examples/node/*
+npm run generate:sdk:examples
+npm run generate:sdk:examples:react   # → generated/xcm-sdk/react/*
+npm run generate:sdk:examples:vue
+npm run generate:sdk:examples:node
 ```
 
-## Re-sync static Hygen files from source templates
-
-After editing `templates/react/xcm-sdk` or `templates/vue/xcm-sdk`:
+### Re-sync SDK Hygen from kitchen sink
 
 ```bash
-npm run bootstrap:react
-npm run bootstrap:vue
-npm run bootstrap:node
-# or all:
-npm run bootstrap
+npm run bootstrap:sdk
+npm run bootstrap:sdk:react
+npm run bootstrap:sdk:vue
+npm run bootstrap:sdk:node
+```
+
+## XCM API
+
+HTTP API + PAPI for substrate; local `@paraspell/sdk` + MetaMask / `PRIVATE_KEY` for EVM origins.
+
+### Parameters
+
+| Flag | Values | Default |
+|------|--------|---------|
+| `--evm` | `true` / `false` | `false` |
+| `--swap` | `true` / `false` | `false` |
+| `--snowbridge` | `true` / `false` (requires EVM) | `false` |
+| `--name` | npm package name | `my-xcm-api-app` |
+| `--out` | output directory | `generated/xcm-api/<framework>/<name>` |
+
+No `--client` flag.
+
+### Quick start
+
+```bash
+npm run generate:xcm-api:react -- --name my-app --swap true --out ./generated/xcm-api/react/my-app
+npm run generate:xcm-api:vue -- --name my-app --evm true --snowbridge true
+npm run generate:xcm-api:node -- --name my-app --evm true
+
+npm run generate:xcm-api -- react --name my-app --swap true
+```
+
+```bash
+npx hygen xcm-api-react new
+npx hygen xcm-api-vue new
+npx hygen xcm-api-node new
+```
+
+### XCM API examples
+
+```bash
+npm run generate:xcm-api:examples   # → generated/xcm-api/{react,vue,node}/*
+```
+
+### Re-sync XCM API Hygen from kitchen sink
+
+```bash
+npm run bootstrap:xcm-api
+npm run bootstrap:xcm-api:react
+npm run bootstrap:xcm-api:vue
+npm run bootstrap:xcm-api:node
 ```
 
 ## Integrating with paraspell-cli
@@ -97,12 +138,7 @@ import { runner, Logger } from 'hygen';
 import path from 'node:path';
 
 const templates = path.join(__dirname, '../xcm-sdk-hygen/_templates');
-const generator =
-  framework === 'vue'
-    ? 'xcm-sdk-vue'
-    : framework === 'node'
-      ? 'xcm-sdk-node'
-      : 'xcm-sdk-react';
+const generator = 'xcm-sdk-react'; // or xcm-sdk-vue, xcm-api-react, …
 
 await runner(
   [generator, 'new', `--client=${clientId}`, `--evm=${evm}`, ...],
@@ -113,10 +149,11 @@ await runner(
 ## Template conventions
 
 - **Conditional files** use `skip_if: <%= (condition).toString() %>` in frontmatter.
-- **EJS templates** hold parameterized logic (`package.json.ejs.t`, `XcmTransfer*.ejs.t`, …).
+- **EJS templates** hold parameterized logic (`package.json.ejs.t`, …).
 - **Unchanged files** are re-copied via the matching `bootstrap:*` script.
+- **Binary assets** (`lightspell.png`, `paraspell.png`) stay as raw files under `_templates/.../public/`; logos are copied with `copyLogo()` after generation (do not bootstrap PNGs as UTF-8).
 
-## Feature matrix
+## Feature matrix (SDK)
 
 | Client | EVM | Swap | Snowbridge |
 |--------|-----|------|------------|

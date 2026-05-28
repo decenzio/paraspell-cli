@@ -1,11 +1,11 @@
-import { Builder } from "@paraspell/sdk";
-import type { SubstrateTransferParams, TransferParams } from "./types.js";
+import { Builder, Native } from "@paraspell/sdk";
+import type { TransferParams } from "./types.js";
 
 const defaults: TransferParams = {
   from: "AssetHubPolkadot",
   to: "Hydration",
   amount: "0.1",
-  currencySymbol: "DOT",
+  currencySymbol: Native("DOT"),
   sender: "//Alice",
   recipient: "//Bob",
 };
@@ -13,7 +13,7 @@ const defaults: TransferParams = {
 async function transferAsset(
   params: Partial<TransferParams> = {},
 ): Promise<string> {
-  const opts = { ...defaults, ...params } as SubstrateTransferParams;
+  const opts: TransferParams = { ...defaults, ...params };
 
   const builder = Builder()
     .from(opts.from)

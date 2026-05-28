@@ -10,6 +10,7 @@ import {
 } from "@paraspell/sdk-pjs";
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues } from "../types";<% if (evm) { %>
+import "@paraspell/evm";
 import { isChainEvm } from "../evm";<% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %>
 
@@ -90,12 +91,8 @@ async function submitTransaction(
 
         resolve();
       })
-      .catch((error: unknown) => {
-        reject(
-          error instanceof Error
-            ? error
-            : new UnsupportedOperationError(String(error)),
-        );
+      .catch((error) => {
+        reject(error);
       });
   });
 }
