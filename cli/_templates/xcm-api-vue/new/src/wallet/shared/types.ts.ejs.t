@@ -1,0 +1,60 @@
+---
+to: src/wallet/shared/types.ts
+skip_if: <%= (!evm).toString() %>
+---
+import type { ComputedRef, Ref } from "vue";
+import type { WalletClient } from "viem";
+import type { FormValues } from "../../types";
+import type { WalletKind } from "../evm/WalletKindSelector.vue";
+import type { EvmAccountOption } from "../evm/useEvmWallet";
+
+export type WalletAccountOption = {
+  address: string;
+  name?: string;
+};
+
+export type SubstrateWalletConnection<TSigner> = {
+  address: string;
+  signer: TSigner;
+};
+
+export type SubstrateWalletBase<TSigner> = {
+  extensionNames: Ref<string[]> | string[];
+  selectedExtensionName: Ref<string | undefined> | string | undefined;
+  accounts: Ref<WalletAccountOption[]> | WalletAccountOption[];
+  selectedAddress: Ref<string | undefined> | string | undefined;
+  connection:
+    | Ref<SubstrateWalletConnection<TSigner> | null>
+    | SubstrateWalletConnection<TSigner>
+    | null;
+  discoverExtensions: () => Promise<void>;
+  selectExtension: (name: string) => Promise<void>;
+  selectAccountByAddress: (address: string) => void;
+};
+
+export type WalletSubmitOptions<TSigner = unknown> =
+  | { kind: "evm"; walletClient: WalletClient }
+  | { kind: "substrate"; signer: TSigner; senderAddress: string };
+
+export type UseWalletWithEvmReturn<TSigner = unknown> = SubstrateWalletBase<TSigner> & {
+  activeWalletKind: Ref<WalletKind>;
+  setActiveWalletKind: (kind: WalletKind) => void;
+  buildSubmitOptions: (from: string) => WalletSubmitOptions<TSigner> | null;
+  getOriginMismatchError: (from: string) => string | null;
+  submitTransfer: (formValues: FormValues) => Promise<void>;
+  evmAccounts: ComputedRef<EvmAccountOption[]>;
+  connectEvm: () => Promise<void>;
+  selectEvmAccount: (address: string) => void;
+  disconnectEvm: () => void;
+  getEvmWalletClient: (origin: string) => WalletClient | undefined;
+};
+
+export type WalletControlsSubstrateProps = {
+  extensionNames: string[];
+  selectedExtensionName: string | undefined;
+  accounts: WalletAccountOption[];
+  selectedAddress: string | undefined;
+  onConnectClick: () => void;
+  onExtensionChange: (name: string) => void;
+  onAccountChange: (address: string) => void;
+};

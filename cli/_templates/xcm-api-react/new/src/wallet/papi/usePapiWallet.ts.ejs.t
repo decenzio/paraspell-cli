@@ -1,0 +1,72 @@
+---
+to: src/wallet/papi/usePapiWallet.ts
+---
+import { useCallback, useMemo, useState } from "react";
+import {
+  connectInjectedExtension,
+  getInjectedExtensions,
+  type InjectedExtension,
+  type InjectedPolkadotAccount,
+} from "polkadot-api/pjs-signer";
+import type { PolkadotSigner } from "polkadot-api";
+
+export type PapiWalletConnection = {
+  address: string;
+  signer: PolkadotSigner;
+};
+
+export function usePapiWallet() {
+  const [extensionNames, setExtensionNames] = useState<string[]>([]);
+  const [selectedExtension, setSelectedExtension] =
+    useState<InjectedExtension | null>(null);
+  const [accounts, setAccounts] = useState<InjectedPolkadotAccount[]>([]);
+  const [selectedAccount, setSelectedAccount] =
+    useState<InjectedPolkadotAccount>();
+
+  const connection = useMemo((): PapiWalletConnection | null => {
+    if (!selectedAccount) return null;
+    return {
+      address: selectedAccount.address,
+      signer: selectedAccount.polkadotSigner,
+    };
+  }, [selectedAccount]);
+
+  const discoverExtensions = useCallback(async () => {
+    const names = getInjectedExtensions();
+    if (names.length === 0) {
+      alert("No wallet extension found, install it to connect");
+      throw new Error("No Wallet Extension Found!");
+    }
+    setExtensionNames(names);
+  }, []);
+
+  const selectExtension = useCallback(async (name: string) => {
+    const injected = await connectInjectedExtension(name);
+    setSelectedExtension(injected);
+    const nextAccounts = injected.getAccounts();
+    setAccounts(nextAccounts);
+    if (nextAccounts.length > 0) setSelectedAccount(nextAccounts[0]);
+    else setSelectedAccount(undefined);
+  }, []);
+
+  const selectAccountByAddress = useCallback(
+    (address: string) => {
+      const acc = accounts.find((a) => a.address === address);
+      if (acc) setSelectedAccount(acc);
+    },
+    [accounts],
+  );
+
+  return {
+    extensionNames,
+    selectedExtensionName: selectedExtension?.name,
+    selectedExtension,
+    accounts,
+    selectedAddress: selectedAccount?.address,
+    selectedAccount,
+    connection,
+    discoverExtensions,
+    selectExtension,
+    selectAccountByAddress,
+  };
+}

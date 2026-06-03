@@ -1,0 +1,33 @@
+{
+  "name": "@paraspell/xcm-sdk-hygen",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Hygen generators for ParaSpell XCM SDK and XCM API templates",
+  "type": "module",
+  "scripts": {
+    "generate": "tsx src/generate.ts",
+    "generate:sdk": "tsx src/generate-sdk.ts",
+    "generate:xcm-api": "tsx src/generate-xcm-api.ts",
+    "generate:sdk:examples": "tsx src/generate-sdk-examples.ts",
+    "generate:xcm-api:examples": "tsx src/generate-xcm-api-examples.ts",
+    "test": "vitest run --project structure",
+    "test:build": "vitest run --project build",
+    "test:all": "vitest run",
+    "test:watch": "vitest --project structure",
+    "test:generate": "tsx src/tests/generate-all.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.4.3",
+    "hygen": "^6.2.11",
+    "terminal-image": "^4.3.0",
+    "validate-npm-package-name": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "@types/validate-npm-package-name": "^4.0.2",
+    "tsx": "^4.19.4",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.6"
+  }
+}
