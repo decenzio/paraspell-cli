@@ -1,11 +1,14 @@
+import path from 'node:path';
 import { createRequire } from 'node:module';
+import { getPackageRoot } from '../package-root.js';
 
 const require = createRequire(import.meta.url);
+const packageRoot = getPackageRoot();
 
 const {
   resolveFeatureFlags,
   snowbridgeRequiresEvmMessage,
-} = require('../../shared/feature-flags.cjs') as {
+} = require(path.join(packageRoot, 'shared/feature-flags.cjs')) as {
   resolveFeatureFlags: (input: {
     evm: unknown;
     swap: unknown;

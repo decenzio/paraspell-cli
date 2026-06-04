@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { getPackageRoot } from './package-root.js';
 import { API_EXAMPLES } from './examples/api-examples.js';
 import { API_FRAMEWORKS } from './shared/frameworks.js';
 import { generateApiApp } from './shared/hygen-runner.js';
@@ -8,7 +8,7 @@ import { shiftPositionalFramework } from './shared/parse-cli-args.js';
 import { normalizePackageManager } from './shared/package-manager.js';
 import type { Framework } from './shared/types.js';
 
-const cliRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const cliRoot = getPackageRoot();
 const templatesRoot = path.join(cliRoot, '_templates');
 const examplesRoot = path.join(cliRoot, 'generated/xcm-api');
 

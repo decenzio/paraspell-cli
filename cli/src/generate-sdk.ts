@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { getPackageRoot } from './package-root.js';
 import { SDK_FRAMEWORKS } from './shared/frameworks.js';
 import { generateSdkApp } from './shared/hygen-runner.js';
 import {
@@ -10,7 +10,7 @@ import {
 } from './shared/parse-cli-args.js';
 import { promptSdkOptions, sdkNeedsInteractive } from './shared/prompt-sdk.js';
 
-const cliRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const cliRoot = getPackageRoot();
 const templatesRoot = path.join(cliRoot, '_templates');
 
 const rawArgv = process.argv.slice(2);

@@ -1,4 +1,5 @@
 node_modules/
+dist/
 generated/
 
 # Accidental app output when Hygen runs with cwd = package root (always pass --out)

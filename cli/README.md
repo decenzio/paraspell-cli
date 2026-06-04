@@ -1,104 +1,111 @@
-# XCM SDK & XCM API Hygen generators
+# create-paraspell
 
-Hygen templates and TypeScript generators for ParaSpell **XCM SDK** and **XCM API** starter apps. Output goes to `generated/` (or a path you choose / the interactive flow writes under `process.cwd()`).
+Scaffold [ParaSpell](https://paraspell.xyz) **XCM SDK** and **XCM API** starter apps (React, Vue, or Node).
 
-The interactive UI (`npm run generate`) mirrors the root `create-paraspell-app` prompts (package manager, framework, project type, client, features). Root `src/` is not used by this package — it is reference only.
+## Usage
 
-## Layout
-
-```text
-cli/
-├── _templates/          # Hygen generators (xcm-sdk-*, xcm-api-*)
-├── shared/              # package-manager.cjs (Hygen index.js)
-├── src/                 # TypeScript generators
-│   ├── generate.ts      # interactive CLI (full flow)
-│   ├── generate-sdk.ts
-│   ├── generate-xcm-api.ts
-│   ├── generate-sdk-examples.ts
-│   └── generate-xcm-api-examples.ts
-└── generated/           # gitignored output for scripted runs
-```
-
-## Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `npm run generate` | Interactive CLI (same UX as root app) |
-| `npm run generate:sdk` | Single SDK app (`--framework`, flags, or TTY prompts) |
-| `npm run generate:xcm-api` | Single XCM API app |
-| `npm run generate:sdk:examples` | All SDK example matrix under `generated/xcm-sdk/` |
-| `npm run generate:xcm-api:examples` | All XCM API examples under `generated/xcm-api/` |
-| `npm test` | Vitest structure suite (generates + validates 37 variants) |
-| `npm run test:build` | Vitest build suite (install + compile/lint per variant) |
-| `npm run test:all` | Both structure and build suites |
-| `npm run test:watch` | Watch mode for structure tests |
-
-## Testing generated projects
-
-Tests live in `src/tests/*.test.ts` and use [Vitest](https://vitest.dev/) with two projects:
-
-| Project | Files | What it checks |
-|---------|-------|----------------|
-| `structure` | `variants.test.ts`, `structure.test.ts` | Matrix completeness, files, deps, no EJS leftovers |
-| `build` | `build.test.ts` | `pnpm install` + `build`/`lint` (web) or `typecheck`/`build` (node) |
-
-All 37 variants from `sdk-examples.ts` / `api-examples.ts` are parametrized with `it.each`.
+### npm
 
 ```bash
-cd cli
-npm install
-
-# Fast gate (auto-generates in test setup)
-npm test
-
-# Full compile/lint gate (slow; needs network)
-npm run test:build
-
-# Everything
-npm run test:all
-
-# Filter by name pattern
-npm test -- -t "sdk/react/pjs"
-npm run test:build -- -t "api/node/base"
-
-# Filter by env
-TEST_KIND=sdk TEST_FRAMEWORK=react npm test
-SKIP_GENERATE=1 npm test   # reuse existing generated/
+npm create paraspell@latest
 ```
 
-## Quick start
+### yarn
 
 ```bash
-cd cli
-npm install
-
-# Interactive (writes to ./<project-name> in current directory)
-npm run generate
-
-# Non-interactive SDK React app
-npm run generate:sdk -- react --name my-app --client pjs --package-manager npm --out ./generated/xcm-sdk/react/my-app
-
-# Examples
-npm run generate:sdk:examples
-npm run generate:xcm-api:examples
+yarn create paraspell
 ```
 
-### Flags (SDK)
+### pnpm
 
-| Flag | Values | Default |
-|------|--------|---------|
+```bash
+pnpm create paraspell
+```
+
+### bun
+
+```bash
+bun create paraspell
+```
+
+### npx
+
+```bash
+npx create-paraspell@latest
+```
+
+You can also use the `create-paraspell` binary directly after a global install:
+
+```bash
+npm install -g create-paraspell
+create-paraspell
+```
+
+The CLI writes a new project in the current directory, then install dependencies in that folder:
+
+```bash
+cd my-app
+pnpm install
+pnpm run dev
+```
+
+## Options (non-interactive, repo development)
+
+From this directory, use the dev scripts:
+
+```bash
+npm run generate:sdk -- react --name my-app --client pjs --package-manager pnpm
+npm run generate:xcm-api -- vue --name my-api --package-manager npm
+```
+
+| Flag (SDK) | Values | Default |
+|------------|--------|---------|
 | `--framework` | `react`, `vue`, `node` | `react` |
 | `--client` | `papi`, `pjs`, `dedot` | `pjs` |
-| `--evm`, `--swap`, `--snowbridge` | `true` / `false` | `false` (`--snowbridge` requires `--evm`) |
+| `--evm`, `--swap`, `--snowbridge` | `true` / `false` | `false` |
 | `--package-manager` | `npm`, `yarn`, `pnpm`, `bun` | `pnpm` |
-| `--name`, `--out` | | see script defaults |
+| `--name`, `--out` | | cwd / `./<name>` |
 
 XCM API omits `--client`.
 
-## Hygen directly
+## Package layout
 
-```bash
-npx hygen xcm-sdk-react new --name my-app --client pjs --packageManager pnpm
+```text
+cli/
+├── index.js             # bin shim → dist/
+├── dist/                # built CLI (prepublish)
+├── _templates/          # Hygen generators (published with the package)
+├── shared/              # Hygen helpers (package-manager.cjs, feature-flags.cjs)
+└── src/                 # TypeScript source
 ```
 
-Template `prompt.js` files were removed; use the TypeScript scripts or pass CLI args to Hygen.
+## Development
+
+```bash
+cd cli
+npm install
+npm run build
+npm run execute          # run built CLI locally
+npm run generate         # interactive via tsx (source)
+
+npm test
+npm run test:build
+```
+
+### Publish
+
+```bash
+npm run build
+npm pack                 # inspect tarball
+npm publish --access public
+```
+
+## Testing
+
+Vitest generates all template variants under `generated/` and validates structure and (optionally) build.
+
+```bash
+npm test
+npm run test:build
+SKIP_GENERATE=1 npm test
+```

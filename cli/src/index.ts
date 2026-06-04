@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { getPackageRoot } from './package-root.js';
 import { runInteractiveGenerate } from './interactive.js';
 
-const cliRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const templatesRoot = path.join(cliRoot, '_templates');
+const packageRoot = getPackageRoot();
+const templatesRoot = path.join(packageRoot, '_templates');
 
 try {
   await runInteractiveGenerate(templatesRoot);

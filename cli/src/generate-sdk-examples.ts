@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { getPackageRoot } from './package-root.js';
 import { SDK_EXAMPLES } from './examples/sdk-examples.js';
 import { SDK_FRAMEWORKS } from './shared/frameworks.js';
 import { generateSdkApp } from './shared/hygen-runner.js';
@@ -8,7 +8,7 @@ import { shiftPositionalFramework } from './shared/parse-cli-args.js';
 import { normalizePackageManager } from './shared/package-manager.js';
 import type { Framework } from './shared/types.js';
 
-const cliRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const cliRoot = getPackageRoot();
 const templatesRoot = path.join(cliRoot, '_templates');
 
 const { argv, framework: positional } = shiftPositionalFramework(
