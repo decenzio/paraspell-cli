@@ -5,8 +5,7 @@ to: src/XcmTransfer.vue
 import { ref<% if (!evm) { %>, unref<% } %> } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
-import type { <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %> } from "@paraspell/sdk";<% if (evm) { %>
-import { getOriginChainsForWallet, isChainEvm } from "./evm";<% } %>
+import type { <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %> } from "@paraspell/sdk";
 import {
   <% if (evm) { %>useWallet,
   WalletControls,
@@ -29,15 +28,10 @@ const originChain = ref<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } 
 
 <% if (evm) { %>const handleOriginChange = (origin: TChain) => {
   originChain.value = origin;
-  wallet.setActiveWalletKind(isChainEvm(origin) ? "evm" : "substrate");
 };
 
 const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
   wallet.setActiveWalletKind(kind);
-  const allowed = getOriginChainsForWallet(kind === "evm");
-  if (!allowed.includes(originChain.value)) {
-    originChain.value = allowed[0];
-  }
 };<% } else { %>const handleOriginChange = (origin: TSubstrateChain) => {
   originChain.value = origin;
 };<% } %>
@@ -47,14 +41,8 @@ const onSubmit = async (formValues: FormValues) => {
   errorVisible.value = false;
 
   try {
-    <% if (evm) { %>const mismatch = wallet.getOriginMismatchError(formValues.from);
-    if (mismatch) {
-      error.value = new Error(mismatch);
-      errorVisible.value = true;
-      return;
-    }
-
-    await wallet.submitTransfer(formValues);<% } else { %>const connection = unref(wallet.connection);
+    <% if (evm) { %>const submitted = await wallet.submitTransfer(formValues);
+    if (!submitted) return;<% } else { %>const connection = unref(wallet.connection);
     if (!connection) {
       alert("No account selected, connect wallet first");
       return;
@@ -130,8 +118,7 @@ const onSubmit = async (formValues: FormValues) => {
       :loading="loading"
       :origin-chain="originChain"
       @submit="onSubmit"
-      @origin-change="handleOriginChange"<% if (evm) { %>
-      :is-evm-origin="wallet.activeWalletKind.value === 'evm'"<% } %>
+      @origin-change="handleOriginChange"
     />
     <p
       v-if="errorVisible"

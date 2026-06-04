@@ -7,13 +7,12 @@ import { ref, computed, watch, onMounted } from "vue";
 import { API_URL } from "./consts";
 import type { AssetInfo, FormValues } from "./types";
 <% if (evm) { %>
-import { filterChainsForWallet } from "./evm";
+import { getOriginChains<% if (swap) { %>, isChainEvm<% } %> } from "./evm";
 <% } %>
 
 const props = defineProps<{
   loading: boolean;
-  originChain: string;<% if (evm) { %>
-  isEvmOrigin?: boolean;<% } %>
+  originChain: string;
 }>();
 
 const emit = defineEmits<{
@@ -42,9 +41,13 @@ onMounted(() => {
   void fetchChains();
 });
 
+<% if (evm && swap) { %>
+const isEvmOrigin = computed(() => isChainEvm(props.originChain));
+
+<% } %>
 <% if (evm) { %>
 const originChains = computed(() =>
-  filterChainsForWallet(chains.value, props.isEvmOrigin ?? false),
+  getOriginChains(chains.value),
 );
 <% } %>
 

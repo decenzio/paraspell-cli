@@ -6,7 +6,6 @@ import { ref } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
 <% if (evm) { %>
-import { getOriginChainsForWallet, isChainEvm } from "./evm";
 import {
   useWallet,
   WalletControls,
@@ -31,15 +30,10 @@ const wallet = useWallet();
 
 const handleOriginChange = (origin: string) => {
   originChain.value = origin;
-  wallet.setActiveWalletKind(isChainEvm(origin) ? "evm" : "substrate");
 };
 
 const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
   wallet.setActiveWalletKind(kind);
-  const allowed = getOriginChainsForWallet(kind === "evm");
-  if (!allowed.includes(originChain.value)) {
-    originChain.value = allowed[0];
-  }
 };
 <% } else { %>
 const wallet = usePapiWallet();
@@ -51,14 +45,8 @@ const onSubmit = async (formValues: FormValues) => {
 
   try {
     <% if (evm) { %>
-    const mismatch = wallet.getOriginMismatchError(formValues.from);
-    if (mismatch) {
-      error.value = new Error(mismatch);
-      errorVisible.value = true;
-      return;
-    }
-
-    await wallet.submitTransfer(formValues);
+    const submitted = await wallet.submitTransfer(formValues);
+    if (!submitted) return;
     <% } else { %>
     if (!wallet.connection.value) {
       alert("No account selected, connect wallet first");
@@ -108,7 +96,6 @@ const onSubmit = async (formValues: FormValues) => {
       :loading="loading"
       :origin-chain="originChain"
       <% if (evm) { %>
-      :is-evm-origin="wallet.activeWalletKind.value === 'evm'"
       @origin-change="handleOriginChange"
       <% } else { %>
       @origin-change="(o: string) => (originChain = o)"

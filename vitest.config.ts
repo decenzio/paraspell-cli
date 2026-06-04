@@ -5,7 +5,7 @@ const BUILD_TIMEOUT_MS = 5 * 60 * 1000;
 export default defineConfig({
   test: {
     globals: false,
-    setupFiles: ['./src/tests/setup.ts'],
+    globalSetup: ['./src/tests/global-setup.ts'],
     projects: [
       {
         extends: true,
@@ -13,6 +13,7 @@ export default defineConfig({
           name: 'structure',
           include: [
             'src/shared/feature-flags.test.ts',
+            'src/examples/feature-combos.test.ts',
             'src/tests/variants.test.ts',
             'src/tests/structure.test.ts',
           ],

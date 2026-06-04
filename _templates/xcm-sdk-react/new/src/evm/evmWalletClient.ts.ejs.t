@@ -2,11 +2,11 @@
 to: src/evm/evmWalletClient.ts
 skip_if: <%= (!evm).toString() %>
 ---
-import { SUBSTRATE_CHAINS, type TChain, type TEvmChainFrom } from "<%= sdkPackage %>";
+import { SUBSTRATE_CHAINS, type TChain } from "<%= sdkPackage %>";
+import type { TEvmChainFrom } from "@paraspell/sdk";
 import {
   createWalletClient,
   custom,
-  numberToHex,
   type Address,
   type Chain,
   type EIP1193Provider,
@@ -56,11 +56,8 @@ export function toSdkEvmFrom(chain: EvmChain): TEvmChainFrom {
   throw new Error(`Unsupported EVM origin: ${chain}`);
 }
 
-export function getOriginChainsForWallet(isEvmWallet: boolean): TChain[] {
-  if (isEvmWallet) {
-    return [...EVM_ORIGIN_CHAINS];
-  }
-  return [...SUBSTRATE_CHAINS];
+export function getOriginChains(): TChain[] {
+  return [...new Set<TChain>([...SUBSTRATE_CHAINS, ...EVM_ORIGIN_CHAINS])];
 }
 
 export function getViemChainForOrigin(origin: TChain): Chain {
@@ -85,63 +82,6 @@ export function getEthereumProvider(): EIP1193Provider {
   return window.ethereum;
 }
 
-const getAddEthereumChainParams = (chain: Chain) => ({
-  chainId: numberToHex(chain.id),
-  chainName: chain.name,
-  nativeCurrency: chain.nativeCurrency,
-  rpcUrls: chain.rpcUrls.default.http,
-  blockExplorerUrls: chain.blockExplorers?.default?.url
-    ? [chain.blockExplorers.default.url]
-    : undefined,
-});
-
-type WalletRpcError = Error & {
-  code?: number;
-};
-
-function readHexString(value: unknown): string {
-  if (typeof value !== "string") {
-    throw new Error("Wallet RPC returned a non-string chain id");
-  }
-  return value;
-}
-
-function isAddChainRequired(error: unknown): boolean {
-  return (error as WalletRpcError).code === 4902;
-}
-
-export async function switchWalletToOrigin(origin: TChain): Promise<void> {
-  const chain = getViemChainForOrigin(origin);
-  const provider = getEthereumProvider();
-  const chainId = numberToHex(chain.id);
-
-  const currentChainId = readHexString(
-    await provider.request({ method: "eth_chainId" }),
-  );
-  if (currentChainId.toLowerCase() === chainId.toLowerCase()) {
-    return;
-  }
-
-  try {
-    await provider.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId }],
-    });
-  } catch (error) {
-    if (!isAddChainRequired(error)) {
-      throw error;
-    }
-    await provider.request({
-      method: "wallet_addEthereumChain",
-      params: [getAddEthereumChainParams(chain)],
-    });
-    await provider.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId }],
-    });
-  }
-}
-
 export function createEvmWalletClient(origin: TChain): WalletClient {
   return createWalletClient({
     chain: getViemChainForOrigin(origin),
@@ -159,8 +99,6 @@ export async function ensureEvmWalletClient(
     );
   }
   const address: Address = walletClient.account.address;
-
-  await switchWalletToOrigin(origin);
 
   return createWalletClient({
     account: address,

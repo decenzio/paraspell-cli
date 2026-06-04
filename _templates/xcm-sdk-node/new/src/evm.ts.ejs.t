@@ -2,12 +2,8 @@
 to: src/evm.ts
 skip_if: <%= (!evm).toString() %>
 ---
-import {
-  Builder,
-  type TChain,
-  type TDestination,
-  type TEvmChainFrom,
-} from "<%= sdkPackage %>";
+import { Builder, type TChain, type TDestination } from "<%= sdkPackage %>";
+import type { TEvmChainFrom } from "@paraspell/sdk";
 import { createWalletClient, http, type WalletClient, type Chain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { darwinia, moonbeam, moonriver } from "viem/chains";

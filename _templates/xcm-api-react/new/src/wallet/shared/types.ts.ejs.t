@@ -36,8 +36,7 @@ export type UseWalletWithEvmReturn<TSigner = unknown> = SubstrateWalletBase<TSig
   activeWalletKind: WalletKind;
   setActiveWalletKind: (kind: WalletKind) => void;
   buildSubmitOptions: (from: string) => WalletSubmitOptions<TSigner> | null;
-  getOriginMismatchError: (from: string) => string | null;
-  submitTransfer: (formValues: FormValues) => Promise<void>;
+  submitTransfer: (formValues: FormValues) => Promise<boolean>;
   evmAccounts: EvmAccountOption[];
   connectEvm: () => Promise<void>;
   selectEvmAccount: (address: string) => void;

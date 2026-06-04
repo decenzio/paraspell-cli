@@ -53,14 +53,15 @@ export function useWalletWithEvm(): UseWalletReturn {
     const options = core.buildSubmitOptions(formValues.from);
     if (!options) {
       connectWalletAlert(core);
-      return;
+      return false;
     }
 
     if (await submitEvmIfNeeded(formValues, options)) {
-      return;
+      return true;
     }
 
     await submitUsingSdk(formValues, options);
+    return true;
   };
 
   return { ...core, submitTransfer };

@@ -57,15 +57,15 @@ export function useWalletWithEvm(): UseWalletReturn {
       const options = core.buildSubmitOptions(formValues.from);
       if (!options) {
         connectWalletAlert(core);
-        return;
+        return false;
       }
 
       if (await submitEvmIfNeeded(formValues, options)) {
-        return;
+        return true;
       }
 
       if (options.kind !== "substrate") {
-        return;
+        return false;
       }
 
       await submitUsingApi(
@@ -73,6 +73,7 @@ export function useWalletWithEvm(): UseWalletReturn {
         options.signer,
         options.senderAddress,
       );
+      return true;
     },
     [core],
   );

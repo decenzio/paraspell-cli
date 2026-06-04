@@ -1,14 +1,13 @@
-export interface ApiExample {
+import type { FeatureFlags } from '../shared/types.js';
+import { FEATURE_COMBOS, formatApiExampleName } from './feature-combos.js';
+
+export interface ApiExample extends FeatureFlags {
   name: string;
-  evm: boolean;
-  swap: boolean;
-  snowbridge: boolean;
 }
 
-export const API_EXAMPLES: ApiExample[] = [
-  { name: 'base', evm: false, swap: false, snowbridge: false },
-  { name: 'swap', evm: false, swap: true, snowbridge: false },
-  { name: 'evm', evm: true, swap: false, snowbridge: false },
-  { name: 'evm-swap', evm: true, swap: true, snowbridge: false },
-  { name: 'evm-snowbridge', evm: true, swap: false, snowbridge: true },
-];
+export const API_EXAMPLES: ApiExample[] = FEATURE_COMBOS.map((combo) => ({
+  name: formatApiExampleName(combo),
+  ...combo,
+}));
+
+export const API_VARIANTS_PER_FRAMEWORK = FEATURE_COMBOS.length;

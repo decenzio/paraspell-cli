@@ -6,23 +6,21 @@ import { useState, useMemo, FormEvent, FC, useEffect } from "react";
 import { API_URL } from "./consts";
 import type { AssetInfo, FormValues } from "./types";
 <% if (evm) { %>
-import { filterChainsForWallet } from "./evm";
+import { getOriginChains<% if (swap) { %>, isChainEvm<% } %> } from "./evm";
 <% } %>
 
 type Props = {
   onSubmit: (values: FormValues) => void;
   loading: boolean;
   originChain: string;
-  onOriginChange: (origin: string) => void;<% if (evm) { %>
-  isEvmOrigin?: boolean;<% } %>
+  onOriginChange: (origin: string) => void;
 };
 
 const TransferForm: FC<Props> = ({
   onSubmit,
   loading,
   originChain,
-  onOriginChange,<% if (evm) { %>
-  isEvmOrigin = false,<% } %>
+  onOriginChange,
 }) => {
   const [chains, setChains] = useState<string[]>([]);
   const [destinationChain, setDestinationChain] = useState("Hydration");
@@ -44,10 +42,14 @@ const TransferForm: FC<Props> = ({
     void fetchChains();
   }, []);
 
+  <% if (evm && swap) { %>
+  const isEvmOrigin = isChainEvm(originChain);
+
+  <% } %>
   <% if (evm) { %>
   const originChains = useMemo(
-    () => filterChainsForWallet(chains, isEvmOrigin),
-    [chains, isEvmOrigin],
+    () => getOriginChains(chains),
+    [chains],
   );
   <% } %>
 

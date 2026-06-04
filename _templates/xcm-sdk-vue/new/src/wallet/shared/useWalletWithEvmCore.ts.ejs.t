@@ -4,7 +4,6 @@ skip_if: <%= (!evm).toString() %>
 ---
 import { computed, ref, unref } from "vue";
 import type { TChain } from "<%= sdkPackage %>";
-import { isChainEvm } from "../../evm";
 import { useEvmWallet } from "../evm/useEvmWallet";
 import type { WalletKind } from "../evm/WalletKindSelector.vue";
 import type {
@@ -49,17 +48,6 @@ export function useWalletWithEvmCore<
     };
   };
 
-  const getOriginMismatchError = (from: TChain): string | null => {
-    const originIsEvm = isChainEvm(from);
-    if (originIsEvm && activeWalletKind.value === "substrate") {
-      return "This origin requires an EVM wallet. Switch wallet type to EVM.";
-    }
-    if (!originIsEvm && activeWalletKind.value === "evm") {
-      return "This origin requires a Substrate wallet. Switch wallet type to Substrate.";
-    }
-    return null;
-  };
-
   const connection = computed(() =>
     activeWalletKind.value === "substrate" ? unref(substrate.connection) : null,
   );
@@ -81,7 +69,6 @@ export function useWalletWithEvmCore<
     activeWalletKind,
     setActiveWalletKind,
     buildSubmitOptions,
-    getOriginMismatchError,
     evmAccounts: evm.accounts,
     connectEvm: evm.connect,
     selectEvmAccount: evm.selectAccountByAddress,

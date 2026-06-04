@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { getPackageRoot } from '../package-root.js';
+import type { FeatureFlags } from './types.js';
 
 const require = createRequire(import.meta.url);
 const packageRoot = getPackageRoot();
@@ -13,7 +14,7 @@ const {
     evm: unknown;
     swap: unknown;
     snowbridge: unknown;
-  }) => { evm: boolean; swap: boolean; snowbridge: boolean };
+  }) => FeatureFlags;
   snowbridgeRequiresEvmMessage: (input: {
     evm: unknown;
     snowbridge: unknown;
@@ -32,7 +33,7 @@ export function assertSnowbridgeRequiresEvm(input: {
   }
 }
 
-export function applyFeatureFlags<T extends { evm: boolean; swap: boolean; snowbridge: boolean }>(
+export function applyFeatureFlags<T extends FeatureFlags>(
   opts: T,
 ): T {
   assertSnowbridgeRequiresEvm(opts);

@@ -5,7 +5,6 @@ import { useCallback, useState, type FC } from "react";
 import TransferForm from "./XcmTransferForm";
 import type { FormValues } from "./types";
 <% if (evm) { %>
-import { getOriginChainsForWallet, isChainEvm } from "./evm";
 import {
   useWallet,
   WalletControls,
@@ -31,20 +30,15 @@ const XcmTransfer: FC = () => {
   const handleOriginChange = useCallback(
     (origin: string) => {
       setOriginChain(origin);
-      wallet.setActiveWalletKind(isChainEvm(origin) ? "evm" : "substrate");
     },
-    [wallet],
+    [],
   );
 
   const setWalletKind = useCallback(
     (kind: typeof wallet.activeWalletKind) => {
       wallet.setActiveWalletKind(kind);
-      const allowed = getOriginChainsForWallet(kind === "evm");
-      if (!allowed.includes(originChain)) {
-        setOriginChain(allowed[0]);
-      }
     },
-    [wallet, originChain],
+    [wallet],
   );
   <% } else { %>
   const wallet = usePapiWallet();
@@ -61,14 +55,8 @@ const XcmTransfer: FC = () => {
 
     try {
       <% if (evm) { %>
-      const mismatch = wallet.getOriginMismatchError(formValues.from);
-      if (mismatch) {
-        setError(new Error(mismatch));
-        setErrorVisible(true);
-        return;
-      }
-
-      await wallet.submitTransfer(formValues);
+      const submitted = await wallet.submitTransfer(formValues);
+      if (!submitted) return;
       <% } else { %>
       if (!wallet.connection) {
         alert("No account selected, connect wallet first");
@@ -122,9 +110,6 @@ const XcmTransfer: FC = () => {
         loading={loading}
         originChain={originChain}
         onOriginChange={handleOriginChange}
-        <% if (evm) { %>
-        isEvmOrigin={wallet.activeWalletKind === "evm"}
-        <% } %>
       />
       {errorVisible && <p className="transferError">{error?.message}</p>}
     </div>

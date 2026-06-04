@@ -1,35 +1,29 @@
-import type { Framework, SdkClient } from '../shared/types.js';
+import type { FeatureFlags, Framework, SdkClient } from '../shared/types.js';
+import {
+  FEATURE_COMBOS,
+  formatSdkExampleDir,
+  SDK_CLIENTS,
+} from './feature-combos.js';
 
-export interface SdkExample {
+export interface SdkExample extends FeatureFlags {
   dir: string;
   client: SdkClient;
-  evm: boolean;
-  swap: boolean;
-  snowbridge: boolean;
 }
 
-const REACT_VUE: SdkExample[] = [
-  { dir: 'pjs', client: 'pjs', evm: false, swap: false, snowbridge: false },
-  { dir: 'papi', client: 'papi', evm: false, swap: false, snowbridge: false },
-  { dir: 'dedot', client: 'dedot', evm: false, swap: false, snowbridge: false },
-  { dir: 'pjs-evm', client: 'pjs', evm: true, swap: false, snowbridge: false },
-  { dir: 'pjs-evm-swap', client: 'pjs', evm: true, swap: true, snowbridge: false },
-  { dir: 'papi-evm-swap', client: 'papi', evm: true, swap: true, snowbridge: false },
-  {
-    dir: 'pjs-evm-snowbridge',
-    client: 'pjs',
-    evm: true,
-    swap: false,
-    snowbridge: true,
-  },
-];
+function buildSdkExamplesForFramework(): SdkExample[] {
+  return SDK_CLIENTS.flatMap((client) =>
+    FEATURE_COMBOS.map((combo) => ({
+      dir: formatSdkExampleDir(client, combo),
+      client,
+      ...combo,
+    })),
+  );
+}
 
-export const SDK_EXAMPLES: Record<Framework, SdkExample[]> = {
-  react: REACT_VUE,
-  vue: REACT_VUE,
-  node: [
-    ...REACT_VUE.slice(0, 3),
-    { dir: 'papi-swap', client: 'papi', evm: false, swap: true, snowbridge: false },
-    ...REACT_VUE.slice(3),
-  ],
-};
+const FRAMEWORKS: Framework[] = ['react', 'vue', 'node'];
+
+export const SDK_EXAMPLES: Record<Framework, SdkExample[]> = Object.fromEntries(
+  FRAMEWORKS.map((framework) => [framework, buildSdkExamplesForFramework()]),
+) as Record<Framework, SdkExample[]>;
+
+export const SDK_VARIANTS_PER_FRAMEWORK = SDK_CLIENTS.length * FEATURE_COMBOS.length;

@@ -6,24 +6,24 @@ export type ProjectType = 'sdk' | 'api';
 
 export type SdkClient = 'papi' | 'pjs' | 'dedot';
 
-export interface SdkGenerateOptions {
-  framework: Framework;
-  name: string;
-  client: SdkClient;
+export interface FeatureFlags {
   evm: boolean;
   swap: boolean;
   snowbridge: boolean;
+}
+
+export interface SdkGenerateOptions extends FeatureFlags {
+  framework: Framework;
+  name: string;
+  client: SdkClient;
   packageManager: PackageManager;
   out: string;
   help?: boolean;
 }
 
-export interface ApiGenerateOptions {
+export interface ApiGenerateOptions extends FeatureFlags {
   framework: Framework;
   name: string;
-  evm: boolean;
-  swap: boolean;
-  snowbridge: boolean;
   packageManager: PackageManager;
   out: string;
   help?: boolean;

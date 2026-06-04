@@ -5,11 +5,9 @@ skip_if: <%= (!evm).toString() %>
 export {
   createEvmWalletClient,
   ensureEvmWalletClient,
-  filterChainsForWallet,
   getEthereumProvider,
-  getOriginChainsForWallet,
+  getOriginChains,
   isChainEvm,
-  switchWalletToOrigin,
   toSdkEvmFrom,
 } from "./evmWalletClient";
 export type { EvmChain } from "./evmWalletClient";

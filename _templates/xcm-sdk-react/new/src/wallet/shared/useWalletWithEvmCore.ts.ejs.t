@@ -4,7 +4,6 @@ skip_if: <%= (!evm).toString() %>
 ---
 import { useCallback, useState } from "react";
 import type { TChain } from "<%= sdkPackage %>";
-import { isChainEvm } from "../../evm";
 import { useEvmWallet } from "../evm/useEvmWallet";
 import type { WalletKind } from "../evm/WalletKindSelector";
 import type {
@@ -51,20 +50,6 @@ export function useWalletWithEvmCore<
     [activeWalletKind, evm, substrate.connection, toSubstratePayload],
   );
 
-  const getOriginMismatchError = useCallback(
-    (from: TChain): string | null => {
-      const originIsEvm = isChainEvm(from);
-      if (originIsEvm && activeWalletKind === "substrate") {
-        return "This origin requires an EVM wallet. Switch wallet type to EVM.";
-      }
-      if (!originIsEvm && activeWalletKind === "evm") {
-        return "This origin requires a Substrate wallet. Switch wallet type to Substrate.";
-      }
-      return null;
-    },
-    [activeWalletKind],
-  );
-
   return {
     ...substrate,
     connection:
@@ -76,7 +61,6 @@ export function useWalletWithEvmCore<
     activeWalletKind,
     setActiveWalletKind,
     buildSubmitOptions,
-    getOriginMismatchError,
     evmAccounts: evm.accounts,
     connectEvm: evm.connect,
     selectEvmAccount: evm.selectAccountByAddress,

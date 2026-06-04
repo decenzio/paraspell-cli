@@ -2,20 +2,17 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { API_EXAMPLES } from '../examples/api-examples.js';
 import { SDK_EXAMPLES } from '../examples/sdk-examples.js';
-import type { Framework, SdkClient } from '../shared/types.js';
+import type { FeatureFlags, Framework, SdkClient } from '../shared/types.js';
 
 export type VariantKind = 'sdk' | 'api';
 
-export interface GeneratedVariant {
+export interface GeneratedVariant extends FeatureFlags {
   id: string;
   kind: VariantKind;
   framework: Framework;
   dir: string;
   absPath: string;
   client?: SdkClient;
-  evm: boolean;
-  swap: boolean;
-  snowbridge: boolean;
 }
 
 const cliRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');

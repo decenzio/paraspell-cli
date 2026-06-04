@@ -11,21 +11,19 @@ import {
   type <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,
 } from "@paraspell/sdk";
 import type { FormValues } from "./types";<% if (evm) { %>
-import { getOriginChainsForWallet } from "./evm";<% } %>
+import { getOriginChains } from "./evm";<% } %>
 
 type Props = {
   onSubmit: (values: FormValues) => void;
   originChain: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
-  onOriginChange: (origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>) => void;<% if (evm) { %>
-  isEvmOrigin?: boolean;<% } %>
+  onOriginChange: (origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>) => void;
   loading: boolean;
 };
 
 const TransferForm: FC<Props> = ({
   onSubmit,
   originChain,
-  onOriginChange,<% if (evm) { %>
-  isEvmOrigin = false,<% } %>
+  onOriginChange,
   loading,
 }) => {
   const [destinationChain, setDestinationChain] = useState<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>("Hydration");
@@ -39,8 +37,8 @@ const TransferForm: FC<Props> = ({
   const [amount, setAmount] = useState("5");
 
   const originChains = useMemo(
-    () => <% if (evm) { %>getOriginChainsForWallet(isEvmOrigin)<% } else { %>[...SUBSTRATE_CHAINS]<% } %>,
-    [<% if (evm) { %>isEvmOrigin<% } %>],
+    () => <% if (evm) { %>getOriginChains()<% } else { %>[...SUBSTRATE_CHAINS]<% } %>,
+    [],
   );
 
   const { currencyOptions, currencyMap<% if (swap) { %>, currencyToOptions, currencyToMap<% } %> } =

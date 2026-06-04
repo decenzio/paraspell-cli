@@ -16,7 +16,6 @@ export const submitEvmTransferFromForm = async (
   walletClient: WalletClient,
 ): Promise<void> => {
   const { from, to, recipient, amount } = formValues;
-  const signer = await ensureEvmWalletClient(walletClient, from);
   const currency = {
     location: formValues.currency!.location,
     amount,
@@ -25,6 +24,7 @@ export const submitEvmTransferFromForm = async (
   if (!isChainEvm(from)) {
     throw new Error(`Unsupported EVM origin: ${from}`);
   }
+  const signer = await ensureEvmWalletClient(walletClient, from);
 
   await Builder()
     .from(toSdkEvmFrom(from))

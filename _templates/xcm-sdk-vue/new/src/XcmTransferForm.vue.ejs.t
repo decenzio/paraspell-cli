@@ -12,13 +12,12 @@ import {
   type <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,
 } from "@paraspell/sdk";
 import type { FormValues } from "./types";<% if (evm) { %>
-import { getOriginChainsForWallet } from "./evm";<% } %>
+import { getOriginChains } from "./evm";<% } %>
 
 const props = defineProps<{
   loading: boolean;
   originChain: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
-  onOriginChange?: (origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>) => void;<% if (evm) { %>
-  isEvmOrigin?: boolean;<% } %>
+  onOriginChange?: (origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>) => void;
 }>();
 
 const emit = defineEmits<{
@@ -35,7 +34,7 @@ const exchange = ref<TExchangeChain | undefined>(undefined);
 const amount = ref("5");
 
 const originChains = computed(
-  () => <% if (evm) { %>getOriginChainsForWallet(props.isEvmOrigin ?? false)<% } else { %>[...SUBSTRATE_CHAINS]<% } %>,
+  () => <% if (evm) { %>getOriginChains()<% } else { %>[...SUBSTRATE_CHAINS]<% } %>,
 );
 
 const from = computed(() => props.originChain);

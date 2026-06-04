@@ -4,8 +4,7 @@ to: src/XcmTransfer.tsx
 import { useCallback, useState, type FC } from "react";
 import TransferForm from "./XcmTransferForm";
 import type { FormValues } from "./types";
-import type { <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %> } from "@paraspell/sdk";<% if (evm) { %>
-import { getOriginChainsForWallet, isChainEvm } from "./evm";<% } %>
+import type { <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %> } from "@paraspell/sdk";
 import {
   <% if (evm) { %>useWallet,
   WalletControls,
@@ -30,23 +29,15 @@ const XcmTransfer: FC = () => {
   <% if (evm) { %>const wallet = useWallet();<% } else if (client === 'pjs') { %>const wallet = usePjsWallet();<% } else if (client === 'papi') { %>const wallet = usePapiWallet();<% } else { %>const wallet = useDedotWallet();<% } %>
   const [originChain, setOriginChain] = useState<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>("Astar");
 
-  <% if (evm) { %>const handleOriginChange = useCallback(
-    (origin: TChain) => {
-      setOriginChain(origin);
-      wallet.setActiveWalletKind(isChainEvm(origin) ? "evm" : "substrate");
-    },
-    [wallet],
-  );
+  <% if (evm) { %>const handleOriginChange = useCallback((origin: TChain) => {
+    setOriginChain(origin);
+  }, []);
 
   const setWalletKind = useCallback(
     (kind: typeof wallet.activeWalletKind) => {
       wallet.setActiveWalletKind(kind);
-      const allowed = getOriginChainsForWallet(kind === "evm");
-      if (!allowed.includes(originChain)) {
-        setOriginChain(allowed[0]);
-      }
     },
-    [wallet, originChain],
+    [wallet],
   );<% } else { %>const handleOriginChange = useCallback((origin: TSubstrateChain) => {
     setOriginChain(origin);
   }, []);<% } %>
@@ -56,14 +47,8 @@ const XcmTransfer: FC = () => {
     setErrorVisible(false);
 
     try {
-      <% if (evm) { %>const mismatch = wallet.getOriginMismatchError(formValues.from);
-      if (mismatch) {
-        setError(new Error(mismatch));
-        setErrorVisible(true);
-        return;
-      }
-
-      await wallet.submitTransfer(formValues);<% } else { %>if (!wallet.connection) {
+      <% if (evm) { %>const submitted = await wallet.submitTransfer(formValues);
+      if (!submitted) return;<% } else { %>if (!wallet.connection) {
         alert("No account selected, connect wallet first");
         return;
       }
@@ -149,8 +134,7 @@ const XcmTransfer: FC = () => {
         onSubmit={onSubmit}
         loading={loading}
         originChain={originChain}
-        onOriginChange={handleOriginChange}<% if (evm) { %>
-        isEvmOrigin={wallet.activeWalletKind === "evm"}<% } %>
+        onOriginChange={handleOriginChange}
       />
       {errorVisible && <p className="transferError">{error?.message}</p>}
     </div>
