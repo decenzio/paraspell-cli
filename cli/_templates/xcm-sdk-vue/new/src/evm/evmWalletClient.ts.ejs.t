@@ -79,7 +79,7 @@ declare global {
 export function getEthereumProvider(): EIP1193Provider {
   if (!window.ethereum) {
     throw new Error(
-      "No EVM wallet found. Install an EVM-supported wallet (EIP-1193 provider).",
+      "No EVM-compatible wallet found. Install an EVM wallet (EIP-1193 provider) and try again.",
     );
   }
   return window.ethereum;

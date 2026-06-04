@@ -1,56 +1,15 @@
-# Dependencies
 node_modules/
-.pnpm-store/
-
-# Logs and debug
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Environment and secrets
-.env
-.env.*
-!.env.example
-
-# TypeScript — emit lives next to sources under src/ (see package.json "build": "tsc")
-src/**/*.js
-src/**/*.js.map
-src/**/*.d.ts
-src/**/*.d.ts.map
-
-# Bundler / app output (templates and future root apps)
 dist/
-build/
-*.local
+generated/
+cli/
 
-# Vite
-.vite/
-
-# Test coverage
-coverage/
-.nyc_output/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Editors
-.idea/
-*.swp
-*.swo
-
-# Tooling caches
-.eslintcache
-.prettiercache
-*.tsbuildinfo
-.turbo/
-.cache/
-
-# Hygen workspace (local installs / generated examples)
-xcm-sdk-hygen/node_modules/
-xcm-sdk-hygen/generated/
-
-# Pack artifacts
+# Accidental app output when Hygen runs with cwd = package root (always pass --out)
+/public/
+/index.html
+/vite.config.ts
+/tsconfig.json
+/tsconfig.app.json
+/tsconfig.node.json
+/eslint.config.js
+LICENSE
 *.tgz

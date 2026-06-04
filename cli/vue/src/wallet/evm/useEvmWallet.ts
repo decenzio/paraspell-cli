@@ -64,7 +64,7 @@ export function useEvmWallet() {
       selectedAddress.value = requestedAccounts[0];
     } catch {
       alert(
-        "Failed to connect. Install MetaMask or another EIP-1193 wallet and try again.",
+        "Failed to connect. Install an EVM-compatible wallet (EIP-1193) and try again.",
       );
     }
   };

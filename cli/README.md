@@ -76,6 +76,7 @@ cli/
 ├── dist/                # built CLI (prepublish)
 ├── _templates/          # Hygen generators (published with the package)
 ├── shared/              # Hygen helpers (package-manager.cjs, feature-flags.cjs)
+│   └── each template uses `prompt.cjs` (CommonJS; required when package is ESM)
 └── src/                 # TypeScript source
 ```
 

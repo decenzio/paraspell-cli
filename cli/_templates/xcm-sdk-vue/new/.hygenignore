@@ -1,2 +1,3 @@
-# Static assets copied by scripts/lib/run-generate.mjs copyLogo (not EJS templates)
+# Static assets copied by copyLogo (not EJS templates)
 public/
+prompt.cjs
