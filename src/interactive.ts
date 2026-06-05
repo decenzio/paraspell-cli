@@ -32,6 +32,32 @@ function preferNativeTerminalImage(): boolean {
   return program !== 'vscode' && program !== 'cursor';
 }
 
+/**
+ * Renders the ParaSpell banner. Best-effort only: the image is decorative and
+ * fetched over the network, so a failure (offline, DNS, proxy, site down, slow
+ * link, or a terminal that can't render it) must never block the CLI from
+ * reaching its prompts. The text welcome line is the fallback.
+ */
+async function renderBanner(): Promise<void> {
+  try {
+    const imageResponse = await fetch(
+      'https://paraspell.xyz/paraspell-icon.png',
+      { signal: AbortSignal.timeout(3000) },
+    );
+    if (!imageResponse.ok) return;
+
+    const buffer = Buffer.from(await imageResponse.arrayBuffer());
+    const image = await terminalImage.buffer(buffer, {
+      width: '40%',
+      height: '40%',
+      preferNativeRender: preferNativeTerminalImage(),
+    });
+    console.log(image);
+  } catch {
+    // Decorative banner unavailable; continue without it.
+  }
+}
+
 function mapClient(value: string): SdkClient {
   if (value === 'polkadot-api') return 'papi';
   if (value === 'polkadot-js') return 'pjs';
@@ -41,18 +67,7 @@ function mapClient(value: string): SdkClient {
 export async function runInteractiveGenerate(
   templatesRoot: string,
 ): Promise<void> {
-  const imageResponse = await fetch('https://paraspell.xyz/paraspell-icon.png');
-  if (!imageResponse.ok) {
-    throw new Error(`Failed to load image: HTTP ${imageResponse.status}`);
-  }
-
-  const buffer = Buffer.from(await imageResponse.arrayBuffer());
-  const image = await terminalImage.buffer(buffer, {
-    width: '40%',
-    height: '40%',
-    preferNativeRender: preferNativeTerminalImage(),
-  });
-  console.log(image);
+  await renderBanner();
   console.log('Welcome to the Paraspell CLI\n');
 
   const projectName = await input({
