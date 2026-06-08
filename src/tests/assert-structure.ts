@@ -144,10 +144,7 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
       }
     }
 
-    const evmPaths =
-      variant.framework === 'react'
-        ? ['src/evm/index.ts', 'src/xcm/evmTransfer.ts']
-        : ['src/evm/index.ts', 'src/xcm/evmTransfer.ts'];
+    const evmPaths = ['src/evm/index.ts', 'src/xcm/evmTransfer.ts'];
 
     for (const rel of evmPaths) {
       const exists = fileExists(root, rel);
