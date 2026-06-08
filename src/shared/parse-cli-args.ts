@@ -59,8 +59,8 @@ const CLIENT_ALIASES: Record<string, SdkClient> = {
   'polkadot-js': 'pjs',
 };
 
-const FRAMEWORKS_ALLOWED = ['react', 'vue', 'node'] as const;
-const CLIENTS_ALLOWED = ['papi', 'pjs', 'dedot'] as const;
+const FRAMEWORKS_ALLOWED = ['react', 'vue', 'node'];
+const CLIENTS_ALLOWED = ['papi', 'pjs', 'dedot'];
 
 function parseClient(value: string): SdkClient | null {
   return CLIENT_ALIASES[value.toLowerCase()] ?? null;
@@ -107,7 +107,7 @@ const KNOWN_FLAGS_COMMON = [
   'evm', 'swap', 'snowbridge',
   'package-manager', 'packageManager', 'out',
   'private-key', 'privateKey',
-] as const;
+];
 
 function warnUnknownFlags(flags: ArgRecord, extra: readonly string[]): void {
   const known = new Set<string>([...KNOWN_FLAGS_COMMON, ...extra]);

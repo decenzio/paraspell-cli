@@ -44,9 +44,9 @@ export async function promptSdkOptions(
     message: 'Select the desired JS client type',
     choices: [
       new Separator(),
-      { name: 'Polkadot API', value: 'papi' as const },
-      { name: 'Polkadot JS', value: 'pjs' as const },
-      { name: 'Dedot', value: 'dedot' as const },
+      { name: 'Polkadot API', value: 'papi' },
+      { name: 'Polkadot JS', value: 'pjs' },
+      { name: 'Dedot', value: 'dedot' },
     ],
     default: partial.client ?? 'pjs',
   });
