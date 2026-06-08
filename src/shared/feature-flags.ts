@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { getPackageRoot } from '../package-root.js';
+import { UserError } from './errors.js';
 import type { FeatureFlags } from './types.js';
 
 const require = createRequire(import.meta.url);
@@ -29,7 +30,7 @@ export function assertSnowbridgeRequiresEvm(input: {
 }): void {
   const message = snowbridgeRequiresEvmMessage(input);
   if (message) {
-    throw new Error(message);
+    throw new UserError(message);
   }
 }
 
