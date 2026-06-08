@@ -4,6 +4,7 @@ import { runInteractiveGenerate } from './interactive.js';
 import { API_FRAMEWORKS, SDK_FRAMEWORKS } from './shared/frameworks.js';
 import { generateApiApp, generateSdkApp } from './shared/hygen-runner.js';
 import {
+  assertNoStrayPositional,
   getArgvFlag,
   parseApiArgv,
   parseSdkArgv,
@@ -75,6 +76,7 @@ export async function runSdkFromArgv(
   ctx: { root: string; templatesRoot: string; consumer?: boolean },
 ): Promise<void> {
   const { argv, framework: positional } = shiftPositionalFramework(rawArgv);
+  assertNoStrayPositional(argv, positional);
   let opts = parseSdkArgv(argv, {
     root: ctx.root,
     framework: positional ?? 'react',
@@ -111,6 +113,7 @@ export async function runApiFromArgv(
   ctx: { root: string; templatesRoot: string; consumer?: boolean },
 ): Promise<void> {
   const { argv, framework: positional } = shiftPositionalFramework(rawArgv);
+  assertNoStrayPositional(argv, positional);
   let opts = parseApiArgv(argv, {
     root: ctx.root,
     framework: positional ?? 'react',
