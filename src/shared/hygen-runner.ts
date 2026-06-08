@@ -16,6 +16,13 @@ import type {
 } from './types.js';
 
 const require = createRequire(import.meta.url);
+const ejs = require('ejs') as {
+  render: (template: string, locals: Record<string, unknown>) => string;
+};
+const hygenContext = require('hygen/dist/context.js').default as (
+  locals: Record<string, unknown>,
+  config: Record<string, unknown>,
+) => Record<string, unknown>;
 const { runner, Logger } = require('hygen') as {
   runner: (
     args: string[],
@@ -23,6 +30,31 @@ const { runner, Logger } = require('hygen') as {
   ) => Promise<{ success: boolean }>;
   Logger: new (log: (msg: string) => void) => unknown;
 };
+
+function createHygenHelpers(): (
+  locals: Record<string, unknown>,
+  config: Record<string, unknown>,
+) => { includeShared: (relativePath: string) => string } {
+  const helpers = (
+    locals: Record<string, unknown>,
+    config: Record<string, unknown>,
+  ) => ({
+    includeShared(relativePath: string): string {
+      const templatesRoot = config.templates as string;
+      const filePath = path.join(templatesRoot, relativePath);
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing shared template: ${filePath}`);
+      }
+      const template = fs.readFileSync(filePath, 'utf8');
+      const ctx = hygenContext(
+        { ...locals, templates: templatesRoot },
+        { ...config, helpers },
+      );
+      return ejs.render(template, ctx);
+    },
+  });
+  return helpers;
+}
 
 async function runHygen(
   generator: string,
@@ -38,6 +70,7 @@ async function runHygen(
       interactive ? createInquirerPrompter() : { prompt: async () => ({}) },
     logger: new Logger(console.log.bind(console)),
     debug: false,
+    helpers: createHygenHelpers(),
   });
   return result.success;
 }
