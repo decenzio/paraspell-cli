@@ -13,8 +13,8 @@ to: package.json
     "preview": "vite preview"
   },
   "dependencies": {
-    "@paraspell/sdk": "<%= sdkVersion %>",
-    "<%= sdkPackage %>": "<%= sdkVersion %>"<% if (swap) { %>,
+    "@paraspell/sdk": "<%= sdkVersion %>"<% if (client !== 'papi') { %>,
+    "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
     "viem": "^2.50.4"<% } %><% if (snowbridge) { %>,

@@ -12,8 +12,8 @@ to: package.json
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@paraspell/sdk": "<%= sdkVersion %>",
-    "<%= sdkPackage %>": "<%= sdkVersion %>"<% if (swap) { %>,
+    "@paraspell/sdk": "<%= sdkVersion %>"<% if (client !== 'papi') { %>,
+    "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
     "dotenv": "^16.4.7",
