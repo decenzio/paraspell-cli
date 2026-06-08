@@ -3,6 +3,7 @@ import path from 'node:path';
 import { runInteractiveGenerate } from './interactive.js';
 import { API_FRAMEWORKS, SDK_FRAMEWORKS } from './shared/frameworks.js';
 import { generateApiApp, generateSdkApp } from './shared/hygen-runner.js';
+import { printNextSteps } from './shared/next-steps.js';
 import {
   assertNoStrayPositional,
   getArgvFlag,
@@ -52,22 +53,6 @@ function resolveConsumerOut(
   return path.join(root, name);
 }
 
-function printNextSteps(
-  outDir: string,
-  pm: string,
-  framework: Framework,
-): void {
-  const cdPath = path.isAbsolute(outDir)
-    ? outDir
-    : path.relative(process.cwd(), outDir) || path.basename(outDir);
-  console.log(`\nNext steps:\n  cd ${cdPath}\n  ${pm} install`);
-  if (framework !== 'node') {
-    console.log(`  ${pm} run dev`);
-  } else {
-    console.log(`  ${pm} start`);
-  }
-}
-
 function assertConsumerProject(name: string, outDir: string): void {
   if (!validateNpmName(name)) {
     console.error(`Invalid project name: ${name}`);
@@ -101,7 +86,7 @@ async function runFromArgv(
   assertNoStrayPositional(argv, positional);
   const parseCtx = {
     root: ctx.root,
-    framework: positional ?? ('react' as Framework),
+    framework: positional ?? 'react',
     frameworkFlag: true,
   };
 
@@ -197,7 +182,7 @@ export async function runCli(
     return;
   }
 
-  const ctx = { root: cwd, templatesRoot, consumer: true as const };
+  const ctx: RunContext = { root: cwd, templatesRoot, consumer: true };
 
   if (projectType === 'sdk') {
     await runSdkFromArgv(argv, ctx);

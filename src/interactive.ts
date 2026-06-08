@@ -1,10 +1,8 @@
-/**
- * Interactive CLI flow — mirrors root src/index.ts UX (reference only; do not import from src).
- */
 import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import path from 'node:path';
 import { input, select, Separator } from '@inquirer/prompts';
+import terminalImage from 'terminal-image';
 import { applyFeatureFlags } from './shared/feature-flags.js';
 import {
   EVM_EXTENSION,
@@ -12,19 +10,17 @@ import {
   SNOWBRIDGE_EXTENSION,
   SWAP_EXTENSION,
 } from './shared/feature-extensions-checkbox.js';
-import terminalImage from 'terminal-image';
 import { API_FRAMEWORKS, SDK_FRAMEWORKS } from './shared/frameworks.js';
 import { generateApiApp, generateSdkApp } from './shared/hygen-runner.js';
-import {
-  normalizePackageManager,
-  type PackageManager,
-} from './shared/package-manager.js';
+import { printNextSteps } from './shared/next-steps.js';
+import { PACKAGE_MANAGERS } from './shared/package-manager.js';
+import { promptEvmPrivateKey } from './shared/prompt-evm-private-key.js';
 import type {
   Framework,
+  PackageManager,
   ProjectType,
   SdkClient,
 } from './shared/types.js';
-import { promptEvmPrivateKey } from './shared/prompt-evm-private-key.js';
 import { validateNameInput } from './shared/validate.js';
 
 function preferNativeTerminalImage(): boolean {
@@ -32,12 +28,6 @@ function preferNativeTerminalImage(): boolean {
   return program !== 'vscode' && program !== 'cursor';
 }
 
-/**
- * Renders the ParaSpell banner. Best-effort only: the image is decorative and
- * fetched over the network, so a failure (offline, DNS, proxy, site down, slow
- * link, or a terminal that can't render it) must never block the CLI from
- * reaching its prompts. The text welcome line is the fallback.
- */
 async function renderBanner(): Promise<void> {
   try {
     const imageResponse = await fetch(
@@ -56,12 +46,6 @@ async function renderBanner(): Promise<void> {
   } catch {
     // Decorative banner unavailable; continue without it.
   }
-}
-
-function mapClient(value: string): SdkClient {
-  if (value === 'polkadot-api') return 'papi';
-  if (value === 'polkadot-js') return 'pjs';
-  return 'dedot';
 }
 
 export async function runInteractiveGenerate(
@@ -84,51 +68,44 @@ export async function runInteractiveGenerate(
 
   const projectPath = path.join(process.cwd(), projectName);
 
-  const packageManager = (await select({
+  const packageManager = await select<PackageManager>({
     message: 'Select the desired package manager',
     choices: [
       new Separator(),
-      { name: 'npm', value: 'npm' },
-      { name: 'yarn', value: 'yarn' },
-      { name: 'pnpm', value: 'pnpm' },
-      { name: 'bun', value: 'bun' },
+      ...PACKAGE_MANAGERS.map((pm) => ({ name: pm, value: pm })),
     ],
-  })) as PackageManager;
+  });
 
-  const frameworkRaw = await select({
+  const framework = await select<Framework>({
     message: 'Select the desired framework',
     choices: [
       new Separator(),
       { name: 'Vite - React', value: 'react' },
       { name: 'Vite - Vue', value: 'vue' },
-      { name: 'NodeJS', value: 'nodejs' },
+      { name: 'NodeJS', value: 'node' },
     ],
   });
 
-  const framework: Framework =
-    frameworkRaw === 'nodejs' ? 'node' : (frameworkRaw as Framework);
-
-  const projectType = (await select({
+  const projectType = await select<ProjectType>({
     message: 'Select the desired project type',
     choices: [
       new Separator(),
       { name: 'XCM SDK', value: 'sdk' },
       { name: 'XCM API', value: 'api' },
     ],
-  })) as ProjectType;
+  });
 
   let client: SdkClient = 'pjs';
   if (projectType === 'sdk') {
-    const clientType = await select({
+    client = await select<SdkClient>({
       message: 'Select the desired JS client type',
       choices: [
         new Separator(),
-        { name: 'Polkadot API', value: 'polkadot-api' },
-        { name: 'Polkadot JS', value: 'polkadot-js' },
+        { name: 'Polkadot API', value: 'papi' },
+        { name: 'Polkadot JS', value: 'pjs' },
         { name: 'Dedot', value: 'dedot' },
       ],
     });
-    client = mapClient(clientType);
   }
 
   const additionalFeatures = await promptFeatureExtensions();
@@ -144,8 +121,6 @@ export async function runInteractiveGenerate(
       ? await promptEvmPrivateKey()
       : undefined;
 
-  const pm = normalizePackageManager(packageManager);
-
   if (projectType === 'sdk') {
     await generateSdkApp({
       meta: SDK_FRAMEWORKS[framework],
@@ -155,7 +130,7 @@ export async function runInteractiveGenerate(
         name: projectName,
         client,
         ...featureFlags,
-        packageManager: pm,
+        packageManager,
         out: projectPath,
         privateKey,
       },
@@ -168,17 +143,12 @@ export async function runInteractiveGenerate(
         framework,
         name: projectName,
         ...featureFlags,
-        packageManager: pm,
+        packageManager,
         out: projectPath,
         privateKey,
       },
     });
   }
 
-  console.log(`\nNext steps:\n  cd ${projectName}\n  ${pm} install`);
-  if (framework !== 'node') {
-    console.log(`  ${pm} run dev`);
-  } else {
-    console.log(`  ${pm} start`);
-  }
+  printNextSteps(projectName, packageManager, framework);
 }
