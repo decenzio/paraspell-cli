@@ -1,29 +1,21 @@
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { getPackageRoot } from '../package-root.js';
+import type { PackageManager } from './types.js';
+
 export type { PackageManager } from './types.js';
+export type PackageManagerId = PackageManager;
 
-const PM_IDS = ['npm', 'yarn', 'pnpm', 'bun'] as const;
-export const PNPM_COREPACK = 'pnpm@10.33.0';
+type PackageManagerModule = {
+  PACKAGE_MANAGERS: readonly PackageManager[];
+  normalizePackageManager: (value: string | undefined) => PackageManager;
+};
 
-export type PackageManagerId = (typeof PM_IDS)[number];
+const require = createRequire(import.meta.url);
+const packageRoot = getPackageRoot();
 
-export const PACKAGE_MANAGERS: readonly PackageManagerId[] = PM_IDS;
+const { PACKAGE_MANAGERS, normalizePackageManager } = require(
+  path.join(packageRoot, 'shared/package-manager.cjs'),
+) as PackageManagerModule;
 
-export function normalizePackageManager(
-  value: string | undefined,
-): PackageManagerId {
-  const key = value?.toLowerCase();
-  if (key && PM_IDS.includes(key as PackageManagerId)) {
-    return key as PackageManagerId;
-  }
-  return 'pnpm';
-}
-
-export function resolvePackageManager(input: string | undefined) {
-  const packageManager = normalizePackageManager(input);
-  return {
-    packageManager,
-    installCmd: `${packageManager} install`,
-    devCmd: `${packageManager} run dev`,
-    startCmd: `${packageManager} start`,
-    usePnpmOverrides: packageManager === 'pnpm',
-  };
-}
+export { PACKAGE_MANAGERS, normalizePackageManager };
