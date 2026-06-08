@@ -23,9 +23,13 @@ const submitApiTransaction = async (
   }
 
   const client = createWsClient(endpoints[0]);
-  const callData = Binary.fromHex(apiTx.tx);
-  const tx = await client.getUnsafeApi().txFromCallData(callData);
-  await submitTransaction(tx, signer);
+  try {
+    const callData = Binary.fromHex(apiTx.tx);
+    const tx = await client.getUnsafeApi().txFromCallData(callData);
+    await submitTransaction(tx, signer);
+  } finally {
+    client.destroy();
+  }
 };
 
 export const submitUsingApi = async (

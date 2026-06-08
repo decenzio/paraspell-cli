@@ -41,24 +41,28 @@ const submitApiTransaction = async (
   }
 
   const client = createWsClient(endpoints[0]);
-  const signer = await getSignerFromMnemonic(mnemonic);
-  const callData = Binary.fromHex(apiTx.tx);
-  const tx = await client.getUnsafeApi().txFromCallData(callData);
+  try {
+    const signer = await getSignerFromMnemonic(mnemonic);
+    const callData = Binary.fromHex(apiTx.tx);
+    const tx = await client.getUnsafeApi().txFromCallData(callData);
 
-  return new Promise((resolve, reject) => {
-    tx.signSubmitAndWatch(signer).subscribe({
-      next: (event) => {
-        if (event.type === "finalized") {
-          if (!event.ok) {
-            reject(new Error("Transaction failed"));
-          } else {
-            resolve(event.txHash);
+    return await new Promise<string>((resolve, reject) => {
+      tx.signSubmitAndWatch(signer).subscribe({
+        next: (event) => {
+          if (event.type === "finalized") {
+            if (!event.ok) {
+              reject(new Error("Transaction failed"));
+            } else {
+              resolve(event.txHash);
+            }
           }
-        }
-      },
-      error: reject,
+        },
+        error: reject,
+      });
     });
-  });
+  } finally {
+    client.destroy();
+  }
 };
 
 export const submitSubstrateTransfers = async (
