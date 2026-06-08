@@ -29,23 +29,38 @@ const defaults: TransferParams = {
   currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
 };
 
+type ApiErrorResponse = {
+  message?: string;
+};
+
 async function resolveCurrencyLocation(
   symbol: TransferParams["currencySymbol"],
   origin: TransferParams["from"],
   destination: TransferParams["to"],
 ): Promise<TAssetInfo["location"]> {
   const symbolValue = typeof symbol === "string" ? symbol : symbol.value;
-  const response = await axios.get(
-    `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
-  );
-  const assets = response.data as TAssetInfo[];
-  const asset = assets.find((a) => a.symbol === symbolValue);
-  if (!asset) {
-    throw new Error(
-      `Asset ${symbolValue} not found for ${origin} -> ${destination}`,
+  try {
+    const response = await axios.get(
+      `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
     );
+    const assets = response.data as TAssetInfo[];
+    const asset = assets.find((a) => a.symbol === symbolValue);
+    if (!asset) {
+      throw new Error(
+        `Asset ${symbolValue} not found for ${origin} -> ${destination}`,
+      );
+    }
+    return asset.location;
+  } catch (error) {
+    if (axios.isAxiosError<ApiErrorResponse>(error)) {
+      const message = error.response?.data.message;
+      const serverMessage = message ? ` Server response: ${message}` : "";
+      throw new Error(`Error while resolving asset.${serverMessage}`, {
+        cause: error,
+      });
+    }
+    throw error;
   }
-  return asset.location;
 }
 
 async function transferViaApi(
@@ -92,15 +107,7 @@ async function main(): Promise<void> {
       `amount ${defaults.amount}`,
   );
 
-<% if (evm) { %>  if (process.env.CONFIRM_TRANSFER !== "true") {
-    console.log(
-      "\nDry run: nothing was broadcast. Re-run with CONFIRM_TRANSFER=true to " +
-        "sign and\nsubmit this transfer for real.",
-    );
-    return;
-  }
-
-<% } %>  const result = await transferViaApi(defaults);
+  const result = await transferViaApi(defaults);
 
   if (Array.isArray(result)) {
     console.log("Submitted XCM transfer(s):", result.join(", "));

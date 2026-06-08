@@ -1,10 +1,10 @@
 ---
 to: README.md
 ---
-# ParaSpell XCM API⚡️ starter template
+# ParaSpell XCM SDK🪄 starter template
 
-- Get started with the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api) using this scaffolded app.
-- Explore more endpoints in the [XCM API docs](https://paraspell.github.io/docs/api/g-started.html).
+- Send cross-chain transfers with the [XCM SDK](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk) using **<%= clientLabel %>**.
+- See the [XCM SDK docs](https://paraspell.github.io/docs/xcm-sdk/send-xcm.html) to customize routes and assets.
 
 ## Usage 📈
 

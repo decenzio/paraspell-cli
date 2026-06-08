@@ -6,9 +6,14 @@ import { Builder, type TChain, type TDestination } from "<%= sdkPackage %>";
 import type { TEvmChainFrom } from "@paraspell/sdk";
 import { createWalletClient, http, type WalletClient, type Chain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { darwinia, moonbeam, moonriver } from "viem/chains";
+import {
+  darwinia,
+  moonbeam,
+  moonriver<% if (snowbridge) { %>,
+  mainnet,
+  sepolia<% } %>,
+} from "viem/chains";
 import "@paraspell/evm";<% if (snowbridge) { %>
-import { mainnet, sepolia } from "viem/chains";
 import "@paraspell/evm-snowbridge";<% } %>
 import type { TransferParams } from "./types.js";
 
@@ -74,6 +79,14 @@ function getEvmWalletClient(origin: EvmChain): WalletClient {
 }
 
 export async function submitEvmTransfer(params: TransferParams): Promise<string> {
+  if (process.env.CONFIRM_TRANSFER !== "true") {
+    console.log(
+      "\nDry run: EVM transfer not broadcast. Re-run with CONFIRM_TRANSFER=true to " +
+        "sign and submit for real.",
+    );
+    return "(dry run)";
+  }
+
   const { from, to, recipient, amount, currencySymbol } = params;
 
   if (!isChainEvm(from)) {

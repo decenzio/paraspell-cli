@@ -3,13 +3,11 @@ to: README.md
 ---
 # ParaSpell XCM SDK — Node.js template
 
-Headless example for sending XCM transfers from Node.js using dev accounts (`//Alice`, `//Bob`) and `signAndSubmit()` — no browser wallet or manual `build()` step.
-
-Same builder API as the [React](../../react/xcm-sdk) and [Vue](../../vue/xcm-sdk) templates. Generate a trimmed variant with Hygen (`xcm-sdk-hygen`) using `--client`, `--evm`, `--swap`, and `--snowbridge`.
+Headless example using **<%= clientLabel %>** (`<%= sdkPackage %>`) with dev accounts (`//Alice`, `//Bob`) and `signAndSubmit()`.
 
 <% if (evm) { %>## Environment
 
-A `.env` file is created at generation time. Set your EVM wallet key there:
+A `.env` file is created automatically when you scaffold this project — add your EVM wallet key there:
 
 | Variable | Used for |
 |----------|----------|
@@ -23,36 +21,18 @@ A `.env` file is created at generation time. Set your EVM wallet key there:
 CONFIRM_TRANSFER=true <%= startCmd %><% } %>
 ```
 
-<% if (evm) { %>`<%= startCmd %>` performs a **dry run** by default: it prints the planned
-transfer but broadcasts nothing. Set `CONFIRM_TRANSFER=true` to sign and submit
-a **real** transaction on the configured (mainnet) network.
-<% } else { %>This example runs with built-in dev accounts (`//Alice`, `//Bob`) when you execute
+<% if (evm) { %>EVM routes perform a **dry run** by default: substrate transfers run normally,
+but EVM origins require `CONFIRM_TRANSFER=true` to sign and submit a **real**
+transaction on the configured (mainnet) network.
+<% } else { %>Runs with built-in dev accounts (`//Alice`, `//Bob`) when you execute
 `<%= startCmd %>`.
 <% } %>
 
-Default `from` is:
-
-- `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>`
-
-## Core example
-
-See `src/index.ts`:
-
-```ts
-const txHash = await Builder()
-  .from("AssetHubPolkadot")
-  .to("Hydration")
-  .currency({ symbol: "DOT", amount: "0.1" })
-  .recipient("//Bob")
-  .sender("//Alice")
-  .signAndSubmit();
-
-await builder.disconnect();
-```
+Default route: `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>` → `Hydration` — edit `src/index.ts` to customize.
 
 ## Docs
 
-- [XCM SDK documentation](https://paraspell.github.io/docs/xcm-sdk/send-xcm.html)
+- [Send XCM](https://paraspell.github.io/docs/xcm-sdk/send-xcm.html)
 - [Getting started](https://paraspell.github.io/docs/sdk/getting-started.html)
 
 ## License

@@ -90,15 +90,7 @@ async function main(): Promise<void> {
       `amount ${defaults.amount}`,
   );
 
-<% if (evm) { %>  if (process.env.CONFIRM_TRANSFER !== "true") {
-    console.log(
-      "\nDry run: nothing was broadcast. Re-run with CONFIRM_TRANSFER=true to " +
-        "sign and\nsubmit this transfer for real.",
-    );
-    return;
-  }
-
-<% } %>  const result = await transferAsset();
+  const result = await transferAsset();
 
   if (Array.isArray(result)) {
     console.log("Submitted XCM transfer(s):", result.join(", "));
