@@ -15,7 +15,7 @@ import type { TransferParams } from "./types.js";<% if (evm) { %>
 import type { TSubstrateChain } from "@paraspell/sdk";<% } %>
 
 const defaults: TransferParams = {
-  from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>",
+  from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
   to: "Hydration",
   amount: "0.1",
 <% if (snowbridge) { -%>
@@ -23,11 +23,11 @@ const defaults: TransferParams = {
 <% } else if (evm) { -%>
   currencySymbol: Native("GLMR"),
 <% } else { -%>
-  currencySymbol: "DOT",
+  currencySymbol: "ASTR",
 <% } -%>
   sender: "//Alice",
   recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: "USDC",<% } %>
+  currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
 };
 
 async function transferAsset(

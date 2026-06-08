@@ -12,14 +12,14 @@ import type { ApiTransaction } from "./types.js";
 
 let cryptoReady: Promise<boolean> | null = null;
 
-async function getSignerFromMnemonic(mnemonic: string) {
+async function getSignerFromUri(uri: string) {
   if (!cryptoReady) {
     cryptoReady = cryptoWaitReady();
   }
   await cryptoReady;
 
   const keyring = new Keyring({ type: "sr25519" });
-  const pair = keyring.addFromMnemonic(mnemonic);
+  const pair = keyring.addFromUri(uri);
 
   return getPolkadotSigner(
     pair.publicKey,
@@ -30,7 +30,7 @@ async function getSignerFromMnemonic(mnemonic: string) {
 
 const submitApiTransaction = async (
   apiTx: ApiTransaction,
-  mnemonic: string,
+  sender: string,
 ): Promise<string> => {
   const response = await axios.get(
     `${API_URL}/chains/${apiTx.chain}/ws-endpoints`,
@@ -42,7 +42,7 @@ const submitApiTransaction = async (
 
   const client = createWsClient(endpoints[0]);
   try {
-    const signer = await getSignerFromMnemonic(mnemonic);
+    const signer = await getSignerFromUri(sender);
     const callData = Binary.fromHex(apiTx.tx);
     const tx = await client.getUnsafeApi().txFromCallData(callData);
 
@@ -67,17 +67,11 @@ const submitApiTransaction = async (
 
 export const submitSubstrateTransfers = async (
   transactions: ApiTransaction[],
+  sender: string,
 ): Promise<string[]> => {
-  const mnemonic = process.env.SUBSTRATE_MNEMONIC;
-  if (!mnemonic) {
-    throw new Error(
-      "SUBSTRATE_MNEMONIC env var is required for substrate API transfers.",
-    );
-  }
-
   const hashes: string[] = [];
   for (const apiTx of transactions) {
-    hashes.push(await submitApiTransaction(apiTx, mnemonic));
+    hashes.push(await submitApiTransaction(apiTx, sender));
   }
   return hashes;
 };

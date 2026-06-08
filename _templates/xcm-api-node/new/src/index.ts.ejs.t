@@ -14,7 +14,7 @@ import type { TransferParams } from "./types.js";
 <% } %>
 
 const defaults: TransferParams = {
-  from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>",
+  from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
   to: "Hydration",
   amount: "0.1",
 <% if (snowbridge) { -%>
@@ -22,11 +22,11 @@ const defaults: TransferParams = {
 <% } else if (evm) { -%>
   currencySymbol: Native("GLMR"),
 <% } else { -%>
-  currencySymbol: "DOT",
+  currencySymbol: "ASTR",
 <% } -%>
   sender: "//Alice",
   recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: "USDC",<% } %>
+  currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
 };
 
 async function resolveCurrencyLocation(
@@ -83,7 +83,7 @@ async function transferViaApi(
   };
 
   const transactions = await fetchFromApi(apiParams);
-  return await submitSubstrateTransfers(transactions);
+  return await submitSubstrateTransfers(transactions, params.sender);
 }
 
 async function main(): Promise<void> {

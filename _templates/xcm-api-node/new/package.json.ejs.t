@@ -13,13 +13,13 @@ to: package.json
   },
   "dependencies": {
     "axios": "^1.15.0",
-    "polkadot-api": "^2.0.2",
-    "@polkadot/keyring": "^13.5.6",
-    "@polkadot/util-crypto": "^13.5.6",
+    "polkadot-api": "<%= polkadotApi %>",
+    "@polkadot/keyring": "<%= polkadotKeyring %>",
+    "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
     "@paraspell/sdk": "<%= sdkVersion %>"<% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
-    "dotenv": "^16.4.7",
-    "viem": "^2.50.4"<% if (snowbridge) { %>,
+    "dotenv": "<%= dotenv %>",
+    "viem": "<%= viem %>"<% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>
   },
   "devDependencies": {

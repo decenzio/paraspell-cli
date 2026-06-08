@@ -14,10 +14,10 @@ to: package.json
   },
   "dependencies": {
     "axios": "^1.15.0",
-    "polkadot-api": "^2.0.2"<% if (evm) { %>,
+    "polkadot-api": "<%= polkadotApi %>"<% if (evm) { %>,
     "@paraspell/sdk": "<%= sdkVersion %>",
     "@paraspell/evm": "<%= sdkVersion %>",
-    "viem": "^2.50.4"<% if (snowbridge) { %>,
+    "viem": "<%= viem %>"<% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>
   },
   "devDependencies": {

@@ -3,7 +3,7 @@ const {
   resolveFeatureFlags,
   snowbridgeRequiresEvmMessage,
 } = require('../../../shared/feature-flags.cjs');
-const { SDK_VERSION, PNPM_COREPACK } = require('../../../shared/versions.cjs');
+const { SDK_VERSION, PNPM_COREPACK, PACKAGE_VERSIONS } = require('../../../shared/versions.cjs');
 
 const CLIENT_META = {
   papi: {
@@ -53,6 +53,7 @@ module.exports = {
       ...args,
       ...meta,
       ...pm,
+      ...PACKAGE_VERSIONS,
       clientKey,
       evm,
       swap,

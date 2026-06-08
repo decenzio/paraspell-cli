@@ -7,14 +7,14 @@ Headless example: build transfers via the [XCM API](https://github.com/paraspell
 
 Generate trimmed variants with Hygen (`xcm-sdk-hygen`) using `--evm`, `--swap`, and `--snowbridge` (no client selection — always PAPI for substrate).
 
-## Environment
+<% if (evm) { %>## Environment
 
-<% if (evm) { %>A `.env` file is created at generation time with `PRIVATE_KEY` (empty if you skipped the prompt).
+A `.env` file is created at generation time with `PRIVATE_KEY` (empty if you skipped the prompt).
 
-<% } %>| Variable | Used for |
+| Variable | Used for |
 |----------|----------|
-| `SUBSTRATE_MNEMONIC` | Substrate routes: sign API-returned call data via PAPI |
-<% if (evm) { %>| `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |
+| `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |
+
 <% } %>
 
 ## Usage
@@ -32,11 +32,11 @@ a **real** transaction on the configured (mainnet) network.
 you execute `<%= startCmd %>`.
 <% } %>
 
-Provide `SUBSTRATE_MNEMONIC` / `PRIVATE_KEY` via a local `.env` file (already
-git-ignored) rather than inline on the command line, so secrets don't leak into
-your shell history or process list.
+<% if (evm) { %>Provide `PRIVATE_KEY` via a local `.env` file (already git-ignored) rather
+than inline on the command line, so secrets don't leak into your shell history
+or process list.
 
-## Features
+<% } %>## Features
 
 | Feature | Behavior |
 |---------|----------|

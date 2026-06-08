@@ -16,13 +16,13 @@ to: package.json
     "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
-    "dotenv": "^16.4.7",
-    "viem": "^2.50.4"<% } %><% if (snowbridge) { %>,
+    "dotenv": "<%= dotenv %>",
+    "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
-    "polkadot-api": "^2.0.2"<% if (swap) { %>,
-    "@galacticcouncil/api-augment": "^0.10.0"<% } %><% } %><% if (client === 'pjs') { %>,
-    "@polkadot/api": "^16.5.6"<% } %><% if (client === 'dedot') { %>,
-    "dedot": "^1.3.0"<% } %>
+    "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
+    "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
+    "@polkadot/api": "<%= polkadotJsApi %>"<% } %><% if (client === 'dedot') { %>,
+    "dedot": "<%= dedot %>"<% } %>
   },
   "devDependencies": {
     "@types/node": "^22.15.21",

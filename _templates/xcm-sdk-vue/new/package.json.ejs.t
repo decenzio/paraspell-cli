@@ -18,15 +18,15 @@ to: package.json
     "vue": "^3.5.13"<% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
-    "viem": "^2.50.4"<% } %><% if (snowbridge) { %>,
+    "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
-    "polkadot-api": "^2.0.2"<% if (swap) { %>,
-    "@galacticcouncil/api-augment": "^0.10.0"<% } %><% } %><% if (client === 'pjs') { %>,
-    "@polkadot/api": "^16.5.6",
-    "@polkadot/extension-dapp": "^0.58.10",
-    "@polkadot/extension-inject": "^0.58.10"<% } %><% if (client === 'dedot') { %>,
-    "dedot": "^1.3.0",
-    "@polkadot/api": "^16.5.6"<% } %>
+    "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
+    "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
+    "@polkadot/api": "<%= polkadotJsApi %>",
+    "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>",
+    "@polkadot/extension-inject": "<%= polkadotExtensionInject %>"<% } %><% if (client === 'dedot') { %>,
+    "dedot": "<%= dedot %>",
+    "@polkadot/api": "<%= polkadotJsApi %>"<% } %>
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
