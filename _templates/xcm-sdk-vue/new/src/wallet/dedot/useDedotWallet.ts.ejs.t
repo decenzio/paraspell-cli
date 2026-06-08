@@ -39,20 +39,6 @@ export function useDedotWallet() {
   const accounts = ref<DedotAccount[]>([]);
   const selectedAddress = ref<string>();
 
-  const discoverExtensions = async () => {
-    const raw = getInjectedWeb3();
-    const names = Object.keys(raw ?? {}).filter((n) => raw?.[n]);
-    if (names.length === 0) {
-      alert("No window.injectedWeb3 extensions found.");
-      throw new Error("No injectedWeb3 extensions");
-    }
-    selectedExtensionName.value = undefined;
-    signer.value = null;
-    accounts.value = [];
-    selectedAddress.value = undefined;
-    extensionNames.value = names;
-  };
-
   const selectExtension = async (name: string) => {
     const entry = getInjectedWeb3()?.[name];
     if (!entry) {
@@ -65,6 +51,17 @@ export function useDedotWallet() {
     const accs = await injected.accounts.get();
     accounts.value = accs;
     selectedAddress.value = accs[0]?.address;
+  };
+
+  const discoverExtensions = async () => {
+    const raw = getInjectedWeb3();
+    const names = Object.keys(raw ?? {}).filter((n) => raw?.[n]);
+    if (names.length === 0) {
+      alert("No window.injectedWeb3 extensions found.");
+      throw new Error("No injectedWeb3 extensions");
+    }
+    extensionNames.value = names;
+    await selectExtension(names[0]);
   };
 
   const connection = computed((): DedotWalletConnection | null => {

@@ -27,9 +27,6 @@ const App = () => (
     <p className="read-the-docs">
       Click on the ParaSpell logo to read the docs
     </p>
-    <p className="read-the-docs" style={{ fontSize: "0.85rem", opacity: 0.7 }}>
-      Generated with Hygen — client: <%= clientLabel %><% if (evm) { %>, EVM<% } %><% if (swap) { %>, Swap<% } %><% if (snowbridge) { %>, Snowbridge<% } %>
-    </p>
   </>
 );
 

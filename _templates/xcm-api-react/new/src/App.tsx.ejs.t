@@ -11,6 +11,7 @@ const App = () => (
       <a
         href="https://paraspell.github.io/docs/xcm-api/getting-started.html"
         target="_blank"
+        rel="noopener noreferrer"
         className="logo"
       >
         <img src="/lightspell.png" alt="ParaSpell logo" />
@@ -24,6 +25,7 @@ const App = () => (
       <a
         href="https://paraspell.github.io/docs/api/deploy.html"
         target="_blank"
+        rel="noopener noreferrer"
       >
         Click here
       </a>{" "}

@@ -116,6 +116,7 @@ const handleSubmit = (e: Event) => {
       <select
         :value="originChain"
         required
+        :disabled="loading"
         @change="onOriginSelect"
       >
         <option
@@ -133,6 +134,7 @@ const handleSubmit = (e: Event) => {
       <select
         v-model="destinationChain"
         required
+        :disabled="loading"
       >
         <option
           v-for="chain in chains"

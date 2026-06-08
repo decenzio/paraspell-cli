@@ -2,10 +2,20 @@
 to: src/App.css
 ---
 #app {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+.transferLayout {
+  width: min(500px, 100%);
+  max-width: min(500px, calc(100vw - 4rem));
+  margin: 0 auto;
+  min-width: 0;
 }
 
 .header {
@@ -59,14 +69,6 @@ to: src/App.css
   color: #888;
 }
 
-.transferLayout {
-  width: min(500px, 100%);
-  max-width: min(500px, calc(100vw - 4rem));
-  margin: 0 auto;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
 form {
   display: flex;
   flex-direction: column;
@@ -111,12 +113,6 @@ select {
   box-sizing: border-box;
 }
 
-form button,
-button.secondary {
-  width: 100%;
-  box-sizing: border-box;
-}
-
 select {
   padding-right: 30px;
   background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23333' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
@@ -134,6 +130,12 @@ select:focus {
 
 form button {
   margin-top: 12px;
+}
+
+form button,
+button.secondary {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 button {
@@ -170,4 +172,23 @@ button.secondary:hover {
 
 form > label + label {
   margin-top: 10px;
+}
+
+.transferError {
+  display: block;
+  box-sizing: border-box;
+  width: min(500px, 100%);
+  max-width: min(500px, calc(100vw - 4rem));
+  max-height: 12rem;
+  margin: 12px auto 0;
+  padding: 10px 12px;
+  overflow: auto;
+  text-align: left;
+  color: #b42318;
+  background-color: #fef3f2;
+  border: 1px solid #fecdca;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  white-space: pre-wrap;
 }

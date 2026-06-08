@@ -30,6 +30,14 @@ export function usePapiWallet() {
     };
   });
 
+  const selectExtension = async (name: string) => {
+    const injected = await connectInjectedExtension(name);
+    selectedExtension.value = injected;
+    const nextAccounts = injected.getAccounts();
+    accounts.value = nextAccounts;
+    selectedAccount.value = nextAccounts[0];
+  };
+
   const discoverExtensions = async () => {
     const names = getInjectedExtensions();
     if (names.length === 0) {
@@ -37,14 +45,7 @@ export function usePapiWallet() {
       throw new Error("No Wallet Extension Found!");
     }
     extensionNames.value = names;
-  };
-
-  const selectExtension = async (name: string) => {
-    const injected = await connectInjectedExtension(name);
-    selectedExtension.value = injected;
-    const nextAccounts = injected.getAccounts();
-    accounts.value = nextAccounts;
-    selectedAccount.value = nextAccounts[0];
+    await selectExtension(names[0]);
   };
 
   const selectAccountByAddress = (address: string) => {

@@ -117,6 +117,7 @@ const TransferForm: FC<Props> = ({
         <select
           value={originChain}
           onChange={(e) => onOriginChange(e.target.value)}
+          disabled={loading}
           required
         >
           {chainOptions.map((chain) => (
@@ -132,6 +133,7 @@ const TransferForm: FC<Props> = ({
         <select
           value={destinationChain}
           onChange={(e) => setDestinationChain(e.target.value)}
+          disabled={loading}
           required
         >
           {chains.map((chain) => (

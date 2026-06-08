@@ -70,6 +70,9 @@ watch(
 
 <% } %>const handleSubmit = (e: Event) => {
   e.preventDefault();
+  if (!currencyOptionId.value) return;<% if (swap) { %>
+  if (swapEnabled.value && !currencyToOptionId.value) return;
+<% } %>
   emit("submit", {
     from: props.originChain,
     to: destinationChain.value,
