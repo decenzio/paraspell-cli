@@ -6,6 +6,7 @@ import { SDK_FRAMEWORKS } from './shared/frameworks.js';
 import { generateSdkApp } from './shared/hygen-runner.js';
 import { shiftPositionalFramework } from './shared/parse-cli-args.js';
 import { normalizePackageManager } from './shared/package-manager.js';
+import { runEntry } from './shared/run-entry.js';
 import type { Framework } from './shared/types.js';
 
 const cliRoot = getPackageRoot();
@@ -27,23 +28,25 @@ const frameworks: Framework[] = positional
   ? [positional]
   : ['react', 'vue', 'node'];
 
-for (const framework of frameworks) {
-  const meta = SDK_FRAMEWORKS[framework];
-  for (const ex of SDK_EXAMPLES[framework]) {
-    await generateSdkApp({
-      meta,
-      templatesRoot,
-      opts: {
-        framework,
-        name: ex.dir,
-        client: ex.client,
-        evm: ex.evm,
-        swap: ex.swap,
-        snowbridge: ex.snowbridge,
-        packageManager,
-        out: path.join(cliRoot, 'generated', 'xcm-sdk', framework, ex.dir),
-      },
-    });
+await runEntry(async () => {
+  for (const framework of frameworks) {
+    const meta = SDK_FRAMEWORKS[framework];
+    for (const ex of SDK_EXAMPLES[framework]) {
+      await generateSdkApp({
+        meta,
+        templatesRoot,
+        opts: {
+          framework,
+          name: ex.dir,
+          client: ex.client,
+          evm: ex.evm,
+          swap: ex.swap,
+          snowbridge: ex.snowbridge,
+          packageManager,
+          out: path.join(cliRoot, 'generated', 'xcm-sdk', framework, ex.dir),
+        },
+      });
+    }
+    console.log(`Generated ${SDK_EXAMPLES[framework].length} ${meta.label} examples`);
   }
-  console.log(`Generated ${SDK_EXAMPLES[framework].length} ${meta.label} examples`);
-}
+});

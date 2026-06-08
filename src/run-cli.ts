@@ -23,7 +23,8 @@ import type {
   ProjectType,
   SdkGenerateOptions,
 } from './shared/types.js';
-import { validateNameInput, validateNpmName } from './shared/validate.js';
+import { UserError } from './shared/errors.js';
+import { validateNameInput } from './shared/validate.js';
 
 function consumerNameValidator(
   argv: string[],
@@ -54,13 +55,12 @@ function resolveConsumerOut(
 }
 
 function assertConsumerProject(name: string, outDir: string): void {
-  if (!validateNpmName(name)) {
-    console.error(`Invalid project name: ${name}`);
-    process.exit(1);
+  const nameError = validateNameInput(name);
+  if (nameError !== true) {
+    throw new UserError(nameError);
   }
   if (fs.existsSync(outDir)) {
-    console.error(`Project already exists: ${outDir}`);
-    process.exit(1);
+    throw new UserError(`Project already exists: ${outDir}`);
   }
 }
 

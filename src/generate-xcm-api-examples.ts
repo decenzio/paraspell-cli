@@ -6,6 +6,7 @@ import { API_FRAMEWORKS } from './shared/frameworks.js';
 import { generateApiApp } from './shared/hygen-runner.js';
 import { shiftPositionalFramework } from './shared/parse-cli-args.js';
 import { normalizePackageManager } from './shared/package-manager.js';
+import { runEntry } from './shared/run-entry.js';
 import type { Framework } from './shared/types.js';
 
 const cliRoot = getPackageRoot();
@@ -28,23 +29,25 @@ const frameworks: Framework[] = positional
   ? [positional]
   : ['react', 'vue', 'node'];
 
-for (const framework of frameworks) {
-  const meta = API_FRAMEWORKS[framework];
-  for (const variant of API_EXAMPLES) {
-    await generateApiApp({
-      meta,
-      templatesRoot,
-      opts: {
-        framework,
-        name: `xcm-api-${variant.name}`,
-        out: path.join(examplesRoot, framework, variant.name),
-        evm: variant.evm,
-        swap: variant.swap,
-        snowbridge: variant.snowbridge,
-        packageManager,
-      },
-    });
+await runEntry(async () => {
+  for (const framework of frameworks) {
+    const meta = API_FRAMEWORKS[framework];
+    for (const variant of API_EXAMPLES) {
+      await generateApiApp({
+        meta,
+        templatesRoot,
+        opts: {
+          framework,
+          name: `xcm-api-${variant.name}`,
+          out: path.join(examplesRoot, framework, variant.name),
+          evm: variant.evm,
+          swap: variant.swap,
+          snowbridge: variant.snowbridge,
+          packageManager,
+        },
+      });
+    }
   }
-}
 
-console.log(`Done. Examples at ${examplesRoot}`);
+  console.log(`Done. Examples at ${examplesRoot}`);
+});

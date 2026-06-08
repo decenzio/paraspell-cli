@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { applyFeatureFlags } from './feature-flags.js';
+import { UserError } from './errors.js';
 import { createInquirerPrompter } from './inquirer-prompter.js';
 import {
   shouldWriteNodeEvmEnv,
@@ -67,8 +68,7 @@ async function generateApp(params: {
   const flags = applyFeatureFlags(opts);
   const templateDir = path.join(templatesRoot, meta.generator, 'new');
   if (!fs.existsSync(templateDir)) {
-    console.error(`Missing Hygen templates at ${templateDir}`);
-    process.exit(1);
+    throw new UserError(`Missing Hygen templates at ${templateDir}`);
   }
 
   if (fs.existsSync(flags.out)) {
@@ -96,8 +96,7 @@ async function generateApp(params: {
   );
 
   if (!ok) {
-    console.error('Hygen generation failed');
-    process.exit(1);
+    throw new UserError('Hygen generation failed');
   }
 
   await copyLogo(meta, templatesRoot, meta.generator, flags.out);
