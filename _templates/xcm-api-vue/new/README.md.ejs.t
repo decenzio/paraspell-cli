@@ -3,23 +3,20 @@ to: README.md
 ---
 # ParaSpell XCM API⚡️ starter template
 
-- Get started with the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api) using this scaffolded app.
-- Explore more endpoints in the [XCM API docs](https://paraspell.github.io/docs/api/g-started.html).
+Browser demo for the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api): fetch transfer routes from the API and sign transactions with a connected wallet.
+See the [XCM API docs](https://paraspell.github.io/docs/xcm-api/getting-started.html) for endpoints and configuration.
 
-## Usage 📈
+## Usage
 
 1. Run `<%= installCmd %>`
 2. Run `<%= devCmd %>`
 
-## Contributing 👨‍💻
+## Get Support
 
-Please open an issue if you have any questions or suggestions.
-
-## Get Support 🚑
 - Contact form on our [landing page](https://paraspell.xyz/#contact-us).
-- Message us on our [X](https://x.com/paraspell).
-- Support channel on [telegram](https://t.me/paraspell).
+- Message us on [X](https://x.com/paraspell).
+- Support channel on [Telegram](https://t.me/paraspell).
 
-## License 📜
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).

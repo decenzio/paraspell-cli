@@ -1,13 +1,13 @@
 ---
 to: README.md
 ---
-# ParaSpell XCM API — Node.js template
+# ParaSpell XCM API — Node.js example
 
 Headless example: build transfers via the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api), then sign with **Polkadot API** (substrate)<% if (evm) { %> or **viem** (EVM origins)<% } %>.
 
 <% if (evm) { %>## Environment
 
-A `.env` file is created automatically when you scaffold this project — add your EVM wallet key there:
+Add your EVM wallet key to `.env`:
 
 | Variable | Used for |
 |----------|----------|

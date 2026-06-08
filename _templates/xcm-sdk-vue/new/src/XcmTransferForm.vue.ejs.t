@@ -17,7 +17,6 @@ import { getOriginChains } from "./evm";<% } %>
 const props = defineProps<{
   loading: boolean;
   originChain: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
-  onOriginChange?: (origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>) => void;
 }>();
 
 const emit = defineEmits<{

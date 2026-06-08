@@ -1,13 +1,13 @@
 ---
 to: README.md
 ---
-# ParaSpell XCM SDK — Node.js template
+# ParaSpell XCM SDK — Node.js example
 
 Headless example using **<%= clientLabel %>** (`<%= sdkPackage %>`) with dev accounts (`//Alice`, `//Bob`) and `signAndSubmit()`.
 
 <% if (evm) { %>## Environment
 
-A `.env` file is created automatically when you scaffold this project — add your EVM wallet key there:
+Add your EVM wallet key to `.env`:
 
 | Variable | Used for |
 |----------|----------|

@@ -38,7 +38,7 @@ export const submitUsingSdk = async (
 
 <% if (swap) { %>    if (swapEnabled) {
       throw new UnsupportedOperationError(
-        "Swap from EVM origins is not supported in this template.",
+        "Swap is not supported when the origin chain is EVM.",
       );
     }
 
