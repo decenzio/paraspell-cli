@@ -13,7 +13,7 @@ import XcmTransfer from "./XcmTransfer.vue";
   <div class="header">
     <h1>Vite + Vue +</h1>
     <a
-      href="https://paraspell.github.io/docs/sdk/getting-started.html"
+      href="https://paraspell.github.io/docs/xcm-sdk/getting-started.html"
       target="_blank"
       rel="noopener noreferrer"
       class="logo"

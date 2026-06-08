@@ -16,7 +16,7 @@ const App = () => (
     <div className="header">
       <h1>Vite + React + </h1>
       <a
-        href="https://paraspell.github.io/docs/sdk/getting-started.html"
+        href="https://paraspell.github.io/docs/xcm-sdk/getting-started.html"
         target="_blank"
         className="logo"
       >

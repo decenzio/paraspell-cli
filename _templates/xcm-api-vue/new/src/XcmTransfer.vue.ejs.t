@@ -36,7 +36,16 @@ const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
   wallet.setActiveWalletKind(kind);
 };
 <% } else { %>
-const wallet = usePapiWallet();
+const {
+  extensionNames,
+  selectedExtensionName,
+  accounts,
+  selectedAddress,
+  connection,
+  discoverExtensions,
+  selectExtension,
+  selectAccountByAddress,
+} = usePapiWallet();
 <% } %>
 
 const onSubmit = async (formValues: FormValues) => {
@@ -48,15 +57,15 @@ const onSubmit = async (formValues: FormValues) => {
     const submitted = await wallet.submitTransfer(formValues);
     if (!submitted) return;
     <% } else { %>
-    if (!wallet.connection.value) {
+    if (!connection.value) {
       alert("No account selected, connect wallet first");
       return;
     }
 
     await submitUsingApi(
       formValues,
-      wallet.connection.value.signer,
-      wallet.connection.value.address,
+      connection.value.signer,
+      connection.value.address,
     );
     <% } %>
     alert("Transaction was successful!");
@@ -82,13 +91,13 @@ const onSubmit = async (formValues: FormValues) => {
     <% } else { %>
     <div class="formHeader">
     <PapiWalletControls
-      :extension-names="wallet.extensionNames"
-      :selected-extension-name="wallet.selectedExtensionName"
-      :accounts="wallet.accounts"
-      :selected-address="wallet.selectedAddress"
-      :on-connect-click="() => void wallet.discoverExtensions()"
-      :on-extension-change="(name: string) => void wallet.selectExtension(name)"
-      :on-account-change="wallet.selectAccountByAddress"
+      :extension-names="extensionNames"
+      :selected-extension-name="selectedExtensionName"
+      :accounts="accounts"
+      :selected-address="selectedAddress"
+      @connect-click="() => { void discoverExtensions(); }"
+      @extension-change="(name: string) => { void selectExtension(name); }"
+      @account-change="selectAccountByAddress"
     />
     </div>
     <% } %>

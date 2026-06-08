@@ -1,8 +1,8 @@
-import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import path from 'node:path';
 import { input, select, Separator } from '@inquirer/prompts';
 import terminalImage from 'terminal-image';
+import { getPackageRoot } from './package-root.js';
 import { applyFeatureFlags } from './shared/feature-flags.js';
 import {
   EVM_EXTENSION,
@@ -30,13 +30,12 @@ function preferNativeTerminalImage(): boolean {
 
 async function renderBanner(): Promise<void> {
   try {
-    const imageResponse = await fetch(
-      'https://paraspell.xyz/paraspell-icon.png',
-      { signal: AbortSignal.timeout(3000) },
+    const iconPath = path.join(
+      getPackageRoot(),
+      'assets',
+      'paraspell-icon.png',
     );
-    if (!imageResponse.ok) return;
-
-    const buffer = Buffer.from(await imageResponse.arrayBuffer());
+    const buffer = await fs.promises.readFile(iconPath);
     const image = await terminalImage.buffer(buffer, {
       width: '40%',
       height: '40%',

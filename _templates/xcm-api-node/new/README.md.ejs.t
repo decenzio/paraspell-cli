@@ -21,13 +21,16 @@ Generate trimmed variants with Hygen (`xcm-sdk-hygen`) using `--evm`, `--swap`, 
 
 ```bash
 <%= installCmd %>
-<%= startCmd %>
-CONFIRM_TRANSFER=true <%= startCmd %>
+<%= startCmd %><% if (evm) { %>
+CONFIRM_TRANSFER=true <%= startCmd %><% } %>
 ```
 
-`<%= startCmd %>` performs a **dry run** by default: it prints the planned
+<% if (evm) { %>`<%= startCmd %>` performs a **dry run** by default: it prints the planned
 transfer but broadcasts nothing. Set `CONFIRM_TRANSFER=true` to sign and submit
 a **real** transaction on the configured (mainnet) network.
+<% } else { %>Substrate routes use dev accounts (`//Alice`, `//Bob`) and run the transfer when
+you execute `<%= startCmd %>`.
+<% } %>
 
 Provide `SUBSTRATE_MNEMONIC` / `PRIVATE_KEY` via a local `.env` file (already
 git-ignored) rather than inline on the command line, so secrets don't leak into

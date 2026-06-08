@@ -12,6 +12,7 @@
     "index.js",
     "dist",
     "_templates",
+    "assets",
     "shared",
     "LICENSE",
     "README.md"

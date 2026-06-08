@@ -10,9 +10,12 @@ defineProps<{
   selectedExtensionName: string | undefined;
   accounts: DedotAccount[];
   selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onExtensionChange: (name: string) => void;
-  onAccountChange: (address: string) => void;
+}>();
+
+const emit = defineEmits<{
+  connectClick: [];
+  extensionChange: [name: string];
+  accountChange: [address: string];
 }>();
 </script>
 
@@ -23,7 +26,7 @@ defineProps<{
         :value="selectedExtensionName"
         @change="
           ($event.target as HTMLSelectElement).value &&
-            onExtensionChange(($event.target as HTMLSelectElement).value)
+            emit('extensionChange', ($event.target as HTMLSelectElement).value)
         "
       >
         <option
@@ -44,7 +47,7 @@ defineProps<{
     <button
       v-else
       type="button"
-      @click="onConnectClick"
+      @click="emit('connectClick')"
     >
       Connect Wallet
     </button>
@@ -53,7 +56,7 @@ defineProps<{
       <h4>Select account:</h4>
       <select
         :value="selectedAddress"
-        @change="onAccountChange(($event.target as HTMLSelectElement).value)"
+        @change="emit('accountChange', ($event.target as HTMLSelectElement).value)"
       >
         <option
           v-for="{ name, address } in accounts"

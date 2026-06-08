@@ -7,7 +7,7 @@ create-paraspell ✨ — scaffold XCM starter apps
 </p>
 
 <p align="center">
-  Official CLI to bootstrap production-ready <strong>XCM SDK</strong> and <strong>XCM API</strong> apps — React, Vue, or Node — in seconds.
+  Official CLI to bootstrap <strong>XCM SDK</strong> and <strong>XCM API</strong> apps — React, Vue, or Node — in seconds.
 </p>
 
 <p align="center">
@@ -20,10 +20,12 @@ create-paraspell ✨ — scaffold XCM starter apps
 
 **What you can generate:**
 
-- **[XCM SDK](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk) 🪄** — Cross-chain dApps with your choice of client: [Polkadot API](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk) (`papi`), [Polkadot.js](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk-pjs) (`pjs`), or [Dedot](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk-dedot) (`dedot`). Optional [EVM](https://github.com/paraspell/xcm-tools/tree/main/packages/evm), [Swap](https://paraspell.github.io/docs/xcm-sdk/getting-started.html#install-swap-extension), and [Snowbridge](https://github.com/paraspell/xcm-tools/tree/main/packages/evm-snowbridge) extensions.
+- **[XCM SDK](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk) 🪄** — Cross-chain dApps with an in-app client library.
+  - **Clients:** `papi` ([Polkadot API](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk)), `pjs` ([Polkadot.js](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk-pjs)), `dedot` ([Dedot](https://github.com/paraspell/xcm-tools/tree/main/packages/sdk-dedot))
+  - **Extensions (optional):** [EVM](https://github.com/paraspell/xcm-tools/tree/main/packages/evm), [Swap](https://paraspell.github.io/docs/xcm-sdk/getting-started.html#install-swap-extension), [Snowbridge](https://github.com/paraspell/xcm-tools/tree/main/packages/evm-snowbridge)
 - **[XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api) ⚡️** — Package-less XCM integration: your app calls the API, signs locally, and stays lean.
 
-**Frameworks:** React (Vite), Vue (Vite), or Node.js (headless scripts).
+**Frameworks** : React (Vite), Vue (Vite), or Node.js (headless scripts).
 
 <br>
 
@@ -62,7 +64,7 @@ create-paraspell
 
 </details>
 
-<details><summary><b>Non-interactive & CI</b></summary>
+<details><summary><b>For Agents & CI</b></summary>
 <br>
 
 Use `sdk` or `api` as the first argument (or `--type`), plus `--name`. SDK projects also need `--client`.
@@ -110,19 +112,29 @@ npm run generate:xcm-api -- vue --name my-api --package-manager npm
 **Package layout:**
 
 ```text
-├── index.js             # bin shim → dist/
-├── dist/                # built CLI (published)
-├── _templates/          # Hygen generators (shipped with the package)
-├── shared/              # Hygen helpers (package-manager, feature flags)
-│   └── each template uses prompt.cjs (CommonJS; required when the package is ESM)
-└── src/                 # TypeScript CLI source
+├── index.js                  # starting point
+├── dist/                     # built CLI
+├── assets/                   # bundled static files
+├── _templates/               # Hygen generators
+│   ├── shared/               # shared EJS partials (evm, xcm)
+│   ├── xcm-sdk-{react,vue,node}/
+│   └── xcm-api-{react,vue,node}/
+├── shared/                   # Hygen helpers consumed by templates (CommonJS)
+│   ├── feature-flags.cjs
+│   ├── package-manager.cjs
+│   └── versions.cjs
+└── src/                      # TypeScript CLI source
+    ├── index.ts              # entry → dist/
+    ├── run-cli.ts            # argv routing & agent flow
+    ├── interactive.ts        # prompts & banner
+    └── shared/               # hygen-runner, parsers, prompts, etc.
 ```
 
 **Publish:**
 
 ```bash
 npm run build
-npm pack                 # inspect the tarball
+npm pack
 npm publish --access public
 ```
 
@@ -131,26 +143,17 @@ npm publish --access public
 <details><summary><b>Testing</b></summary>
 <br>
 
-[Vitest](https://vitest.dev/) generates every template variant under `generated/`, then checks project structure and (optionally) production builds.
-
 ```bash
-npm test
-npm run test:build
-SKIP_GENERATE=1 npm test
+npm run typecheck          # type-check the CLI
+npm test                   # scaffold variants + check structure
+npm run test:build         # production build each variant (slow)
+npm run test:all           # structure + build
+npm run test:watch         # structure tests in watch mode
+npm run test:generate      # regenerate generated/ only
+SKIP_GENERATE=1 npm test   # skip scaffolding, reuse generated/
 ```
 
 </details>
-
-<br>
-
-**Learn more:**
-
-- [XCM Tools documentation](https://paraspell.github.io/docs/) 📚
-- [XCM SDK starter templates](https://github.com/paraspell/xcm-sdk-template) · [XCM API starter templates](https://github.com/paraspell/xcm-api-template) (legacy; this CLI supersedes manual template clones)
-
-**Service status:** [status.paraspell.xyz](https://status.paraspell.xyz/)
-
-<br>
 
 **Tools supported by:**
 

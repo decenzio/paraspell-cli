@@ -8,9 +8,12 @@ import type { EvmAccountOption } from "./useEvmWallet";
 defineProps<{
   accounts: EvmAccountOption[];
   selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onAccountChange: (address: string) => void;
-  onDisconnect?: () => void;
+}>();
+
+const emit = defineEmits<{
+  connectClick: [];
+  accountChange: [address: string];
+  disconnect: [];
 }>();
 </script>
 
@@ -18,7 +21,7 @@ defineProps<{
   <button
       v-if="accounts.length === 0"
       type="button"
-      @click="onConnectClick"
+      @click="emit('connectClick')"
     >
       Connect Wallet
     </button>
@@ -26,7 +29,7 @@ defineProps<{
       <h4>Select account:</h4>
       <select
         :value="selectedAddress"
-        @change="onAccountChange(($event.target as HTMLSelectElement).value)"
+        @change="emit('accountChange', ($event.target as HTMLSelectElement).value)"
       >
         <option
           v-for="{ label, address } in accounts"
@@ -38,10 +41,10 @@ defineProps<{
       </select>
     </div>
     <button
-      v-if="selectedAddress && onDisconnect"
+      v-if="selectedAddress"
       type="button"
       class="secondary"
-      @click="onDisconnect"
+      @click="emit('disconnect')"
     >
       Disconnect
     </button>

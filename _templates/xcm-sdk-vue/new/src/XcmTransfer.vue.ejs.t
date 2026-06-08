@@ -84,9 +84,9 @@ const onSubmit = async (formValues: FormValues) => {
       :selected-extension-name="wallet.selectedExtensionName"
       :accounts="wallet.accounts"
       :selected-address="wallet.selectedAddress"
-      :on-connect-click="() => { void wallet.discoverExtensions(); }"
-      :on-extension-change="(name: string) => { void wallet.selectExtension(name); }"
-      :on-account-change="wallet.selectAccountByAddress"
+      @connect-click="() => { void wallet.discoverExtensions(); }"
+      @extension-change="(name: string) => { void wallet.selectExtension(name); }"
+      @account-change="wallet.selectAccountByAddress"
     />
     </div>
     <% } else if (client === 'papi') { %>
@@ -96,9 +96,9 @@ const onSubmit = async (formValues: FormValues) => {
       :selected-extension-name="wallet.selectedExtensionName"
       :accounts="wallet.accounts"
       :selected-address="wallet.selectedAddress"
-      :on-connect-click="() => { void wallet.discoverExtensions(); }"
-      :on-extension-change="(name: string) => { void wallet.selectExtension(name); }"
-      :on-account-change="wallet.selectAccountByAddress"
+      @connect-click="() => { void wallet.discoverExtensions(); }"
+      @extension-change="(name: string) => { void wallet.selectExtension(name); }"
+      @account-change="wallet.selectAccountByAddress"
     />
     </div>
     <% } else { %>
@@ -108,9 +108,9 @@ const onSubmit = async (formValues: FormValues) => {
       :selected-extension-name="wallet.selectedExtensionName"
       :accounts="wallet.accounts"
       :selected-address="wallet.selectedAddress"
-      :on-connect-click="() => { void wallet.discoverExtensions(); }"
-      :on-extension-change="(name: string) => { void wallet.selectExtension(name); }"
-      :on-account-change="wallet.selectAccountByAddress"
+      @connect-click="() => { void wallet.discoverExtensions(); }"
+      @extension-change="(name: string) => { void wallet.selectExtension(name); }"
+      @account-change="wallet.selectAccountByAddress"
     />
     </div>
     <% } %>

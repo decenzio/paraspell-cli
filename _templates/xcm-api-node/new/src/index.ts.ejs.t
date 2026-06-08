@@ -24,8 +24,8 @@ const defaults: TransferParams = {
 <% } else { -%>
   currencySymbol: "DOT",
 <% } -%>
-  sender: "<%= evm ? '0x0000000000000000000000000000000000000000' : '//Alice' %>",
-  recipient: "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",<% if (swap) { %>
+  sender: "//Alice",
+  recipient: "//Bob",<% if (swap) { %>
   currencyToSymbol: "USDC",<% } %>
 };
 
@@ -92,7 +92,7 @@ async function main(): Promise<void> {
       `amount ${defaults.amount}`,
   );
 
-  if (process.env.CONFIRM_TRANSFER !== "true") {
+<% if (evm) { %>  if (process.env.CONFIRM_TRANSFER !== "true") {
     console.log(
       "\nDry run: nothing was broadcast. Re-run with CONFIRM_TRANSFER=true to " +
         "sign and\nsubmit this transfer for real.",
@@ -100,7 +100,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const result = await transferViaApi(defaults);
+<% } %>  const result = await transferViaApi(defaults);
 
   if (Array.isArray(result)) {
     console.log("Submitted XCM transfer(s):", result.join(", "));

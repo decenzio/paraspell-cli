@@ -19,16 +19,18 @@ A `.env` file is created at generation time. Set your EVM wallet key there:
 
 ```bash
 <%= installCmd %>
-<%= startCmd %>
-CONFIRM_TRANSFER=true <%= startCmd %>
+<%= startCmd %><% if (evm) { %>
+CONFIRM_TRANSFER=true <%= startCmd %><% } %>
 ```
 
-`<%= startCmd %>` performs a **dry run** by default: it prints the planned
+<% if (evm) { %>`<%= startCmd %>` performs a **dry run** by default: it prints the planned
 transfer but broadcasts nothing. Set `CONFIRM_TRANSFER=true` to sign and submit
 a **real** transaction on the configured (mainnet) network.
+<% } else { %>This example runs with built-in dev accounts (`//Alice`, `//Bob`) when you execute
+`<%= startCmd %>`.
+<% } %>
 
-<% if (!evm) { %>This example project runs with built-in defaults (no env parsing in `index.ts`).
-<% } %>Default `from` is:
+Default `from` is:
 
 - `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>`
 
