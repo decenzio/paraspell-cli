@@ -7,7 +7,12 @@ import {
   shouldWriteNodeEvmEnv,
   writeNodeEvmEnv,
 } from './write-node-evm-env.js';
-import type { ApiGenerateOptions, FrameworkMeta, SdkGenerateOptions } from './types.js';
+import type {
+  ApiGenerateOptions,
+  FrameworkMeta,
+  ProjectType,
+  SdkGenerateOptions,
+} from './types.js';
 
 const require = createRequire(import.meta.url);
 const { runner, Logger } = require('hygen') as {
@@ -51,13 +56,14 @@ async function copyLogo(
   }
 }
 
-export async function generateSdkApp(params: {
+async function generateApp(params: {
+  kind: ProjectType;
   meta: FrameworkMeta;
   templatesRoot: string;
-  opts: SdkGenerateOptions;
-  interactive?: boolean;
+  opts: SdkGenerateOptions | ApiGenerateOptions;
+  interactive: boolean;
 }): Promise<void> {
-  const { meta, templatesRoot, opts, interactive = false } = params;
+  const { kind, meta, templatesRoot, opts, interactive } = params;
   const flags = applyFeatureFlags(opts);
   const templateDir = path.join(templatesRoot, meta.generator, 'new');
   if (!fs.existsSync(templateDir)) {
@@ -70,18 +76,22 @@ export async function generateSdkApp(params: {
   }
   await fs.promises.mkdir(flags.out, { recursive: true });
 
+  const hygenArgs = [
+    `--name=${flags.name}`,
+    ...(kind === 'sdk'
+      ? [`--client=${(flags as SdkGenerateOptions).client}`]
+      : []),
+    `--evm=${flags.evm}`,
+    `--swap=${flags.swap}`,
+    `--snowbridge=${flags.snowbridge}`,
+    `--packageManager=${opts.packageManager}`,
+  ];
+
   const ok = await runHygen(
     meta.generator,
     templatesRoot,
     flags.out,
-    [
-      `--name=${flags.name}`,
-      `--client=${flags.client}`,
-      `--evm=${flags.evm}`,
-      `--swap=${flags.swap}`,
-      `--snowbridge=${flags.snowbridge}`,
-      `--packageManager=${opts.packageManager}`,
-    ],
+    hygenArgs,
     interactive,
   );
 
@@ -96,7 +106,23 @@ export async function generateSdkApp(params: {
     await writeNodeEvmEnv(flags.out, opts.privateKey);
   }
 
-  console.log(`\nGenerated ${meta.label} XCM SDK app at ${flags.out}`);
+  const label = kind === 'sdk' ? 'XCM SDK' : 'XCM API';
+  console.log(`\nGenerated ${meta.label} ${label} app at ${flags.out}`);
+}
+
+export async function generateSdkApp(params: {
+  meta: FrameworkMeta;
+  templatesRoot: string;
+  opts: SdkGenerateOptions;
+  interactive?: boolean;
+}): Promise<void> {
+  return generateApp({
+    kind: 'sdk',
+    meta: params.meta,
+    templatesRoot: params.templatesRoot,
+    opts: params.opts,
+    interactive: params.interactive ?? false,
+  });
 }
 
 export async function generateApiApp(params: {
@@ -105,43 +131,11 @@ export async function generateApiApp(params: {
   opts: ApiGenerateOptions;
   interactive?: boolean;
 }): Promise<void> {
-  const { meta, templatesRoot, opts, interactive = false } = params;
-  const flags = applyFeatureFlags(opts);
-  const templateDir = path.join(templatesRoot, meta.generator, 'new');
-  if (!fs.existsSync(templateDir)) {
-    console.error(`Missing Hygen templates at ${templateDir}`);
-    process.exit(1);
-  }
-
-  if (fs.existsSync(flags.out)) {
-    await fs.promises.rm(flags.out, { recursive: true, force: true });
-  }
-  await fs.promises.mkdir(flags.out, { recursive: true });
-
-  const ok = await runHygen(
-    meta.generator,
-    templatesRoot,
-    flags.out,
-    [
-      `--name=${flags.name}`,
-      `--evm=${flags.evm}`,
-      `--swap=${flags.swap}`,
-      `--snowbridge=${flags.snowbridge}`,
-      `--packageManager=${opts.packageManager}`,
-    ],
-    interactive,
-  );
-
-  if (!ok) {
-    console.error('Hygen generation failed');
-    process.exit(1);
-  }
-
-  await copyLogo(meta, templatesRoot, meta.generator, flags.out);
-
-  if (shouldWriteNodeEvmEnv(opts.framework, flags.evm)) {
-    await writeNodeEvmEnv(flags.out, opts.privateKey);
-  }
-
-  console.log(`\nGenerated ${meta.label} XCM API app at ${flags.out}`);
+  return generateApp({
+    kind: 'api',
+    meta: params.meta,
+    templatesRoot: params.templatesRoot,
+    opts: params.opts,
+    interactive: params.interactive ?? false,
+  });
 }
