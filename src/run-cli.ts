@@ -16,7 +16,12 @@ import {
 } from './shared/parse-cli-args.js';
 import { apiNeedsInteractive, promptApiOptions } from './shared/prompt-api.js';
 import { promptSdkOptions, sdkNeedsInteractive } from './shared/prompt-sdk.js';
-import type { Framework, ProjectType } from './shared/types.js';
+import type {
+  ApiGenerateOptions,
+  Framework,
+  ProjectType,
+  SdkGenerateOptions,
+} from './shared/types.js';
 import { validateNameInput, validateNpmName } from './shared/validate.js';
 
 function consumerNameValidator(
@@ -85,32 +90,42 @@ function parseProjectTypeFlag(argv: string[]): ProjectType | null {
   return null;
 }
 
-export async function runSdkFromArgv(
+type RunContext = { root: string; templatesRoot: string; consumer?: boolean };
+
+async function runFromArgv(
+  kind: ProjectType,
   rawArgv: string[],
-  ctx: { root: string; templatesRoot: string; consumer?: boolean },
+  ctx: RunContext,
 ): Promise<void> {
   const { argv, framework: positional } = shiftPositionalFramework(rawArgv);
   assertNoStrayPositional(argv, positional);
-  let opts = parseSdkArgv(argv, {
+  const parseCtx = {
     root: ctx.root,
-    framework: positional ?? 'react',
+    framework: positional ?? ('react' as Framework),
     frameworkFlag: true,
-  });
+  };
+
+  let opts: SdkGenerateOptions | ApiGenerateOptions =
+    kind === 'sdk' ? parseSdkArgv(argv, parseCtx) : parseApiArgv(argv, parseCtx);
 
   if (opts.help) {
-    printSdkHelp(ctx.consumer ? 'create-paraspell sdk' : undefined);
+    const helpCommand = ctx.consumer ? `create-paraspell ${kind}` : undefined;
+    if (kind === 'sdk') printSdkHelp(helpCommand);
+    else printApiHelp(helpCommand);
     return;
   }
 
-  if (sdkNeedsInteractive(argv)) {
-    opts = {
-      ...opts,
-      ...(await promptSdkOptions(opts, {
-        validateName: ctx.consumer
-          ? consumerNameValidator(argv, ctx.root, opts.out)
-          : undefined,
-      })),
-    };
+  const needsInteractive =
+    kind === 'sdk' ? sdkNeedsInteractive(argv) : apiNeedsInteractive(argv);
+  if (needsInteractive) {
+    const validateName = ctx.consumer
+      ? consumerNameValidator(argv, ctx.root, opts.out)
+      : undefined;
+    const answers =
+      kind === 'sdk'
+        ? await promptSdkOptions(opts as SdkGenerateOptions, { validateName })
+        : await promptApiOptions(opts, { validateName });
+    opts = { ...opts, ...answers };
   }
 
   if (ctx.consumer) {
@@ -118,59 +133,37 @@ export async function runSdkFromArgv(
     assertConsumerProject(opts.name, opts.out);
   }
 
-  await generateSdkApp({
-    meta: SDK_FRAMEWORKS[opts.framework],
-    templatesRoot: ctx.templatesRoot,
-    opts,
-  });
+  if (kind === 'sdk') {
+    await generateSdkApp({
+      meta: SDK_FRAMEWORKS[opts.framework],
+      templatesRoot: ctx.templatesRoot,
+      opts: opts as SdkGenerateOptions,
+    });
+  } else {
+    await generateApiApp({
+      meta: API_FRAMEWORKS[opts.framework],
+      templatesRoot: ctx.templatesRoot,
+      opts,
+    });
+  }
 
   if (ctx.consumer) {
     printNextSteps(opts.out, opts.packageManager, opts.framework);
   }
 }
 
+export async function runSdkFromArgv(
+  rawArgv: string[],
+  ctx: RunContext,
+): Promise<void> {
+  return runFromArgv('sdk', rawArgv, ctx);
+}
+
 export async function runApiFromArgv(
   rawArgv: string[],
-  ctx: { root: string; templatesRoot: string; consumer?: boolean },
+  ctx: RunContext,
 ): Promise<void> {
-  const { argv, framework: positional } = shiftPositionalFramework(rawArgv);
-  assertNoStrayPositional(argv, positional);
-  let opts = parseApiArgv(argv, {
-    root: ctx.root,
-    framework: positional ?? 'react',
-    frameworkFlag: true,
-  });
-
-  if (opts.help) {
-    printApiHelp(ctx.consumer ? 'create-paraspell api' : undefined);
-    return;
-  }
-
-  if (apiNeedsInteractive(argv)) {
-    opts = {
-      ...opts,
-      ...(await promptApiOptions(opts, {
-        validateName: ctx.consumer
-          ? consumerNameValidator(argv, ctx.root, opts.out)
-          : undefined,
-      })),
-    };
-  }
-
-  if (ctx.consumer) {
-    opts.out = resolveConsumerOut(argv, ctx.root, opts.name, opts.out);
-    assertConsumerProject(opts.name, opts.out);
-  }
-
-  await generateApiApp({
-    meta: API_FRAMEWORKS[opts.framework],
-    templatesRoot: ctx.templatesRoot,
-    opts,
-  });
-
-  if (ctx.consumer) {
-    printNextSteps(opts.out, opts.packageManager, opts.framework);
-  }
+  return runFromArgv('api', rawArgv, ctx);
 }
 
 export async function runCli(
