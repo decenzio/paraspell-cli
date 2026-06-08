@@ -4,7 +4,6 @@ import { getPackageRoot } from '../package-root.js';
 import type { PackageManager } from './types.js';
 
 export type { PackageManager } from './types.js';
-export type PackageManagerId = PackageManager;
 
 type PackageManagerModule = {
   PACKAGE_MANAGERS: readonly PackageManager[];

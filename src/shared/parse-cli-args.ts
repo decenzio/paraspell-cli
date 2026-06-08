@@ -5,7 +5,7 @@ import { parseBool } from './parse-bool.js';
 import {
   normalizePackageManager,
   PACKAGE_MANAGERS,
-  type PackageManagerId,
+  type PackageManager,
 } from './package-manager.js';
 import { parseFramework } from './frameworks.js';
 import type {
@@ -91,7 +91,7 @@ function requireKnown<T>(
 
 function parsePackageManagerFlag(
   flags: ArgRecord,
-): PackageManagerId | undefined {
+): PackageManager | undefined {
   const raw = valueFlag(flags, 'package-manager') ?? valueFlag(flags, 'packageManager');
   if (raw === undefined) return undefined;
   if (!(PACKAGE_MANAGERS as readonly string[]).includes(raw.toLowerCase())) {
@@ -130,10 +130,42 @@ export function assertNoStrayPositional(
   }
 }
 
-export function parseSdkArgv(
-  argv: string[],
-  ctx: { root: string; framework: Framework; frameworkFlag?: boolean },
-): SdkGenerateOptions {
+type ParseCtx = { root: string; framework: Framework; frameworkFlag?: boolean };
+
+function applyCommonFlags(
+  opts: ApiGenerateOptions,
+  flags: ArgRecord,
+  ctx: ParseCtx,
+): void {
+  if (flags.help === true) opts.help = true;
+
+  if (ctx.frameworkFlag) {
+    const framework = valueFlag(flags, 'framework');
+    if (framework !== undefined) {
+      opts.framework = requireKnown(
+        framework, parseFramework(framework), '--framework', FRAMEWORKS_ALLOWED,
+      );
+    }
+  }
+
+  const name = valueFlag(flags, 'name');
+  if (name !== undefined) opts.name = name;
+
+  opts.evm = parseBool(flags.evm, opts.evm);
+  opts.swap = parseBool(flags.swap, opts.swap);
+  opts.snowbridge = parseBool(flags.snowbridge, opts.snowbridge);
+
+  const packageManager = parsePackageManagerFlag(flags);
+  if (packageManager !== undefined) opts.packageManager = packageManager;
+
+  const out = valueFlag(flags, 'out');
+  if (out !== undefined) opts.out = resolveOut(ctx.root, out);
+
+  const privateKey = valueFlag(flags, 'private-key') ?? valueFlag(flags, 'privateKey');
+  if (privateKey !== undefined) opts.privateKey = privateKey;
+}
+
+export function parseSdkArgv(argv: string[], ctx: ParseCtx): SdkGenerateOptions {
   const flags = parseArgv(argv);
   warnUnknownFlags(flags, ['client']);
   const opts: SdkGenerateOptions = {
@@ -147,45 +179,17 @@ export function parseSdkArgv(
     out: path.join(ctx.root, 'generated', 'xcm-sdk', ctx.framework, 'my-xcm-app'),
   };
 
-  if (flags.help === true) opts.help = true;
-
-  if (ctx.frameworkFlag) {
-    const framework = valueFlag(flags, 'framework');
-    if (framework !== undefined) {
-      opts.framework = requireKnown(
-        framework, parseFramework(framework), '--framework', FRAMEWORKS_ALLOWED,
-      );
-    }
-  }
-
-  const name = valueFlag(flags, 'name');
-  if (name !== undefined) opts.name = name;
+  applyCommonFlags(opts, flags, ctx);
 
   const client = valueFlag(flags, 'client');
   if (client !== undefined) {
     opts.client = requireKnown(client, parseClient(client), '--client', CLIENTS_ALLOWED);
   }
 
-  opts.evm = parseBool(flags.evm, opts.evm);
-  opts.swap = parseBool(flags.swap, opts.swap);
-  opts.snowbridge = parseBool(flags.snowbridge, opts.snowbridge);
-
-  const packageManager = parsePackageManagerFlag(flags);
-  if (packageManager !== undefined) opts.packageManager = packageManager;
-
-  const out = valueFlag(flags, 'out');
-  if (out !== undefined) opts.out = resolveOut(ctx.root, out);
-
-  const privateKey = valueFlag(flags, 'private-key') ?? valueFlag(flags, 'privateKey');
-  if (privateKey !== undefined) opts.privateKey = privateKey;
-
   return applyFeatureFlags(opts);
 }
 
-export function parseApiArgv(
-  argv: string[],
-  ctx: { root: string; framework: Framework; frameworkFlag?: boolean },
-): ApiGenerateOptions {
+export function parseApiArgv(argv: string[], ctx: ParseCtx): ApiGenerateOptions {
   const flags = parseArgv(argv);
   warnUnknownFlags(flags, []);
   const opts: ApiGenerateOptions = {
@@ -198,32 +202,7 @@ export function parseApiArgv(
     out: path.join(ctx.root, 'generated', 'xcm-api', ctx.framework, 'my-xcm-api-app'),
   };
 
-  if (flags.help === true) opts.help = true;
-
-  if (ctx.frameworkFlag) {
-    const framework = valueFlag(flags, 'framework');
-    if (framework !== undefined) {
-      opts.framework = requireKnown(
-        framework, parseFramework(framework), '--framework', FRAMEWORKS_ALLOWED,
-      );
-    }
-  }
-
-  const name = valueFlag(flags, 'name');
-  if (name !== undefined) opts.name = name;
-
-  opts.evm = parseBool(flags.evm, opts.evm);
-  opts.swap = parseBool(flags.swap, opts.swap);
-  opts.snowbridge = parseBool(flags.snowbridge, opts.snowbridge);
-
-  const packageManager = parsePackageManagerFlag(flags);
-  if (packageManager !== undefined) opts.packageManager = packageManager;
-
-  const out = valueFlag(flags, 'out');
-  if (out !== undefined) opts.out = resolveOut(ctx.root, out);
-
-  const privateKey = valueFlag(flags, 'private-key') ?? valueFlag(flags, 'privateKey');
-  if (privateKey !== undefined) opts.privateKey = privateKey;
+  applyCommonFlags(opts, flags, ctx);
 
   return applyFeatureFlags(opts);
 }
