@@ -35,7 +35,7 @@ to: package.json
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.8"
   }<% if (usePnpmConfig) { %>,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "<%= pnpmCorepack %>",
   "pnpm": {
     "overrides": {
       "@paraspell/sdk-common": "<%= sdkVersion %>"

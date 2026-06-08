@@ -3,7 +3,7 @@ const {
   resolveFeatureFlags,
   snowbridgeRequiresEvmMessage,
 } = require('../../../shared/feature-flags.cjs');
-const SDK_VERSION = '13.5.0';
+const { SDK_VERSION, PNPM_COREPACK } = require('../../../shared/versions.cjs');
 
 module.exports = {
   params: ({ args, h }) => {
@@ -20,6 +20,7 @@ module.exports = {
       swap,
       snowbridge,
       sdkVersion: SDK_VERSION,
+      pnpmCorepack: PNPM_COREPACK,
       projectName: args.name ?? 'my-xcm-api-app',
       usePnpmConfig: pm.usePnpmOverrides && evm,
       h,

@@ -29,7 +29,7 @@ to: package.json
     "tsx": "^4.19.4",
     "typescript": "^6.0.2"
   }<% if (usePnpmConfig) { %>,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "<%= pnpmCorepack %>",
   "pnpm": {
     "overrides": {
       "@paraspell/sdk-common": "<%= sdkVersion %>"

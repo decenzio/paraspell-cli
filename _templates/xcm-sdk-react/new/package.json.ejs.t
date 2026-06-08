@@ -43,7 +43,7 @@ to: package.json
     "vite": "^8.0.8",
     "vite-plugin-wasm": "^3.6.0"
   }<% if (usePnpmConfig) { %>,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "<%= pnpmCorepack %>",
   "pnpm": {
     "overrides": {
       "@paraspell/sdk-common": "<%= sdkVersion %>"

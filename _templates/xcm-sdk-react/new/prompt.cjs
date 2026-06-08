@@ -3,40 +3,29 @@ const {
   resolveFeatureFlags,
   snowbridgeRequiresEvmMessage,
 } = require('../../../shared/feature-flags.cjs');
+const { SDK_VERSION, PNPM_COREPACK } = require('../../../shared/versions.cjs');
 
 const CLIENT_META = {
   papi: {
     client: 'papi',
     clientDir: 'papi',
     sdkPackage: '@paraspell/sdk',
-    sdkVersion: '13.5.0',
+    sdkVersion: SDK_VERSION,
     clientLabel: 'Polkadot API',
-    extraDependencies: {
-      'polkadot-api': '^2.0.2',
-      '@galacticcouncil/api-augment': '^0.10.0',
-    },
   },
   pjs: {
     client: 'pjs',
     clientDir: 'pjs',
     sdkPackage: '@paraspell/sdk-pjs',
-    sdkVersion: '13.5.0',
+    sdkVersion: SDK_VERSION,
     clientLabel: 'Polkadot JS',
-    extraDependencies: {
-      '@polkadot/api': '^16.5.6',
-      '@polkadot/extension-dapp': '^0.58.10',
-      '@polkadot/extension-inject': '^0.58.10',
-    },
   },
   dedot: {
     client: 'dedot',
     clientDir: 'dedot',
     sdkPackage: '@paraspell/sdk-dedot',
-    sdkVersion: '13.5.0',
+    sdkVersion: SDK_VERSION,
     clientLabel: 'Dedot',
-    extraDependencies: {
-      dedot: '^1.3.0',
-    },
   },
 };
 
@@ -69,6 +58,7 @@ module.exports = {
       swap,
       snowbridge,
       projectName: args.name ?? 'my-xcm-app',
+      pnpmCorepack: PNPM_COREPACK,
       usePnpmConfig: pm.usePnpmOverrides,
       h,
     };

@@ -1,7 +1,7 @@
 /** @typedef {'npm' | 'yarn' | 'pnpm' | 'bun'} PackageManager */
 
 const PACKAGE_MANAGERS = /** @type {const} */ (['npm', 'yarn', 'pnpm', 'bun']);
-const PNPM_COREPACK = 'pnpm@10.33.0';
+const { PNPM_COREPACK } = require('./versions.cjs');
 
 /** @param {string | undefined} value @returns {PackageManager} */
 function normalizePackageManager(value) {

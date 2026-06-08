@@ -41,7 +41,7 @@ to: package.json
     "vue-eslint-parser": "^10.0.0",
     "vue-tsc": "^2.2.10"
   }<% if (usePnpmConfig) { %>,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "<%= pnpmCorepack %>",
   "pnpm": {
     "overrides": {
       "@paraspell/sdk-common": "<%= sdkVersion %>"
