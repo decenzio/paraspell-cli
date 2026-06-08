@@ -9,9 +9,13 @@ import {
 import { promptEvmPrivateKey } from './prompt-evm-private-key.js';
 import type { ApiGenerateOptions } from './types.js';
 import { PACKAGE_MANAGERS } from './package-manager.js';
+import { validateNameInput } from './validate.js';
+
+type NameValidator = (name: string) => true | string | Promise<true | string>;
 
 export async function promptApiOptions(
   partial: Partial<ApiGenerateOptions>,
+  options: { validateName?: NameValidator } = {},
 ): Promise<
   Pick<
     ApiGenerateOptions,
@@ -45,6 +49,7 @@ export async function promptApiOptions(
   const name = await input({
     message: 'package.json name',
     default: partial.name ?? 'my-xcm-api-app',
+    validate: options.validateName ?? validateNameInput,
   });
 
   return {

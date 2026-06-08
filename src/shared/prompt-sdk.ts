@@ -9,9 +9,13 @@ import {
 import { promptEvmPrivateKey } from './prompt-evm-private-key.js';
 import type { SdkGenerateOptions } from './types.js';
 import { PACKAGE_MANAGERS } from './package-manager.js';
+import { validateNameInput } from './validate.js';
+
+type NameValidator = (name: string) => true | string | Promise<true | string>;
 
 export async function promptSdkOptions(
   partial: Partial<SdkGenerateOptions>,
+  options: { validateName?: NameValidator } = {},
 ): Promise<
   Pick<
     SdkGenerateOptions,
@@ -62,6 +66,7 @@ export async function promptSdkOptions(
   const name = await input({
     message: 'package.json name',
     default: partial.name ?? 'my-xcm-app',
+    validate: options.validateName ?? validateNameInput,
   });
 
   return {

@@ -17,7 +17,21 @@ import {
 import { apiNeedsInteractive, promptApiOptions } from './shared/prompt-api.js';
 import { promptSdkOptions, sdkNeedsInteractive } from './shared/prompt-sdk.js';
 import type { Framework, ProjectType } from './shared/types.js';
-import { validateNpmName } from './shared/validate.js';
+import { validateNameInput, validateNpmName } from './shared/validate.js';
+
+function consumerNameValidator(
+  argv: string[],
+  root: string,
+  parsedOut: string,
+): (name: string) => true | string {
+  return (name) => {
+    const base = validateNameInput(name);
+    if (base !== true) return base;
+    const out = resolveConsumerOut(argv, root, name, parsedOut);
+    if (fs.existsSync(out)) return `Project already exists: ${out}`;
+    return true;
+  };
+}
 
 function argvHasOut(argv: string[]): boolean {
   return argv.some((a) => a === '--out' || a.startsWith('--out='));
@@ -89,7 +103,14 @@ export async function runSdkFromArgv(
   }
 
   if (sdkNeedsInteractive(argv)) {
-    opts = { ...opts, ...(await promptSdkOptions(opts)) };
+    opts = {
+      ...opts,
+      ...(await promptSdkOptions(opts, {
+        validateName: ctx.consumer
+          ? consumerNameValidator(argv, ctx.root, opts.out)
+          : undefined,
+      })),
+    };
   }
 
   if (ctx.consumer) {
@@ -126,7 +147,14 @@ export async function runApiFromArgv(
   }
 
   if (apiNeedsInteractive(argv)) {
-    opts = { ...opts, ...(await promptApiOptions(opts)) };
+    opts = {
+      ...opts,
+      ...(await promptApiOptions(opts, {
+        validateName: ctx.consumer
+          ? consumerNameValidator(argv, ctx.root, opts.out)
+          : undefined,
+      })),
+    };
   }
 
   if (ctx.consumer) {

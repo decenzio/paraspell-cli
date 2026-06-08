@@ -25,7 +25,7 @@ import type {
   SdkClient,
 } from './shared/types.js';
 import { promptEvmPrivateKey } from './shared/prompt-evm-private-key.js';
-import { validateNpmName } from './shared/validate.js';
+import { validateNameInput } from './shared/validate.js';
 
 function preferNativeTerminalImage(): boolean {
   const program = process.env.TERM_PROGRAM?.toLowerCase() ?? '';
@@ -73,19 +73,16 @@ export async function runInteractiveGenerate(
   const projectName = await input({
     message: 'Enter the project name',
     default: 'my-app',
+    validate: (name) => {
+      const base = validateNameInput(name);
+      if (base !== true) return base;
+      const target = path.join(process.cwd(), name.trim());
+      if (fs.existsSync(target)) return `Project already exists: ${target}`;
+      return true;
+    },
   });
 
   const projectPath = path.join(process.cwd(), projectName);
-
-  if (!validateNpmName(projectName)) {
-    console.error(`Invalid project name: ${projectName}`);
-    process.exit(1);
-  }
-
-  if (fs.existsSync(projectPath)) {
-    console.error(`Project already exists: ${projectPath}`);
-    process.exit(1);
-  }
 
   const packageManager = (await select({
     message: 'Select the desired package manager',
