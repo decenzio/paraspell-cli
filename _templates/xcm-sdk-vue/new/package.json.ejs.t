@@ -24,10 +24,9 @@ to: package.json
     "@galacticcouncil/api-augment": "^0.10.0"<% } %><% } %><% if (client === 'pjs') { %>,
     "@polkadot/api": "^16.5.6",
     "@polkadot/extension-dapp": "^0.58.10",
-    "@polkadot/extension-inject": "^0.58.10"<% } %>    <% if (client === 'dedot') { %>,
+    "@polkadot/extension-inject": "^0.58.10"<% } %><% if (client === 'dedot') { %>,
     "dedot": "^1.3.0",
-    "@polkadot/api": "^16.5.6",
-    "@polkadot/extension-inject": "^0.58.10"<% } %>
+    "@polkadot/api": "^16.5.6"<% } %>
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
