@@ -21,8 +21,17 @@ Generate trimmed variants with Hygen (`xcm-sdk-hygen`) using `--evm`, `--swap`, 
 
 ```bash
 <%= installCmd %>
-SUBSTRATE_MNEMONIC="your twelve words ..." <%= startCmd %>
+<%= startCmd %>
+CONFIRM_TRANSFER=true <%= startCmd %>
 ```
+
+`<%= startCmd %>` performs a **dry run** by default: it prints the planned
+transfer but broadcasts nothing. Set `CONFIRM_TRANSFER=true` to sign and submit
+a **real** transaction on the configured (mainnet) network.
+
+Provide `SUBSTRATE_MNEMONIC` / `PRIVATE_KEY` via a local `.env` file (already
+git-ignored) rather than inline on the command line, so secrets don't leak into
+your shell history or process list.
 
 ## Features
 
