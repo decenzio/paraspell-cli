@@ -2,7 +2,7 @@
 to: src/wallet/shared/useWalletWithEvmCore.ts
 skip_if: <%= (!evm).toString() %>
 ---
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { TChain } from "<%= sdkPackage %>";
 import { useEvmWallet } from "../evm/useEvmWallet";
 import type { WalletKind } from "../evm/WalletKindSelector";
@@ -30,6 +30,22 @@ export function useWalletWithEvmCore<
 
   const [activeWalletKind, setActiveWalletKind] =
     useState<WalletKind>("substrate");
+
+  useEffect(() => {
+    if (activeWalletKind !== "substrate") return;
+    if (substrate.accounts.length > 0) return;
+    if (substrate.extensionNames.length === 0) return;
+
+    const name =
+      substrate.selectedExtensionName ?? substrate.extensionNames[0];
+    void substrate.selectExtension(name);
+  }, [
+    activeWalletKind,
+    substrate.accounts.length,
+    substrate.extensionNames,
+    substrate.selectedExtensionName,
+    substrate.selectExtension,
+  ]);
 
   const buildSubmitOptions = useCallback(
     (from: TChain): WalletSubmitOptions<TSigner> | null => {

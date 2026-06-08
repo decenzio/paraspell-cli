@@ -29,7 +29,7 @@ DedotWalletControlsProps
   <>
     {extensionNames.length > 0 ? (
       <div>
-        <h4>Select extension (injectedWeb3):</h4>
+        <h4>Select extension:</h4>
         <select
           value={selectedExtensionName}
           onChange={(e) => onExtensionChange(e.target.value)}

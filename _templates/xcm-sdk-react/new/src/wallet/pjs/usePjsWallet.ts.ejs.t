@@ -31,21 +31,6 @@ export function usePjsWallet() {
   const [selectedAddress, setSelectedAddress] = useState<string>();
   const [signer, setSigner] = useState<Signer | null>(null);
 
-  const discoverExtensions = useCallback(async () => {
-    const injected = await web3Enable(DAPP_ORIGIN);
-    if (!injected.length) {
-      alert(
-        "No Polkadot{.js} extension responded. Install a compatible wallet.",
-      );
-      return;
-    }
-    setExtensionNames(injected.map((e) => e.name));
-    setSelectedExtensionName(undefined);
-    setAccounts([]);
-    setSelectedAddress(undefined);
-    setSigner(null);
-  }, []);
-
   const selectExtension = useCallback(async (name: string) => {
     await web3Enable(DAPP_ORIGIN);
     const filtered = await web3Accounts({ extensions: [name] });
@@ -63,6 +48,19 @@ export function usePjsWallet() {
       setSelectedAddress(undefined);
     }
   }, []);
+
+  const discoverExtensions = useCallback(async () => {
+    const injected = await web3Enable(DAPP_ORIGIN);
+    if (!injected.length) {
+      alert(
+        "No Polkadot{.js} extension responded. Install a compatible wallet.",
+      );
+      return;
+    }
+    const names = injected.map((e) => e.name);
+    setExtensionNames(names);
+    await selectExtension(names[0]);
+  }, [selectExtension]);
 
   useEffect(() => {
     if (!selectedAddress) {

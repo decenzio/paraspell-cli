@@ -24,10 +24,9 @@ export async function buildTransaction(
   }
 
 <% } %>  const substrateFrom = from<% if (evm) { %> as TSubstrateChain<% } %>;
-  const api = await createChainClient(substrateFrom);
 
 <% if (swap) { %>  if (swapEnabled) {
-    const builder = Builder(api)
+    const contexts = await Builder()
       .from(substrateFrom)
       .to(to)
       .currency({ location: formValues.currency!.location, amount })
@@ -36,13 +35,14 @@ export async function buildTransaction(
         currencyTo: { location: currencyTo!.location },
         ...(exchange ? { exchange: [exchange] } : {}),
       })
-      .sender(senderAddress);
+      .sender(senderAddress)
+      .buildAll();
 
-    const contexts = await builder.buildAll();
     return contexts.map((ctx) => ctx.tx);
   }
 
-<% } %>  const tx = await Builder(api)
+<% } %>  const api = await createChainClient(substrateFrom);
+  const tx = await Builder(api)
     .from(substrateFrom)
     .to(to)
     .currency({ location: formValues.currency!.location, amount })

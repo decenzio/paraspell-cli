@@ -38,20 +38,6 @@ export function useDedotWallet() {
   const [accounts, setAccounts] = useState<DedotAccount[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>();
 
-  const discoverExtensions = useCallback(async () => {
-    const raw = getInjectedWeb3();
-    const names = Object.keys(raw ?? {}).filter((n) => raw?.[n]);
-    if (names.length === 0) {
-      alert("No window.injectedWeb3 extensions found.");
-      throw new Error("No injectedWeb3 extensions");
-    }
-    setSelectedExtensionName(undefined);
-    setSigner(null);
-    setAccounts([]);
-    setSelectedAddress(undefined);
-    setExtensionNames(names);
-  }, []);
-
   const selectExtension = useCallback(async (name: string) => {
     const entry = getInjectedWeb3()?.[name];
     if (!entry) {
@@ -66,6 +52,17 @@ export function useDedotWallet() {
     if (accs[0]) setSelectedAddress(accs[0].address);
     else setSelectedAddress(undefined);
   }, []);
+
+  const discoverExtensions = useCallback(async () => {
+    const raw = getInjectedWeb3();
+    const names = Object.keys(raw ?? {}).filter((n) => raw?.[n]);
+    if (names.length === 0) {
+      alert("No window.injectedWeb3 extensions found.");
+      throw new Error("No injectedWeb3 extensions");
+    }
+    setExtensionNames(names);
+    await selectExtension(names[0]);
+  }, [selectExtension]);
 
   const connection = useMemo((): DedotWalletConnection | null => {
     if (!selectedAddress || !signer) return null;

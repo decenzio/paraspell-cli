@@ -41,6 +41,28 @@ async function transferAsset(
 
 <% } %><% if (evm && client !== 'papi') { %>
   const substrateFrom = opts.from as TSubstrateChain;
+<% } %><% if (swap) { %>  if (opts.currencyToSymbol) {
+    const swapBuilder = Builder()
+      .from(opts.from)
+      .to(opts.to)
+      .currency({
+        symbol: opts.currencySymbol,
+        amount: opts.amount,
+      })
+      .recipient(opts.recipient)
+      .sender(opts.sender)
+      .swap({
+        currencyTo: { symbol: opts.currencyToSymbol },
+        ...(opts.exchange ? { exchange: [opts.exchange] } : {}),
+      });
+
+    try {
+      return await swapBuilder.signAndSubmitAll();
+    } finally {
+      await swapBuilder.disconnect();
+    }
+  }
+
 <% } %><% if (client === 'papi') { %>
   const builder = Builder()
     .from(opts.from)
@@ -63,21 +85,8 @@ async function transferAsset(
     .recipient(opts.recipient)
     .sender(opts.sender);
 <% } %>
-<% if (swap) { %>
-  if (opts.currencyToSymbol) {
-    builder.swap({
-      currencyTo: { symbol: opts.currencyToSymbol },
-      ...(opts.exchange ? { exchange: [opts.exchange] } : {}),
-    });
-  }
-<% } %>
 
   try {
-<% if (swap) { %>
-    if (opts.currencyToSymbol) {
-      return await builder.signAndSubmitAll();
-    }
-<% } %>
     return await builder.signAndSubmit();
   } finally {
     await builder.disconnect();
