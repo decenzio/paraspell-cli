@@ -70,9 +70,15 @@ function assertPackageDeps(
   if (variant.evm) {
     if (!deps['@paraspell/evm']) errors.push('Missing dependency @paraspell/evm');
     if (!deps['viem']) errors.push('Missing dependency viem');
+    if (variant.framework === 'node' && !deps['dotenv']) {
+      errors.push('Missing dependency dotenv');
+    }
   } else {
     if (deps['@paraspell/evm']) {
       errors.push('Unexpected dependency @paraspell/evm when evm=false');
+    }
+    if (deps['dotenv']) {
+      errors.push('Unexpected dependency dotenv when evm=false');
     }
   }
 
@@ -156,6 +162,37 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
   return errors;
 }
 
+async function assertNodeEvmEnv(variant: GeneratedVariant, root: string): Promise<string[]> {
+  const errors: string[] = [];
+  if (variant.framework !== 'node') return errors;
+
+  const envPath = path.join(root, '.env');
+  const envExists = fs.existsSync(envPath);
+
+  if (variant.evm) {
+    if (!envExists) {
+      errors.push('Missing .env');
+    } else {
+      const content = await fs.promises.readFile(envPath, 'utf8');
+      if (!content.startsWith('PRIVATE_KEY=')) {
+        errors.push('.env must start with PRIVATE_KEY=');
+      }
+    }
+
+    const indexPath = path.join(root, 'src/index.ts');
+    if (fs.existsSync(indexPath)) {
+      const indexContent = await fs.promises.readFile(indexPath, 'utf8');
+      if (!indexContent.includes('dotenv/config')) {
+        errors.push('src/index.ts must import dotenv/config when evm=true');
+      }
+    }
+  } else if (envExists) {
+    errors.push('Unexpected .env when evm=false');
+  }
+
+  return errors;
+}
+
 export async function assertVariantStructure(
   variant: GeneratedVariant,
 ): Promise<StructureResult> {
@@ -188,6 +225,7 @@ export async function assertVariantStructure(
   }
 
   errors.push(...(await assertNoTemplateArtifacts(root)));
+  errors.push(...(await assertNodeEvmEnv(variant, root)));
 
   return { variant, ok: errors.length === 0, errors };
 }

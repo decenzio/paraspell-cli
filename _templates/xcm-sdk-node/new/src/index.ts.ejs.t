@@ -1,14 +1,15 @@
 ---
 to: src/index.ts
 ---
-<% if (client === 'papi') { %>import { Builder } from "@paraspell/sdk";<% } else if (client === 'pjs') { %>import {
+<% if (evm) { %>import "dotenv/config";
+<% } %><% if (client === 'papi') { %>import { Builder } from "@paraspell/sdk";<% } else if (client === 'pjs') { %>import {
   Builder,
   createChainClient,
 } from "@paraspell/sdk-pjs";<% } else { %>import {
   Builder,
   createChainClient,
-} from "@paraspell/sdk-dedot";<% } %>
-import { Native<% if (swap) { %>, Foreign<% } %> } from "@paraspell/sdk";<% if (evm) { %>
+} from "@paraspell/sdk-dedot";<% } %><% if (evm && !snowbridge) { %>
+import { Native } from "@paraspell/sdk";<% } %><% if (evm) { %>
 import { isChainEvm, submitEvmTransfer } from "./evm.js";<% } %>
 import type { TransferParams } from "./types.js";<% if (evm) { %>
 import type { TSubstrateChain } from "@paraspell/sdk";<% } %>
@@ -18,15 +19,15 @@ const defaults: TransferParams = {
   to: "Hydration",
   amount: "0.1",
 <% if (snowbridge) { -%>
-  currencySymbol: Native("ETH"),
+  currencySymbol: "ETH",
 <% } else if (evm) { -%>
   currencySymbol: Native("GLMR"),
 <% } else { -%>
-  currencySymbol: Native("DOT"),
+  currencySymbol: "DOT",
 <% } -%>
   sender: "//Alice",
   recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: Foreign("USDC"),<% } %>
+  currencyToSymbol: "USDC",<% } %>
 };
 
 async function transferAsset(

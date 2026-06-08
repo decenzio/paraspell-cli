@@ -24,6 +24,7 @@ import type {
   ProjectType,
   SdkClient,
 } from './shared/types.js';
+import { promptEvmPrivateKey } from './shared/prompt-evm-private-key.js';
 import { validateNpmName } from './shared/validate.js';
 
 function preferNativeTerminalImage(): boolean {
@@ -126,6 +127,11 @@ export async function runInteractiveGenerate(
     snowbridge: additionalFeatures.includes(SNOWBRIDGE_EXTENSION),
   });
 
+  const privateKey =
+    framework === 'node' && featureFlags.evm
+      ? await promptEvmPrivateKey()
+      : undefined;
+
   const pm = normalizePackageManager(packageManager);
 
   if (projectType === 'sdk') {
@@ -139,6 +145,7 @@ export async function runInteractiveGenerate(
         ...featureFlags,
         packageManager: pm,
         out: projectPath,
+        privateKey,
       },
     });
   } else {
@@ -151,6 +158,7 @@ export async function runInteractiveGenerate(
         ...featureFlags,
         packageManager: pm,
         out: projectPath,
+        privateKey,
       },
     });
   }

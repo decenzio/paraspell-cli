@@ -16,6 +16,7 @@ to: package.json
     "<%= sdkPackage %>": "<%= sdkVersion %>"<% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
+    "dotenv": "^16.4.7",
     "viem": "^2.50.4"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
     "polkadot-api": "^2.0.2",

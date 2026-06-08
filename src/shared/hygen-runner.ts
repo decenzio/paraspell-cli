@@ -3,6 +3,10 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { applyFeatureFlags } from './feature-flags.js';
 import { createInquirerPrompter } from './inquirer-prompter.js';
+import {
+  shouldWriteNodeEvmEnv,
+  writeNodeEvmEnv,
+} from './write-node-evm-env.js';
 import type { ApiGenerateOptions, FrameworkMeta, SdkGenerateOptions } from './types.js';
 
 const require = createRequire(import.meta.url);
@@ -87,6 +91,11 @@ export async function generateSdkApp(params: {
   }
 
   await copyLogo(meta, templatesRoot, meta.generator, flags.out);
+
+  if (shouldWriteNodeEvmEnv(opts.framework, flags.evm)) {
+    await writeNodeEvmEnv(flags.out, opts.privateKey);
+  }
+
   console.log(`\nGenerated ${meta.label} XCM SDK app at ${flags.out}`);
 }
 
@@ -129,5 +138,10 @@ export async function generateApiApp(params: {
   }
 
   await copyLogo(meta, templatesRoot, meta.generator, flags.out);
+
+  if (shouldWriteNodeEvmEnv(opts.framework, flags.evm)) {
+    await writeNodeEvmEnv(flags.out, opts.privateKey);
+  }
+
   console.log(`\nGenerated ${meta.label} XCM API app at ${flags.out}`);
 }

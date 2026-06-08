@@ -18,6 +18,7 @@ to: package.json
     "@polkadot/util-crypto": "^13.5.6",
     "@paraspell/sdk": "<%= sdkVersion %>"<% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
+    "dotenv": "^16.4.7",
     "viem": "^2.50.4"<% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>
   },

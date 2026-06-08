@@ -1,13 +1,10 @@
----
-to: README.md
----
 # ParaSpell XCM SDK — Node.js template
 
 Headless example for sending XCM transfers from Node.js using dev accounts (`//Alice`, `//Bob`) and `signAndSubmit()` — no browser wallet or manual `build()` step.
 
 Same builder API as the [React](../../react/xcm-sdk) and [Vue](../../vue/xcm-sdk) templates. Generate a trimmed variant with Hygen (`xcm-sdk-hygen`) using `--client`, `--evm`, `--swap`, and `--snowbridge`.
 
-<% if (evm) { %>## Environment
+## Environment
 
 A `.env` file is created at generation time. Set your EVM wallet key there:
 
@@ -15,17 +12,16 @@ A `.env` file is created at generation time. Set your EVM wallet key there:
 |----------|----------|
 | `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |
 
-<% } %>## Usage
+## Usage
 
 ```bash
-<%= installCmd %>
-<%= startCmd %>
+pnpm install
+pnpm start
 ```
 
-<% if (!evm) { %>This example project runs with built-in defaults (no env parsing in `index.ts`).
-<% } %>Default `from` is:
+Default `from` is:
 
-- `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>`
+- `Ethereum`
 
 ## Core example
 

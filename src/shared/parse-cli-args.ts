@@ -91,6 +91,11 @@ export function parseSdkArgv(
         : undefined;
   if (pm) opts.packageManager = normalizePackageManager(pm);
   if (typeof flags.out === 'string') opts.out = resolveOut(ctx.root, flags.out);
+  if (typeof flags['private-key'] === 'string') {
+    opts.privateKey = flags['private-key'];
+  } else if (typeof flags.privateKey === 'string') {
+    opts.privateKey = flags.privateKey;
+  }
   return applyFeatureFlags(opts);
 }
 
@@ -126,6 +131,11 @@ export function parseApiArgv(
         : undefined;
   if (pm) opts.packageManager = normalizePackageManager(pm);
   if (typeof flags.out === 'string') opts.out = resolveOut(ctx.root, flags.out);
+  if (typeof flags['private-key'] === 'string') {
+    opts.privateKey = flags['private-key'];
+  } else if (typeof flags.privateKey === 'string') {
+    opts.privateKey = flags.privateKey;
+  }
   return applyFeatureFlags(opts);
 }
 
@@ -160,6 +170,7 @@ export function shiftPositionalFramework(argv: string[]): {
 const SHARED_OPTIONS = `  --framework <id>        react | vue | node
   --name <string>
   --evm, --swap, --snowbridge <bool>  (snowbridge requires --evm true)
+  --private-key <hex>     optional EVM wallet key for node + --evm (non-interactive)
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>            default: ./<name> in cwd
   --help`;

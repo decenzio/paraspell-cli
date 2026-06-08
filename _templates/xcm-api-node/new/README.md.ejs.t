@@ -9,10 +9,13 @@ Generate trimmed variants with Hygen (`xcm-sdk-hygen`) using `--evm`, `--swap`, 
 
 ## Environment
 
-| Variable | Used for |
+<% if (evm) { %>A `.env` file is created at generation time with `PRIVATE_KEY` (empty if you skipped the prompt).
+
+<% } %>| Variable | Used for |
 |----------|----------|
 | `SUBSTRATE_MNEMONIC` | Substrate routes: sign API-returned call data via PAPI |
-| `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |
+<% if (evm) { %>| `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |
+<% } %>
 
 ## Usage
 

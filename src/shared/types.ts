@@ -19,6 +19,7 @@ export interface SdkGenerateOptions extends FeatureFlags {
   packageManager: PackageManager;
   out: string;
   help?: boolean;
+  privateKey?: string;
 }
 
 export interface ApiGenerateOptions extends FeatureFlags {
@@ -27,6 +28,7 @@ export interface ApiGenerateOptions extends FeatureFlags {
   packageManager: PackageManager;
   out: string;
   help?: boolean;
+  privateKey?: string;
 }
 
 export interface FrameworkMeta {

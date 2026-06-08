@@ -1,15 +1,16 @@
 ---
 to: src/index.ts
 ---
-import axios from "axios";
+<% if (evm) { %>import "dotenv/config";
+<% } %>import axios from "axios";
 import { API_URL } from "./consts.js";
 import { fetchFromApi } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
 import type { TAssetInfo } from "@paraspell/sdk";
 import type { TransferParams } from "./types.js";
 <% if (evm) { %>
-import { Native } from "@paraspell/sdk";
-import { isChainEvm, submitEvmTransfer } from "./evm.js";
+<% if (!snowbridge) { %>import { Native } from "@paraspell/sdk";
+<% } %>import { isChainEvm, submitEvmTransfer } from "./evm.js";
 <% } %>
 
 const defaults: TransferParams = {
@@ -17,7 +18,7 @@ const defaults: TransferParams = {
   to: "Hydration",
   amount: "0.1",
 <% if (snowbridge) { -%>
-  currencySymbol: Native("ETH"),
+  currencySymbol: "ETH",
 <% } else if (evm) { -%>
   currencySymbol: Native("GLMR"),
 <% } else { -%>

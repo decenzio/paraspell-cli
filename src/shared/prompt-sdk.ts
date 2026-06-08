@@ -6,6 +6,7 @@ import {
   SNOWBRIDGE_EXTENSION,
   SWAP_EXTENSION,
 } from './feature-extensions-checkbox.js';
+import { promptEvmPrivateKey } from './prompt-evm-private-key.js';
 import type { SdkGenerateOptions } from './types.js';
 import { PACKAGE_MANAGERS } from './package-manager.js';
 
@@ -14,7 +15,13 @@ export async function promptSdkOptions(
 ): Promise<
   Pick<
     SdkGenerateOptions,
-    'name' | 'client' | 'evm' | 'swap' | 'snowbridge' | 'packageManager'
+    | 'name'
+    | 'client'
+    | 'evm'
+    | 'swap'
+    | 'snowbridge'
+    | 'packageManager'
+    | 'privateKey'
   >
 > {
   const packageManager = await select({
@@ -47,6 +54,11 @@ export async function promptSdkOptions(
     snowbridge: additionalFeatures.includes(SNOWBRIDGE_EXTENSION),
   });
 
+  const privateKey =
+    partial.framework === 'node' && featureFlags.evm
+      ? await promptEvmPrivateKey()
+      : undefined;
+
   const name = await input({
     message: 'package.json name',
     default: partial.name ?? 'my-xcm-app',
@@ -57,6 +69,7 @@ export async function promptSdkOptions(
     client,
     ...featureFlags,
     packageManager,
+    privateKey,
   };
 }
 
