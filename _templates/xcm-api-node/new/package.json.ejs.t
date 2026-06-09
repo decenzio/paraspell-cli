@@ -17,12 +17,14 @@ to: package.json
     "@polkadot/keyring": "<%= polkadotKeyring %>",
     "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
     "@paraspell/sdk": "<%= sdkVersion %>",
-    "dotenv": "<%= dotenv %>"<% if (evm) { %>,
+    "dotenv": "<%= dotenv %>",
+    "express": "<%= express %>"<% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
     "viem": "<%= viem %>"<% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>
   },
   "devDependencies": {
+    "@types/express": "^5.0.3",
     "@types/node": "^22.15.21",
     "tsx": "^4.19.4",
     "typescript": "^6.0.2"

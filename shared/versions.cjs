@@ -7,6 +7,7 @@ const PACKAGE_VERSIONS = {
   polkadotKeyring: '^13.5.6',
   polkadotUtilCrypto: '^13.5.6',
   dotenv: '^16.4.7',
+  express: '^5.1.0',
   viem: '^2.50.4',
   galacticcouncilApiAugment: '^0.10.0',
   polkadotJsApi: '^16.5.6',

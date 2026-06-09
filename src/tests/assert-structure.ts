@@ -70,6 +70,9 @@ function assertPackageDeps(
   if (variant.framework === 'node' && !deps['dotenv']) {
     errors.push('Missing dependency dotenv');
   }
+  if (variant.framework === 'node' && !deps['express']) {
+    errors.push('Missing dependency express');
+  }
   if (variant.framework === 'node' && variant.kind === 'sdk') {
     if (!deps['@polkadot/keyring']) {
       errors.push('Missing dependency @polkadot/keyring');
@@ -117,6 +120,9 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
   if (variant.framework === 'node') {
     if (!fileExists(root, 'src/index.ts')) {
       errors.push('Missing src/index.ts');
+    }
+    if (!fileExists(root, 'src/transfer.ts')) {
+      errors.push('Missing src/transfer.ts');
     }
     if (!fileExists(root, 'src/substrate.ts')) {
       errors.push('Missing src/substrate.ts');

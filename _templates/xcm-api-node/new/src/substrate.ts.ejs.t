@@ -59,16 +59,4 @@ export async function getSignerFromSecret(secret: string) {
   );
 }
 
-export function ensureSubstrateTransferConfirmed(): boolean {
-  if (process.env.CONFIRM_TRANSFER !== "true") {
-    console.log(
-      "\nDry run: Substrate transfer not broadcast. Re-run with CONFIRM_TRANSFER=true to " +
-        "sign and submit for real.",
-    );
-    return false;
-  }
-
-  return true;
-}
-
 export { Binary };

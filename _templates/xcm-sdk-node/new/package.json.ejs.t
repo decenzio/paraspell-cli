@@ -15,7 +15,8 @@ to: package.json
     "@paraspell/sdk": "<%= sdkVersion %>",
     "@polkadot/keyring": "<%= polkadotKeyring %>",
     "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
-    "dotenv": "<%= dotenv %>"<% if (client !== 'papi') { %>,
+    "dotenv": "<%= dotenv %>",
+    "express": "<%= express %>"<% if (client !== 'papi') { %>,
     "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
@@ -27,6 +28,7 @@ to: package.json
     "dedot": "<%= dedot %>"<% } %>
   },
   "devDependencies": {
+    "@types/express": "^5.0.3",
     "@types/node": "^22.15.21",
     "tsx": "^4.19.4",
     "typescript": "^6.0.2"

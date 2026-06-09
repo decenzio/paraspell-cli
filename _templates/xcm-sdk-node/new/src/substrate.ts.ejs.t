@@ -2,10 +2,12 @@
 to: src/substrate.ts
 ---
 import { Keyring } from "@polkadot/keyring";
-import { cryptoWaitReady } from "@polkadot/util-crypto";<% if (client === 'papi') { %>
+import { cryptoWaitReady } from "@polkadot/util-crypto";
+import type { KeyringPair } from "@polkadot/keyring/types";<% if (client === 'papi') { %>
 import { getPolkadotSigner } from "polkadot-api/signer";
-import type { PolkadotSigner } from "polkadot-api";<% } else { %>
-import type { IKeyringPair } from "@polkadot/keyring/types";<% } %>
+import type { PolkadotSigner } from "polkadot-api";<% } else if (client === 'pjs') { %>
+import type { Signer } from "@polkadot/api/types";
+import type { TPjsSigner } from "@paraspell/sdk-pjs";<% } %>
 
 let cryptoReady: Promise<boolean> | null = null;
 
@@ -27,7 +29,7 @@ export function getSubstrateMnemonic(): string {
   return secret;
 }
 
-function createKeyringPair(secret: string)<% if (client === 'papi') { %>: IKeyringPair<% } %> {
+function createKeyringPair(secret: string): KeyringPair {
   const keyring = new Keyring({ type: "sr25519" });
   try {
     if (secret.startsWith("//")) {
@@ -43,8 +45,46 @@ function createKeyringPair(secret: string)<% if (client === 'papi') { %>: IKeyri
     );
   }
 }
+<% if (client === 'pjs') { %>
+type SignerPayloadRaw = Parameters<NonNullable<Signer["signRaw"]>>[0];
+type SignerPayloadJSON = Parameters<NonNullable<Signer["signPayload"]>>[0];
+type SignerResult = Awaited<ReturnType<NonNullable<Signer["signRaw"]>>>;
 
-export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'PolkadotSigner' : 'IKeyringPair' %>> {
+function hexToU8a(value: string): Uint8Array {
+  const hex = value.startsWith("0x") ? value.slice(2) : value;
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
+
+function u8aToHex(bytes: Uint8Array): `0x${string}` {
+  return `0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+
+type KeyringPairWithPayload = KeyringPair & {
+  signPayload(payload: SignerPayloadJSON): Uint8Array;
+};
+
+function keyringPairToPjsSigner(pair: KeyringPair): TPjsSigner {
+  const signingPair = pair as KeyringPairWithPayload;
+  const signer: Signer = {
+    signRaw: async (raw: SignerPayloadRaw): Promise<SignerResult> => ({
+      id: 1,
+      signature: u8aToHex(pair.sign(hexToU8a(raw.data))),
+    }),
+    signPayload: async (payload: SignerPayloadJSON): Promise<SignerResult> => ({
+      id: 1,
+      signature: u8aToHex(signingPair.signPayload(payload)),
+    }),
+  };
+
+  return { address: pair.address, signer };
+}
+<% } %>
+
+export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'PolkadotSigner' : client === 'pjs' ? 'TPjsSigner' : 'KeyringPair' %>> {
   await ensureCryptoReady();
   const pair = createKeyringPair(getSubstrateMnemonic());
 <% if (client === 'papi') { %>
@@ -53,19 +93,9 @@ export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'Pol
     "Sr25519",
     (input) => pair.sign(input) as Uint8Array,
   );
+<% } else if (client === 'pjs') { %>
+  return keyringPairToPjsSigner(pair);
 <% } else { %>
   return pair;
 <% } %>
-}
-
-export function ensureSubstrateTransferConfirmed(): boolean {
-  if (process.env.CONFIRM_TRANSFER !== "true") {
-    console.log(
-      "\nDry run: Substrate transfer not broadcast. Re-run with CONFIRM_TRANSFER=true to " +
-        "sign and submit for real.",
-    );
-    return false;
-  }
-
-  return true;
 }
