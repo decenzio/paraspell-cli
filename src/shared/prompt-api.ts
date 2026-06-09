@@ -7,6 +7,7 @@ import {
   SWAP_EXTENSION,
 } from './feature-extensions-checkbox.js';
 import { promptEvmPrivateKey } from './prompt-evm-private-key.js';
+import { promptSubstrateMnemonic } from './prompt-substrate-mnemonic.js';
 import type { ApiGenerateOptions } from './types.js';
 import { PACKAGE_MANAGERS } from './package-manager.js';
 import { validateNameInput } from './validate.js';
@@ -19,7 +20,13 @@ export async function promptApiOptions(
 ): Promise<
   Pick<
     ApiGenerateOptions,
-    'name' | 'evm' | 'swap' | 'snowbridge' | 'packageManager' | 'privateKey'
+    | 'name'
+    | 'evm'
+    | 'swap'
+    | 'snowbridge'
+    | 'packageManager'
+    | 'privateKey'
+    | 'substrateMnemonic'
   >
 > {
   const packageManager = await select({
@@ -41,6 +48,11 @@ export async function promptApiOptions(
     snowbridge: additionalFeatures.includes(SNOWBRIDGE_EXTENSION),
   });
 
+  const substrateMnemonic =
+    partial.framework === 'node'
+      ? await promptSubstrateMnemonic()
+      : undefined;
+
   const privateKey =
     partial.framework === 'node' && featureFlags.evm
       ? await promptEvmPrivateKey()
@@ -57,6 +69,7 @@ export async function promptApiOptions(
     ...featureFlags,
     packageManager,
     privateKey,
+    substrateMnemonic,
   };
 }
 

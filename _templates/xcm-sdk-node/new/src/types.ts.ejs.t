@@ -9,7 +9,6 @@ export type TransferParams = {
   to: <% if (evm) { %>TDestination<% } else { %>TSubstrateChain<% } %>;
   amount: string;
   currencySymbol: string | TSymbolSpecifier;
-  sender: string;
   recipient: string;<% if (swap) { %>
   currencyToSymbol?: string | TSymbolSpecifier;
   exchange?: TExchangeChain;<% } %>

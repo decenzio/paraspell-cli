@@ -1,6 +1,3 @@
----
-to: src/index.ts
----
 import "dotenv/config";
 import axios from "axios";
 import { API_URL } from "./consts.js";
@@ -8,10 +5,7 @@ import { fetchFromApi } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
 import type { TAssetInfo } from "@paraspell/sdk";
 import type { TransferParams } from "./types.js";
-<% if (evm) { %>
-<% if (!snowbridge) { %>import { Native } from "@paraspell/sdk";
-<% } %>import { isChainEvm, submitEvmTransfer } from "./evm.js";
-<% } %>
+
 import {
   ensureSubstrateTransferConfirmed,
   getSubstrateMnemonic,
@@ -19,18 +13,12 @@ import {
 } from "./substrate.js";
 
 const defaults: TransferParams = {
-  from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
+  from: "Astar",
   to: "Hydration",
   amount: "0.1",
-<% if (snowbridge) { -%>
-  currencySymbol: "ETH",
-<% } else if (evm) { -%>
-  currencySymbol: Native("GLMR"),
-<% } else { -%>
   currencySymbol: "ASTR",
-<% } -%>
-  recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
+  recipient: "//Bob",
+  currencyToSymbol: "DOT",
 };
 
 type ApiErrorResponse = {
@@ -70,11 +58,7 @@ async function resolveCurrencyLocation(
 async function transferViaApi(
   params: TransferParams,
 ): Promise<string | string[]> {
-<% if (evm) { %>
-  if (isChainEvm(params.from)) {
-    return await submitEvmTransfer(params);
-  }
-<% } %>
+
 
   if (!ensureSubstrateTransferConfirmed()) {
     return "(dry run)";
@@ -97,7 +81,7 @@ async function transferViaApi(
     currency: {
       location,
       amount: params.amount,
-    },<% if (swap) { %>
+    },
     ...(params.currencyToSymbol
       ? {
           swapOptions: {
@@ -105,7 +89,7 @@ async function transferViaApi(
             ...(params.exchange ? { exchange: [params.exchange] } : {}),
           },
         }
-      : {}),<% } %>
+      : {}),
   };
 
   const transactions = await fetchFromApi(apiParams);

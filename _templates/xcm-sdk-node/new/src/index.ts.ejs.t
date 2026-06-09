@@ -1,7 +1,8 @@
 ---
 to: src/index.ts
 ---
-<% if (evm) { %>import "dotenv/config";
+import "dotenv/config";
+<% if (swap) { %>import "@paraspell/swap";
 <% } %><% if (client === 'papi') { %>import { Builder } from "@paraspell/sdk";<% } else if (client === 'pjs') { %>import {
   Builder,
   createChainClient,
@@ -11,6 +12,10 @@ to: src/index.ts
 } from "@paraspell/sdk-dedot";<% } %><% if (evm && !snowbridge) { %>
 import { Native } from "@paraspell/sdk";<% } %><% if (evm) { %>
 import { isChainEvm, submitEvmTransfer } from "./evm.js";<% } %>
+import {
+  ensureSubstrateTransferConfirmed,
+  getSubstrateSigner,
+} from "./substrate.js";
 import type { TransferParams } from "./types.js";<% if (evm) { %>
 import type { TSubstrateChain } from "@paraspell/sdk";<% } %>
 
@@ -25,7 +30,6 @@ const defaults: TransferParams = {
 <% } else { -%>
   currencySymbol: "ASTR",
 <% } -%>
-  sender: "//Alice",
   recipient: "//Bob",<% if (swap) { %>
   currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
 };
@@ -41,7 +45,13 @@ async function transferAsset(
 
 <% } %><% if (evm && client !== 'papi') { %>
   const substrateFrom = opts.from as TSubstrateChain;
-<% } %><% if (swap) { %>  if (opts.currencyToSymbol) {
+<% } %>
+  if (!ensureSubstrateTransferConfirmed()) {
+    return "(dry run)";
+  }
+
+  const sender = await getSubstrateSigner();
+<% if (swap) { %>  if (opts.currencyToSymbol) {
     const swapBuilder = Builder()
       .from(opts.from)
       .to(opts.to)
@@ -50,7 +60,7 @@ async function transferAsset(
         amount: opts.amount,
       })
       .recipient(opts.recipient)
-      .sender(opts.sender)
+      .sender(sender)
       .swap({
         currencyTo: { symbol: opts.currencyToSymbol },
         ...(opts.exchange ? { exchange: [opts.exchange] } : {}),
@@ -72,7 +82,7 @@ async function transferAsset(
       amount: opts.amount,
     })
     .recipient(opts.recipient)
-    .sender(opts.sender);
+    .sender(sender);
 <% } else { %>
   const client = await createChainClient(<% if (evm) { %>substrateFrom<% } else { %>opts.from<% } %>);
   const builder = Builder(client)
@@ -83,7 +93,7 @@ async function transferAsset(
       amount: opts.amount,
     })
     .recipient(opts.recipient)
-    .sender(opts.sender);
+    .sender(sender);
 <% } %>
 
   try {

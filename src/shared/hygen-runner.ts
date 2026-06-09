@@ -4,10 +4,7 @@ import { createRequire } from 'node:module';
 import { applyFeatureFlags } from './feature-flags.js';
 import { UserError } from './errors.js';
 import { createInquirerPrompter } from './inquirer-prompter.js';
-import {
-  shouldWriteNodeEvmEnv,
-  writeNodeEvmEnv,
-} from './write-node-evm-env.js';
+import { shouldWriteNodeEnv, writeNodeEnv } from './write-node-env.js';
 import type {
   ApiGenerateOptions,
   FrameworkMeta,
@@ -134,8 +131,12 @@ async function generateApp(params: {
 
   await copyLogo(meta, templatesRoot, meta.generator, flags.out);
 
-  if (shouldWriteNodeEvmEnv(opts.framework, flags.evm)) {
-    await writeNodeEvmEnv(flags.out, opts.privateKey);
+  if (shouldWriteNodeEnv(opts.framework)) {
+    await writeNodeEnv(flags.out, {
+      evm: flags.evm,
+      privateKey: opts.privateKey,
+      substrateMnemonic: opts.substrateMnemonic,
+    });
   }
 
   const label = kind === 'sdk' ? 'XCM SDK' : 'XCM API';

@@ -16,9 +16,9 @@ to: package.json
     "polkadot-api": "<%= polkadotApi %>",
     "@polkadot/keyring": "<%= polkadotKeyring %>",
     "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
-    "@paraspell/sdk": "<%= sdkVersion %>"<% if (evm) { %>,
+    "@paraspell/sdk": "<%= sdkVersion %>",
+    "dotenv": "<%= dotenv %>"<% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>",
-    "dotenv": "<%= dotenv %>",
     "viem": "<%= viem %>"<% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>
   },

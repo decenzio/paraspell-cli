@@ -107,6 +107,7 @@ const KNOWN_FLAGS_COMMON = [
   'evm', 'swap', 'snowbridge',
   'package-manager', 'packageManager', 'out',
   'private-key', 'privateKey',
+  'substrate-mnemonic', 'substrateMnemonic',
 ];
 
 function warnUnknownFlags(flags: ArgRecord, extra: readonly string[]): void {
@@ -163,6 +164,10 @@ function applyCommonFlags(
 
   const privateKey = valueFlag(flags, 'private-key') ?? valueFlag(flags, 'privateKey');
   if (privateKey !== undefined) opts.privateKey = privateKey;
+
+  const substrateMnemonic =
+    valueFlag(flags, 'substrate-mnemonic') ?? valueFlag(flags, 'substrateMnemonic');
+  if (substrateMnemonic !== undefined) opts.substrateMnemonic = substrateMnemonic;
 }
 
 export function parseSdkArgv(argv: string[], ctx: ParseCtx): SdkGenerateOptions {
@@ -238,6 +243,7 @@ export function shiftPositionalFramework(argv: string[]): {
 const SHARED_OPTIONS = `  --framework <id>        react | vue | node
   --name <string>
   --evm, --swap, --snowbridge <bool>  (snowbridge requires --evm true)
+  --substrate-mnemonic <secret>  optional Substrate mnemonic or //Dev URI for node (non-interactive)
   --private-key <hex>     optional EVM wallet key for node + --evm (non-interactive)
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>            default: ./<name> in cwd

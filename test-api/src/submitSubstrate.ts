@@ -1,6 +1,3 @@
----
-to: src/submitSubstrate.ts
----
 import axios from "axios";
 import { createWsClient } from "polkadot-api/ws";
 import { API_URL } from "./consts.js";

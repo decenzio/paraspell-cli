@@ -20,6 +20,7 @@ export interface SdkGenerateOptions extends FeatureFlags {
   out: string;
   help?: boolean;
   privateKey?: string;
+  substrateMnemonic?: string;
 }
 
 export interface ApiGenerateOptions extends FeatureFlags {
@@ -29,6 +30,7 @@ export interface ApiGenerateOptions extends FeatureFlags {
   out: string;
   help?: boolean;
   privateKey?: string;
+  substrateMnemonic?: string;
 }
 
 export interface FrameworkMeta {

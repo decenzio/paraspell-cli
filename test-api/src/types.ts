@@ -1,6 +1,3 @@
----
-to: src/types.ts
----
 import type {
   TAssetInfo,
   TChain,

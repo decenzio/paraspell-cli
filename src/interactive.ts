@@ -15,6 +15,7 @@ import { generateApiApp, generateSdkApp } from './shared/hygen-runner.js';
 import { printNextSteps } from './shared/next-steps.js';
 import { PACKAGE_MANAGERS } from './shared/package-manager.js';
 import { promptEvmPrivateKey } from './shared/prompt-evm-private-key.js';
+import { promptSubstrateMnemonic } from './shared/prompt-substrate-mnemonic.js';
 import type {
   Framework,
   PackageManager,
@@ -115,6 +116,9 @@ export async function runInteractiveGenerate(
     snowbridge: additionalFeatures.includes(SNOWBRIDGE_EXTENSION),
   });
 
+  const substrateMnemonic =
+    framework === 'node' ? await promptSubstrateMnemonic() : undefined;
+
   const privateKey =
     framework === 'node' && featureFlags.evm
       ? await promptEvmPrivateKey()
@@ -132,6 +136,7 @@ export async function runInteractiveGenerate(
         packageManager,
         out: projectPath,
         privateKey,
+        substrateMnemonic,
       },
     });
   } else {
@@ -145,6 +150,7 @@ export async function runInteractiveGenerate(
         packageManager,
         out: projectPath,
         privateKey,
+        substrateMnemonic,
       },
     });
   }
