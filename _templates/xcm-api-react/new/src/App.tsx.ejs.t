@@ -23,7 +23,7 @@ const App = () => (
     </p>
     <p className="read-the-docs">
       <a
-        href="https://paraspell.github.io/docs/api/deploy.html"
+        href="https://paraspell.github.io/docs/xcm-api/deploy-api-yourself.html"
         target="_blank"
         rel="noopener noreferrer"
       >

@@ -27,7 +27,7 @@ import XcmTransfer from "./XcmTransfer.vue";
   </p>
   <p class="read-the-docs">
     <a
-      href="https://paraspell.github.io/docs/api/deploy.html"
+      href="https://paraspell.github.io/docs/xcm-api/deploy-api-yourself.html"
       target="_blank"
       rel="noopener noreferrer"
     >
