@@ -42,11 +42,5 @@ to: package.json
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.8",
     "vite-plugin-wasm": "^3.6.0"
-  }<% if (usePnpmConfig) { %>,
-  "packageManager": "<%= pnpmCorepack %>",
-  "pnpm": {
-    "overrides": {
-      "@paraspell/sdk-common": "<%= sdkVersion %>"
-    }
-  }<% } %>
+  }
 }

@@ -32,11 +32,5 @@ to: package.json
     "@types/node": "^22.15.21",
     "tsx": "^4.19.4",
     "typescript": "^6.0.2"
-  }<% if (usePnpmConfig) { %>,
-  "packageManager": "<%= pnpmCorepack %>",
-  "pnpm": {
-    "overrides": {
-      "@paraspell/sdk-common": "<%= sdkVersion %>"
-    }
-  }<% } %>
+  }
 }

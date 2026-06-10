@@ -1,5 +1,4 @@
 const SDK_VERSION = '13.5.0';
-const PNPM_COREPACK = 'pnpm@10.33.0';
 
 /** @type {Record<string, string>} */
 const PACKAGE_VERSIONS = {
@@ -16,4 +15,4 @@ const PACKAGE_VERSIONS = {
   dedot: '^1.3.0',
 };
 
-module.exports = { SDK_VERSION, PNPM_COREPACK, PACKAGE_VERSIONS };
+module.exports = { SDK_VERSION, PACKAGE_VERSIONS };

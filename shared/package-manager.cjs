@@ -1,7 +1,6 @@
 /** @typedef {'npm' | 'yarn' | 'pnpm' | 'bun'} PackageManager */
 
 const PACKAGE_MANAGERS = /** @type {const} */ (['npm', 'yarn', 'pnpm', 'bun']);
-const { PNPM_COREPACK } = require('./versions.cjs');
 
 /** @param {string | undefined} value @returns {PackageManager} */
 function normalizePackageManager(value) {
@@ -20,13 +19,11 @@ function resolvePackageManager(input) {
     installCmd: `${packageManager} install`,
     devCmd: `${packageManager} run dev`,
     startCmd: `${packageManager} start`,
-    usePnpmOverrides: packageManager === 'pnpm',
   };
 }
 
 module.exports = {
   PACKAGE_MANAGERS,
-  PNPM_COREPACK,
   normalizePackageManager,
   resolvePackageManager,
 };

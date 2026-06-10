@@ -40,11 +40,5 @@ to: package.json
     "vite-plugin-wasm": "^3.6.0",
     "vue-eslint-parser": "^10.0.0",
     "vue-tsc": "^2.2.10"
-  }<% if (usePnpmConfig) { %>,
-  "packageManager": "<%= pnpmCorepack %>",
-  "pnpm": {
-    "overrides": {
-      "@paraspell/sdk-common": "<%= sdkVersion %>"
-    }
-  }<% } %>
+  }
 }

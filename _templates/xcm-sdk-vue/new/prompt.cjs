@@ -3,7 +3,7 @@ const {
   resolveFeatureFlags,
   snowbridgeRequiresEvmMessage,
 } = require('../../../shared/feature-flags.cjs');
-const { SDK_VERSION, PNPM_COREPACK, PACKAGE_VERSIONS } = require('../../../shared/versions.cjs');
+const { SDK_VERSION, PACKAGE_VERSIONS } = require('../../../shared/versions.cjs');
 
 const CLIENT_META = {
   papi: {
@@ -59,8 +59,6 @@ module.exports = {
       swap,
       snowbridge,
       projectName: args.name ?? 'my-xcm-app',
-      pnpmCorepack: PNPM_COREPACK,
-      usePnpmConfig: pm.usePnpmOverrides,
       h,
     };
   },
