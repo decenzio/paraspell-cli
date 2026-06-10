@@ -24,12 +24,13 @@ const errorVisible = ref(false);
 const error = ref<Error | null>(null);
 const loading = ref(false);
 const originChain = ref("Astar");
-<% if (evm) { %>
-const wallet = useWallet();
 
 const handleOriginChange = (origin: string) => {
   originChain.value = origin;
 };
+
+<% if (evm) { %>
+const wallet = useWallet();
 
 const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
   wallet.setActiveWalletKind(kind);
@@ -103,11 +104,7 @@ const onSubmit = async (formValues: FormValues) => {
     <TransferForm
       :loading="loading"
       :origin-chain="originChain"
-      <% if (evm) { %>
       @origin-change="handleOriginChange"
-      <% } else { %>
-      @origin-change="(o: string) => (originChain = o)"
-      <% } %>
       @submit="onSubmit"
     />
     <p

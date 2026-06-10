@@ -27,7 +27,7 @@ The server starts without submitting a transfer. Send `POST /` to sign and submi
 
 Keep wallet secrets in `.env`, not on the command line.
 
-Default route: `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'AssetHubPolkadot' %>` → `Hydration` — edit `src/transfer.ts` to customize.
+Default route: `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>` → `Hydration` — edit `src/transfer.ts` to customize.
 
 ## Docs
 

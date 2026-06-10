@@ -154,13 +154,3 @@ SKIP_GENERATE=1 npm test   # skip scaffolding, reuse generated/
 ```
 
 </details>
-
-**Tools supported by:**
-
-<p align="center">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/paraspell/presskit/blob/main/logos_supporters/polkadot_kusama_transparent.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://github.com/paraspell/presskit/blob/main/logos_supporters/polkadot_kusama_w3f_standard.png">
-      <img width="750" alt="Polkadot and Kusama — Web3 Foundation grant" src="https://github.com/paraspell/presskit/blob/main/logos_supporters/polkadot_kusama_w3f_standard.png">
-    </picture>
-</p>
