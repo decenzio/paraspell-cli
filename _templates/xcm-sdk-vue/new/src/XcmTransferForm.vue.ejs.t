@@ -5,36 +5,30 @@ to: src/XcmTransferForm.vue
 import { computed, ref, watch } from "vue";
 import useCurrencyOptions from "./useCurrencyOptions";
 import {
-  <% if (evm) { %>CHAINS,<% } else { %>
-  SUBSTRATE_CHAINS,<% } %><% if (swap) { %>
+  CHAINS,<% if (swap) { %>
   EXCHANGE_CHAINS,
   type TExchangeChain,<% } %>
-  type <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,
+  type TChain,
 } from "@paraspell/sdk";
-import type { FormValues } from "./types";<% if (evm) { %>
-import { getOriginChains } from "./evm";<% } %>
+import type { FormValues } from "./types";
 
 const props = defineProps<{
   loading: boolean;
-  originChain: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
+  originChain: TChain;
 }>();
 
 const emit = defineEmits<{
   submit: [values: FormValues];
-  originChange: [origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>];
+  originChange: [origin: TChain];
 }>();
 
-const destinationChain = ref<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>("Hydration");
+const destinationChain = ref<TChain>("Hydration");
 const currencyOptionId = ref("");
 <% if (swap) { %>const currencyToOptionId = ref("");
 const swapEnabled = ref(false);
 const exchange = ref<TExchangeChain | undefined>(undefined);
 <% } %>const recipient = ref("5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96");
 const amount = ref("5");
-
-const originChains = computed(
-  () => <% if (evm) { %>getOriginChains()<% } else { %>[...SUBSTRATE_CHAINS]<% } %>,
-);
 
 const from = computed(() => props.originChain);
 const to = computed(() => destinationChain.value);
@@ -99,12 +93,12 @@ watch(
         @change="
           emit(
             'originChange',
-            ($event.target as HTMLSelectElement).value as <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,
+            ($event.target as HTMLSelectElement).value as TChain,
           )
         "
       >
         <option
-          v-for="chain in originChains"
+          v-for="chain in CHAINS"
           :key="chain"
           :value="chain"
         >
@@ -121,7 +115,7 @@ watch(
         :disabled="loading"
       >
         <option
-          v-for="chain in <% if (evm) { %>CHAINS<% } else { %>SUBSTRATE_CHAINS<% } %>"
+          v-for="chain in CHAINS"
           :key="chain"
           :value="chain"
         >

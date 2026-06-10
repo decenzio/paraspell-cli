@@ -10,7 +10,7 @@ to: src/transfer.ts
   createChainClient,
 } from "@paraspell/sdk-dedot";<% } %><% if (evm && !snowbridge) { %>
 import { Native } from "@paraspell/sdk";<% } %><% if (evm) { %>
-import { isChainEvm, submitEvmTransfer } from "./evm.js";<% } %>
+import { getEvmWalletClient, isChainEvm, submitEvmTransfer } from "./evm.js";<% } %>
 import { getSubstrateSigner } from "./substrate.js";
 import type { TransferParams } from "./types.js";<% if (evm) { %>
 import type { TSubstrateChain } from "@paraspell/sdk";<% } %>
@@ -33,15 +33,15 @@ const defaults: TransferParams = {
 export async function transferAsset(): Promise<string | string[]> {
   const opts = defaults;
 
-<% if (evm) { %>  if (isChainEvm(opts.from)) {
-    return await submitEvmTransfer(opts);
-  }
-
-<% } %><% if (evm && client !== 'papi') { %>
+<% if (evm && client !== 'papi') { %>
   const substrateFrom = opts.from as TSubstrateChain;
 <% } %>
-  const sender = await getSubstrateSigner();
 <% if (swap) { %>  if (opts.currencyToSymbol) {
+<% if (evm) { %>    const sender = isChainEvm(opts.from)
+      ? getEvmWalletClient(opts.from)
+      : await getSubstrateSigner();
+<% } else { %>    const sender = await getSubstrateSigner();
+<% } %>
     const swapBuilder = Builder()
       .from(opts.from)
       .to(opts.to)
@@ -63,7 +63,13 @@ export async function transferAsset(): Promise<string | string[]> {
     }
   }
 
-<% } %><% if (client === 'papi') { %>
+<% } %><% if (evm) { %>  if (isChainEvm(opts.from)) {
+    return await submitEvmTransfer(opts);
+  }
+
+<% } %>
+  const sender = await getSubstrateSigner();
+<% if (client === 'papi') { %>
   const builder = Builder()
     .from(opts.from)
     .to(opts.to)

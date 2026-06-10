@@ -3,7 +3,7 @@ to: src/useCurrencyOptions.ts
 ---
 import type { Ref } from "vue";
 import { computed } from "vue";
-import type { TAssetInfo<% if (evm) { %>, TChain<% } else { %>, TSubstrateChain<% } %><% if (swap) { %>, TExchangeInput<% } %> } from "@paraspell/sdk";
+import type { TAssetInfo, TChain<% if (swap) { %>, TExchangeInput<% } %> } from "@paraspell/sdk";
 import { getSupportedAssets } from "@paraspell/sdk";<% if (swap) { %>
 import {
   getSupportedAssetsFrom,
@@ -18,8 +18,8 @@ function assetKey(asset: TAssetInfo): string {
 }
 
 const useCurrencyOptions = (
-  from: Ref<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>,
-  to: Ref<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>,<% if (swap) { %>
+  from: Ref<TChain>,
+  to: Ref<TChain>,<% if (swap) { %>
   swapEnabled: Ref<boolean>,
   exchange: Ref<TExchangeInput | undefined>,<% } %>
 ) => {

@@ -2,8 +2,7 @@ export {
   createEvmWalletClient,
   ensureEvmWalletClient,
   getEthereumProvider,
-  getOriginChains,
   isChainEvm,
-  toSdkEvmFrom,
+  getViemChainForOrigin,
 } from "./evmWalletClient";
 export type { EvmChain } from "./evmWalletClient";

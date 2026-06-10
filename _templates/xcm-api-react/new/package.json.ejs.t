@@ -15,10 +15,7 @@ to: package.json
   "dependencies": {
     "axios": "^1.15.0",
     "polkadot-api": "<%= polkadotApi %>"<% if (evm) { %>,
-    "@paraspell/sdk": "<%= sdkVersion %>",
-    "@paraspell/evm": "<%= sdkVersion %>",
-    "viem": "<%= viem %>"<% if (snowbridge) { %>,
-    "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>
+    "viem": "<%= viem %>"<% } %>
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -34,11 +31,5 @@ to: package.json
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.8"
-  }<% if (usePnpmConfig) { %>,
-  "packageManager": "<%= pnpmCorepack %>",
-  "pnpm": {
-    "overrides": {
-      "@paraspell/sdk-common": "<%= sdkVersion %>"
-    }
-  }<% } %>
+  }
 }

@@ -1,4 +1,4 @@
-import { UnsupportedOperationError<% if (evm) { %>, type TSubstrateChain<% } %> } from "@paraspell/sdk";
+import { UnsupportedOperationError, type TSubstrateChain } from "@paraspell/sdk";
 import {
   Builder,
   createChainClient,
@@ -7,7 +7,14 @@ import {
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues } from "../types";<% if (evm) { %>
 import "@paraspell/evm";
-import { isChainEvm } from "../evm";<% } %><% if (snowbridge) { %>
+import { isChainEvm } from "../evm";
+import type { WalletClient } from "viem";
+import { submitEvmTransferFromForm } from "./evmTransfer";
+
+export type SubmitOptions =
+  | { kind: "substrate"; signer: Signer; senderAddress: string }
+  | { kind: "evm"; walletClient: WalletClient };
+<% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %>
 
 export async function buildTransaction(
@@ -23,7 +30,7 @@ export async function buildTransaction(
     );
   }
 
-<% } %>  const substrateFrom = from<% if (evm) { %> as TSubstrateChain<% } %>;
+<% } %>  const substrateFrom = from as TSubstrateChain;
 
 <% if (swap) { %>  if (swapEnabled) {
     const contexts = await Builder()
@@ -95,10 +102,29 @@ async function submitTransaction(
 
 export const submitUsingSdk = async (
   formValues: FormValues,
-  signer: Signer,
-  senderAddress: string,
+  <% if (evm) { %>options: SubmitOptions,<% } else { %>signer: Signer,
+  senderAddress: string,<% } %>
 ): Promise<void> => {
-  if (!senderAddress) {
+<% if (evm) { %>  if (isChainEvm(formValues.from)) {
+    if (options.kind !== "evm") {
+      throw new UnsupportedOperationError(
+        "EVM origin requires a connected EVM wallet.",
+      );
+    }
+
+    await submitEvmTransferFromForm(formValues, options.walletClient);
+    return;
+  }
+
+  if (options.kind !== "substrate") {
+    throw new UnsupportedOperationError(
+      "Substrate origin requires a Polkadot extension wallet.",
+    );
+  }
+
+  const { signer, senderAddress } = options;
+
+<% } %>  if (!senderAddress) {
     alert("No account selected, connect wallet first");
     return;
   }

@@ -36,13 +36,7 @@ export const submitUsingSdk = async (
       );
     }
 
-<% if (swap) { %>    if (swapEnabled) {
-      throw new UnsupportedOperationError(
-        "Swap is not supported when the origin chain is EVM.",
-      );
-    }
-
-<% } %>    await submitEvmTransferFromForm(formValues, options.walletClient);
+    await submitEvmTransferFromForm(formValues, options.walletClient);
     return;
   }
 

@@ -23,7 +23,6 @@ module.exports = {
       sdkVersion: SDK_VERSION,
       pnpmCorepack: PNPM_COREPACK,
       projectName: args.name ?? 'my-xcm-api-app',
-      usePnpmConfig: pm.usePnpmOverrides && evm,
       h,
     };
   },

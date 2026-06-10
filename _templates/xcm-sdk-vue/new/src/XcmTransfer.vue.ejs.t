@@ -5,7 +5,7 @@ to: src/XcmTransfer.vue
 import { ref } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
-import type { <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %> } from "@paraspell/sdk";
+import type { TChain } from "@paraspell/sdk";
 import {
   <% if (evm) { %>useWallet,
   WalletControls,
@@ -22,7 +22,7 @@ const toError = (error: unknown): Error =>
 const errorVisible = ref(false);
 const error = ref<Error | null>(null);
 const loading = ref(false);
-const originChain = ref<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>("Astar");
+const originChain = ref<TChain>("Astar");
 
 <% if (evm) { %>const wallet = useWallet();
 
@@ -44,7 +44,7 @@ const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
   selectAccountByAddress,
 } = usePjsWallet();
 
-const handleOriginChange = (origin: TSubstrateChain) => {
+const handleOriginChange = (origin: TChain) => {
   originChain.value = origin;
 };
 <% } else if (client === 'papi') { %>const {
@@ -58,7 +58,7 @@ const handleOriginChange = (origin: TSubstrateChain) => {
   selectAccountByAddress,
 } = usePapiWallet();
 
-const handleOriginChange = (origin: TSubstrateChain) => {
+const handleOriginChange = (origin: TChain) => {
   originChain.value = origin;
 };
 <% } else { %>const {
@@ -72,7 +72,7 @@ const handleOriginChange = (origin: TSubstrateChain) => {
   selectAccountByAddress,
 } = useDedotWallet();
 
-const handleOriginChange = (origin: TSubstrateChain) => {
+const handleOriginChange = (origin: TChain) => {
   originChain.value = origin;
 };
 <% } %>

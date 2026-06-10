@@ -2,6 +2,8 @@
 to: src/fetchFromApi.ts
 ---
 import axios from "axios";
+<% if (evm) { %>import type { Hex } from "viem";
+<% } %>
 import { API_URL } from "./consts";
 import type { ApiParams, ApiTransaction } from "./types";
 
@@ -13,28 +15,34 @@ export const fetchFromApi = async (
   params: ApiParams,
 ): Promise<ApiTransaction[]> => {
   try {
-    const response = await axios(`${API_URL}/x-transfers`, {
-      method: "POST",
-      data: params,
-    });
-
+    const response = await axios.post(`${API_URL}/x-transfers`, params);
     return response.data as ApiTransaction[];
   } catch (error) {
     if (axios.isAxiosError<ApiErrorResponse>(error)) {
-      let errorMessage = "Error while fetching data.";
-      if (error.response === undefined) {
-        errorMessage += " Couldn't connect to API.";
-      } else {
-        const message = error.response.data.message;
-        if (message) {
-          errorMessage += ` Server response: ${message}`;
-        }
-      }
-      throw new Error(errorMessage, { cause: error });
-    } else if (error instanceof Error) {
-      throw new Error(error.message, { cause: error });
-    } else {
-      throw new Error("An unknown error occurred", { cause: error });
+      const message = error.response?.data.message;
+      const serverMessage = message ? ` Server response: ${message}` : "";
+      throw new Error(`Error while fetching data.${serverMessage}`, {
+        cause: error,
+      });
     }
+    throw error;
   }
 };
+<% if (evm) { %>
+
+export const fetchFromEvmApi = async (params: ApiParams): Promise<Hex> => {
+  try {
+    const response = await axios.post(`${API_URL}/evm-x-transfer`, params);
+    return response.data as Hex;
+  } catch (error) {
+    if (axios.isAxiosError<ApiErrorResponse>(error)) {
+      const message = error.response?.data.message;
+      const serverMessage = message ? ` Server response: ${message}` : "";
+      throw new Error(`Error while fetching EVM transaction.${serverMessage}`, {
+        cause: error,
+      });
+    }
+    throw error;
+  }
+};
+<% } %>

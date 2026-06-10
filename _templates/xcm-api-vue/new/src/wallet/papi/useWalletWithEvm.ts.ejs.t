@@ -6,10 +6,7 @@ import type { PolkadotSigner } from "polkadot-api";
 import type { FormValues } from "../../types";
 import { submitUsingApi } from "../../submit/submitUsingApi";
 import { createWalletControls } from "../shared/createWalletControls";
-import {
-  connectWalletAlert,
-  submitEvmIfNeeded,
-} from "../shared/submitTransfer";
+import { connectWalletAlert } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
 import type {
   SubstrateWalletConnection,
@@ -55,19 +52,7 @@ export function useWalletWithEvm(): UseWalletReturn {
       return false;
     }
 
-    if (await submitEvmIfNeeded(formValues, options)) {
-      return true;
-    }
-
-    if (options.kind !== "substrate") {
-      return false;
-    }
-
-    await submitUsingApi(
-      formValues,
-      options.signer,
-      options.senderAddress,
-    );
+    await submitUsingApi(formValues, options);
     return true;
   };
 

@@ -4,7 +4,7 @@ to: src/XcmTransfer.tsx
 import { useCallback, useState, type FC } from "react";
 import TransferForm from "./XcmTransferForm";
 import type { FormValues } from "./types";
-import type { <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %> } from "@paraspell/sdk";
+import type { TChain } from "@paraspell/sdk";
 import {
   <% if (evm) { %>useWallet,
   WalletControls,
@@ -27,7 +27,7 @@ const XcmTransfer: FC = () => {
   const [loading, setLoading] = useState(false);
 
   <% if (evm) { %>const wallet = useWallet();<% } else if (client === 'pjs') { %>const wallet = usePjsWallet();<% } else if (client === 'papi') { %>const wallet = usePapiWallet();<% } else { %>const wallet = useDedotWallet();<% } %>
-  const [originChain, setOriginChain] = useState<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>("Astar");
+  const [originChain, setOriginChain] = useState<TChain>("Astar");
 
   <% if (evm) { %>const handleOriginChange = useCallback((origin: TChain) => {
     setOriginChain(origin);
@@ -38,7 +38,7 @@ const XcmTransfer: FC = () => {
       wallet.setActiveWalletKind(kind);
     },
     [wallet],
-  );<% } else { %>const handleOriginChange = useCallback((origin: TSubstrateChain) => {
+  );<% } else { %>const handleOriginChange = useCallback((origin: TChain) => {
     setOriginChain(origin);
   }, []);<% } %>
 

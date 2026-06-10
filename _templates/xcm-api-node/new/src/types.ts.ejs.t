@@ -1,34 +1,32 @@
 ---
 to: src/types.ts
 ---
-import type {
-  TAssetInfo,
-  TChain,
-  TDestination,
-  TSymbolSpecifier,
-} from "@paraspell/sdk";
+export type AssetInfo = {
+  symbol?: string;
+  assetId?: string;
+  location: object;
+};
 
 export type TransferParams = {
-  from: TChain;
-  to: TDestination;
+  from: string;
+  to: string;
   amount: string;
-  currencySymbol: string | TSymbolSpecifier;
+  currencySymbol: string;
   recipient: string;
-  currencyToSymbol?: string | TSymbolSpecifier;
+  currencyToSymbol?: string;
   exchange?: string;
 };
 
 export type ApiParams = {
-  from?: TChain;
-  to?: TDestination;
-  currency: {
-    location: TAssetInfo["location"];
-    amount: string;
-  };
+  from?: string;
+  to?: string;
+  currency:
+    | { location: object; amount: string }
+    | { symbol: string; amount: string };
   recipient: string;
   sender: string;
   swapOptions?: {
-    currencyTo: { symbol: string | TSymbolSpecifier };
+    currencyTo: { symbol: string };
     exchange?: string[];
   };
 };

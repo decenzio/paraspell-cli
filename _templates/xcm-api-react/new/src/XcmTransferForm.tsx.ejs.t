@@ -5,9 +5,6 @@ import axios from "axios";
 import { useState, useMemo, FormEvent, FC, useEffect } from "react";
 import { API_URL } from "./consts";
 import type { AssetInfo, FormValues } from "./types";
-<% if (evm) { %>
-import { getOriginChains<% if (swap) { %>, isChainEvm<% } %> } from "./evm";
-<% } %>
 
 type Props = {
   onSubmit: (values: FormValues) => void;
@@ -41,17 +38,6 @@ const TransferForm: FC<Props> = ({
     };
     void fetchChains();
   }, []);
-
-  <% if (evm && swap) { %>
-  const isEvmOrigin = isChainEvm(originChain);
-
-  <% } %>
-  <% if (evm) { %>
-  const originChains = useMemo(
-    () => getOriginChains(chains),
-    [chains],
-  );
-  <% } %>
 
   useEffect(() => {
     const fetchAssets = async () => {
@@ -108,7 +94,7 @@ const TransferForm: FC<Props> = ({
     });
   };
 
-  const chainOptions = <% if (evm) { %>originChains<% } else { %>chains<% } %>;
+  const chainOptions = chains;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -180,8 +166,7 @@ const TransferForm: FC<Props> = ({
       </label>
 
       <% if (swap) { %>
-      <% if (evm) { %>{!isEvmOrigin && (
-        <% } %><>
+      <>
           <button
             type="button"
             className="secondary"
@@ -213,8 +198,7 @@ const TransferForm: FC<Props> = ({
               </label>
             </>
           )}
-        </><% if (evm) { %>
-      )}<% } %>
+        </>
       <% } %>
 
       <button type="submit" disabled={loading}>

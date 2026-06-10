@@ -60,15 +60,7 @@ export function useWalletWithEvm(): UseWalletReturn {
         return true;
       }
 
-      if (options.kind !== "substrate") {
-        return false;
-      }
-
-      await submitUsingSdk(
-        formValues,
-        options.signer,
-        options.senderAddress,
-      );
+      await submitUsingSdk(formValues, options);
       return true;
     },
     [core],

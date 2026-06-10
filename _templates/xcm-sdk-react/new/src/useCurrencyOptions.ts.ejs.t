@@ -1,7 +1,7 @@
 ---
 to: src/useCurrencyOptions.ts
 ---
-import type { TAssetInfo<% if (evm) { %>, TChain<% } else { %>, TSubstrateChain<% } %><% if (swap) { %>, TExchangeInput<% } %> } from "@paraspell/sdk";
+import type { TAssetInfo, TChain<% if (swap) { %>, TExchangeInput<% } %> } from "@paraspell/sdk";
 import { getSupportedAssets } from "@paraspell/sdk";<% if (swap) { %>
 import {
   getSupportedAssetsFrom,
@@ -10,8 +10,8 @@ import {
 import { useMemo } from "react";
 
 const useCurrencyOptions = (
-  from: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,
-  to: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,<% if (swap) { %>
+  from: TChain,
+  to: TChain,<% if (swap) { %>
   swapEnabled: boolean,
   exchange?: TExchangeInput,<% } %>
 ) => {

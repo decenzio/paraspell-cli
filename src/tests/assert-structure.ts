@@ -83,7 +83,9 @@ function assertPackageDeps(
   }
 
   if (variant.evm) {
-    if (!deps['@paraspell/evm']) errors.push('Missing dependency @paraspell/evm');
+    if (variant.kind === 'sdk') {
+      if (!deps['@paraspell/evm']) errors.push('Missing dependency @paraspell/evm');
+    }
     if (!deps['viem']) errors.push('Missing dependency viem');
   } else if (deps['@paraspell/evm']) {
     errors.push('Unexpected dependency @paraspell/evm when evm=false');
@@ -94,15 +96,24 @@ function assertPackageDeps(
   }
 
   if (variant.snowbridge) {
-    if (!deps['@paraspell/evm-snowbridge']) {
+    if (variant.kind === 'sdk' && !deps['@paraspell/evm-snowbridge']) {
       errors.push('Missing dependency @paraspell/evm-snowbridge');
     }
   } else if (deps['@paraspell/evm-snowbridge']) {
     errors.push('Unexpected dependency @paraspell/evm-snowbridge when snowbridge=false');
   }
 
-  if (variant.kind === 'api' && !deps['axios']) {
-    errors.push('Missing dependency axios');
+  if (variant.kind === 'api') {
+    if (!deps['axios']) errors.push('Missing dependency axios');
+    if (deps['@paraspell/sdk']) {
+      errors.push('Unexpected dependency @paraspell/sdk in api project');
+    }
+    if (deps['@paraspell/evm']) {
+      errors.push('Unexpected dependency @paraspell/evm in api project');
+    }
+    if (deps['@paraspell/evm-snowbridge']) {
+      errors.push('Unexpected dependency @paraspell/evm-snowbridge in api project');
+    }
   }
 
   return errors;
@@ -161,14 +172,21 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
       }
     }
 
-    const evmPaths = ['src/evm/index.ts', 'src/xcm/evmTransfer.ts'];
-
-    for (const rel of evmPaths) {
-      const exists = fileExists(root, rel);
-      if (variant.evm !== exists) {
-        errors.push(
-          variant.evm ? `Missing ${rel}` : `Unexpected ${rel} when evm=false`,
-        );
+    if (variant.evm) {
+      if (!fileExists(root, 'src/evm/index.ts')) {
+        errors.push('Missing src/evm/index.ts');
+      }
+      if (variant.kind === 'sdk' && !fileExists(root, 'src/xcm/evmTransfer.ts')) {
+        errors.push('Missing src/xcm/evmTransfer.ts');
+      }
+      if (variant.kind === 'api' && fileExists(root, 'src/xcm/evmTransfer.ts')) {
+        errors.push('Unexpected src/xcm/evmTransfer.ts in api project');
+      }
+    } else {
+      for (const rel of ['src/evm/index.ts', 'src/xcm/evmTransfer.ts']) {
+        if (fileExists(root, rel)) {
+          errors.push(`Unexpected ${rel} when evm=false`);
+        }
       }
     }
   }

@@ -2,6 +2,8 @@
 to: src/fetchFromApi.ts
 ---
 import axios from "axios";
+<% if (evm) { %>import type { Hex } from "viem";
+<% } %>
 import { API_URL } from "./consts.js";
 import type { ApiParams, ApiTransaction } from "./types.js";
 
@@ -26,3 +28,21 @@ export const fetchFromApi = async (
     throw error;
   }
 };
+<% if (evm) { %>
+
+export const fetchFromEvmApi = async (params: ApiParams): Promise<Hex> => {
+  try {
+    const response = await axios.post(`${API_URL}/evm-x-transfer`, params);
+    return response.data as Hex;
+  } catch (error) {
+    if (axios.isAxiosError<ApiErrorResponse>(error)) {
+      const message = error.response?.data.message;
+      const serverMessage = message ? ` Server response: ${message}` : "";
+      throw new Error(`Error while fetching EVM transaction.${serverMessage}`, {
+        cause: error,
+      });
+    }
+    throw error;
+  }
+};
+<% } %>

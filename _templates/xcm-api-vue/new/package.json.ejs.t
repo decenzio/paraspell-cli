@@ -15,10 +15,7 @@ to: package.json
   "dependencies": {
     "axios": "^1.15.0",
     "polkadot-api": "<%= polkadotApi %>"<% if (evm) { %>,
-    "@paraspell/sdk": "<%= sdkVersion %>",
-    "@paraspell/evm": "<%= sdkVersion %>",
-    "viem": "<%= viem %>"<% if (snowbridge) { %>,
-    "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% } %>,
+    "viem": "<%= viem %>"<% } %>,
     "vue": "^3.5.13"
   },
   "devDependencies": {
@@ -32,11 +29,5 @@ to: package.json
     "vite": "^8.0.8",
     "vue-eslint-parser": "^10.0.0",
     "vue-tsc": "^3.2.5"
-  }<% if (usePnpmConfig) { %>,
-  "packageManager": "<%= pnpmCorepack %>",
-  "pnpm": {
-    "overrides": {
-      "@paraspell/sdk-common": "<%= sdkVersion %>"
-    }
-  }<% } %>
+  }
 }

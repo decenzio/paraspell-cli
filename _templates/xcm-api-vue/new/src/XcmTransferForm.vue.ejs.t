@@ -6,9 +6,6 @@ import axios from "axios";
 import { ref, computed, watch, onMounted } from "vue";
 import { API_URL } from "./consts";
 import type { AssetInfo, FormValues } from "./types";
-<% if (evm) { %>
-import { getOriginChains<% if (swap) { %>, isChainEvm<% } %> } from "./evm";
-<% } %>
 
 const props = defineProps<{
   loading: boolean;
@@ -40,16 +37,6 @@ const fetchChains = async () => {
 onMounted(() => {
   void fetchChains();
 });
-
-<% if (evm && swap) { %>
-const isEvmOrigin = computed(() => isChainEvm(props.originChain));
-
-<% } %>
-<% if (evm) { %>
-const originChains = computed(() =>
-  getOriginChains(chains.value),
-);
-<% } %>
 
 watch(
   [() => props.originChain, destinationChain],
@@ -120,7 +107,7 @@ const handleSubmit = (e: Event) => {
         @change="onOriginSelect"
       >
         <option
-          v-for="chain in <% if (evm) { %>originChains<% } else { %>chains<% } %>"
+          v-for="chain in chains"
           :key="chain"
           :value="chain"
         >
@@ -181,7 +168,7 @@ const handleSubmit = (e: Event) => {
     </label>
 
     <% if (swap) { %>
-    <template v-if="<% if (evm) { %>!isEvmOrigin<% } else { %>true<% } %>">
+    <template>
       <button
         type="button"
         class="secondary"

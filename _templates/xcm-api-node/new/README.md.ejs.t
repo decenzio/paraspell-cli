@@ -33,8 +33,8 @@ Keep wallet secrets in `.env`, not on the command line.
 |---------|----------|
 | Base | `POST /x-transfers` + PAPI `signSubmitAndWatch` |<% if (swap) { %>
 | Swap | `swapOptions` on API request |<% } %><% if (evm) { %>
-| EVM | Local `@paraspell/sdk` `Builder` + `PRIVATE_KEY` |<% } %><% if (snowbridge) { %>
-| Snowbridge | `Ethereum` / `EthereumTestnet` origins + `@paraspell/evm-snowbridge` |<% } %>
+| EVM | `POST /evm-x-transfer` + viem `sendTransaction` |<% } %><% if (snowbridge) { %>
+| Snowbridge | `Ethereum` / `EthereumTestnet` origins via API |<% } %>
 
 ## License
 

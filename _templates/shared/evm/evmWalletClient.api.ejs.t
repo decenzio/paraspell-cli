@@ -1,5 +1,3 @@
-import { SUBSTRATE_CHAINS } from "@paraspell/sdk";
-import type { TEvmChainFrom } from "@paraspell/sdk";
 import {
   createWalletClient,
   custom,
@@ -31,30 +29,6 @@ export const VIEM_CHAIN_BY_ORIGIN: Record<EvmChain, Chain> = {
 
 export function isChainEvm(chain: string): chain is EvmChain {
   return EVM_ORIGIN_CHAINS.some((origin) => origin === chain);
-}
-
-export function toSdkEvmFrom(chain: EvmChain): TEvmChainFrom {
-  if (
-    chain === "Moonbeam" ||
-    chain === "Moonriver" ||
-    chain === "Darwinia"
-  ) {
-    return chain;
-  }
-<% if (snowbridge) { %>
-  if (chain === "EthereumTestnet") {
-    return "Ethereum" as TEvmChainFrom;
-  }
-  if (chain === "Ethereum") {
-    return chain as TEvmChainFrom;
-  }
-<% } %>
-  throw new Error(`Unsupported EVM origin: ${chain}`);
-}
-
-export function getOriginChains(chains: string[] = []): string[] {
-  const substrateChains = chains.length > 0 ? chains : [...SUBSTRATE_CHAINS];
-  return [...new Set([...substrateChains, ...EVM_ORIGIN_CHAINS])];
 }
 
 export function getViemChainForOrigin(origin: string): Chain {

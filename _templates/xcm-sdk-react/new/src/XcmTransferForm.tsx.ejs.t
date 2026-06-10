@@ -1,22 +1,20 @@
 ---
 to: src/XcmTransferForm.tsx
 ---
-import { useState, useMemo, FormEvent, FC } from "react";
+import { useState, FormEvent, FC } from "react";
 import useCurrencyOptions from "./useCurrencyOptions";
 import {
-  <% if (evm) { %>CHAINS,<% } else { %>
-  SUBSTRATE_CHAINS,<% } %><% if (swap) { %>
+  CHAINS,<% if (swap) { %>
   EXCHANGE_CHAINS,
   type TExchangeChain,<% } %>
-  type <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>,
+  type TChain,
 } from "@paraspell/sdk";
-import type { FormValues } from "./types";<% if (evm) { %>
-import { getOriginChains } from "./evm";<% } %>
+import type { FormValues } from "./types";
 
 type Props = {
   onSubmit: (values: FormValues) => void;
-  originChain: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
-  onOriginChange: (origin: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>) => void;
+  originChain: TChain;
+  onOriginChange: (origin: TChain) => void;
   loading: boolean;
 };
 
@@ -26,7 +24,7 @@ const TransferForm: FC<Props> = ({
   onOriginChange,
   loading,
 }) => {
-  const [destinationChain, setDestinationChain] = useState<<% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>>("Hydration");
+  const [destinationChain, setDestinationChain] = useState<TChain>("Hydration");
   const [currencyOptionId, setCurrencyOptionId] = useState("");
   <% if (swap) { %>const [currencyToOptionId, setCurrencyToOptionId] = useState("");
   const [swapEnabled, setSwapEnabled] = useState(false);
@@ -35,11 +33,6 @@ const TransferForm: FC<Props> = ({
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
   );
   const [amount, setAmount] = useState("5");
-
-  const originChains = useMemo(
-    () => <% if (evm) { %>getOriginChains()<% } else { %>[...SUBSTRATE_CHAINS]<% } %>,
-    [],
-  );
 
   const { currencyOptions, currencyMap<% if (swap) { %>, currencyToOptions, currencyToMap<% } %> } =
     useCurrencyOptions(originChain, destinationChain<% if (swap) { %>, swapEnabled, exchange<% } %>);
@@ -84,13 +77,11 @@ const TransferForm: FC<Props> = ({
         Origin chain
         <select
           value={originChain}
-          onChange={(e) =>
-            onOriginChange(e.target.value as <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>)
-          }
+          onChange={(e) => onOriginChange(e.target.value as TChain)}
           disabled={loading}
           required
         >
-          {originChains.map((chain) => (
+          {CHAINS.map((chain) => (
             <option key={chain} value={chain}>
               {chain}
             </option>
@@ -102,13 +93,11 @@ const TransferForm: FC<Props> = ({
         Destination chain
         <select
           value={destinationChain}
-          onChange={(e) =>
-            setDestinationChain(e.target.value as <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>)
-          }
+          onChange={(e) => setDestinationChain(e.target.value as TChain)}
           disabled={loading}
           required
         >
-          {<% if (evm) { %>CHAINS<% } else { %>SUBSTRATE_CHAINS<% } %>.map((chain) => (
+          {CHAINS.map((chain) => (
             <option key={chain} value={chain}>
               {chain}
             </option>

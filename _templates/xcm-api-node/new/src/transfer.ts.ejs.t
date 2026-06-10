@@ -3,13 +3,12 @@ to: src/transfer.ts
 ---
 import axios from "axios";
 import { API_URL } from "./consts.js";
-import { fetchFromApi } from "./fetchFromApi.js";
+import { fetchFromApi<% if (evm) { %>, fetchFromEvmApi<% } %> } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
-import type { TAssetInfo } from "@paraspell/sdk";
-import type { TransferParams } from "./types.js";
+import type { AssetInfo, ApiParams, TransferParams } from "./types.js";
 <% if (evm) { %>
-<% if (!snowbridge) { %>import { Native } from "@paraspell/sdk";
-<% } %>import { isChainEvm, submitEvmTransfer } from "./evm.js";
+import { getEvmSenderAddress, getEvmWalletClient, isChainEvm } from "./evm.js";
+import { submitEvmTx } from "./submitEvmTx.js";
 <% } %>
 import { getSubstrateMnemonic, getSubstrateSenderAddress } from "./substrate.js";
 
@@ -17,13 +16,7 @@ const defaults: TransferParams = {
   from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
   to: "Hydration",
   amount: "0.1",
-<% if (snowbridge) { -%>
-  currencySymbol: "ETH",
-<% } else if (evm) { -%>
-  currencySymbol: Native("GLMR"),
-<% } else { -%>
-  currencySymbol: "ASTR",
-<% } -%>
+  currencySymbol: "<%= snowbridge ? 'ETH' : evm ? 'GLMR' : 'ASTR' %>",
   recipient: "//Bob",<% if (swap) { %>
   currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
 };
@@ -36,17 +29,16 @@ async function resolveCurrencyLocation(
   symbol: TransferParams["currencySymbol"],
   origin: TransferParams["from"],
   destination: TransferParams["to"],
-): Promise<TAssetInfo["location"]> {
-  const symbolValue = typeof symbol === "string" ? symbol : symbol.value;
+): Promise<AssetInfo["location"]> {
   try {
     const response = await axios.get(
       `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
     );
-    const assets = response.data as TAssetInfo[];
-    const asset = assets.find((a) => a.symbol === symbolValue);
+    const assets = response.data as AssetInfo[];
+    const asset = assets.find((a) => a.symbol === symbol);
     if (!asset) {
       throw new Error(
-        `Asset ${symbolValue} not found for ${origin} -> ${destination}`,
+        `Asset ${symbol} not found for ${origin} -> ${destination}`,
       );
     }
     return asset.location;
@@ -64,9 +56,32 @@ async function resolveCurrencyLocation(
 
 export async function transferViaApi(): Promise<string | string[]> {
   const params = defaults;
+
 <% if (evm) { %>
   if (isChainEvm(params.from)) {
-    return await submitEvmTransfer(params);
+    const sender = getEvmSenderAddress(params.from);
+    const walletClient = getEvmWalletClient(params.from);
+    const apiParams: ApiParams = {
+      from: params.from,
+      to: params.to,
+      recipient: params.recipient,
+      sender,
+      currency: {
+        symbol: params.currencySymbol,
+        amount: params.amount,
+      },<% if (swap) { %>
+      ...(params.currencyToSymbol
+        ? {
+            swapOptions: {
+              currencyTo: { symbol: params.currencyToSymbol },
+              ...(params.exchange ? { exchange: [params.exchange] } : {}),
+            },
+          }
+        : {}),<% } %>
+    };
+    const serializedTx = await fetchFromEvmApi(apiParams);
+    const txHash = await submitEvmTx(serializedTx, walletClient);
+    return txHash;
   }
 <% } %>
 
@@ -79,7 +94,7 @@ export async function transferViaApi(): Promise<string | string[]> {
     params.to,
   );
 
-  const apiParams = {
+  const apiParams: ApiParams = {
     from: params.from,
     to: params.to,
     recipient: params.recipient,

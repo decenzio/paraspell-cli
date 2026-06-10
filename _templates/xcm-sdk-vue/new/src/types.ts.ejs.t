@@ -1,11 +1,11 @@
 ---
 to: src/types.ts
 ---
-import type { TAssetInfo<% if (evm) { %>, TChain<% } else { %>, TSubstrateChain<% } %><% if (swap) { %>, TExchangeChain<% } %> } from "@paraspell/sdk";
+import type { TAssetInfo, TChain<% if (swap) { %>, TExchangeChain<% } %> } from "@paraspell/sdk";
 
 export type FormValues = {
-  from: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
-  to: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
+  from: TChain;
+  to: TChain;
   currencyOptionId: string;
   recipient: string;
   amount: string;

@@ -2,12 +2,6 @@
 to: src/evm.ts
 skip_if: <%= (!evm).toString() %>
 ---
-import {
-  Builder,
-  type TChain,
-  type TDestination,
-  type TEvmChainFrom,
-} from "@paraspell/sdk";
 import { createWalletClient, http, type WalletClient, type Chain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import {
@@ -17,9 +11,6 @@ import {
   mainnet,
   sepolia<% } %>,
 } from "viem/chains";
-import "@paraspell/evm";<% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } %>
-import type { TransferParams } from "./types.js";
 
 export const EVM_ORIGIN_CHAINS = [
   "Moonbeam",
@@ -43,30 +34,11 @@ export function isChainEvm(chain: string): chain is EvmChain {
   return EVM_ORIGIN_CHAINS.some((origin) => origin === chain);
 }
 
-function toSdkEvmFrom(chain: EvmChain): TEvmChainFrom {
-  if (
-    chain === "Moonbeam" ||
-    chain === "Moonriver" ||
-    chain === "Darwinia"
-  ) {
-    return chain;
-  }
-<% if (snowbridge) { %>
-  if (chain === "EthereumTestnet") {
-    return "Ethereum" as TEvmChainFrom;
-  }
-  if (chain === "Ethereum") {
-    return chain as TEvmChainFrom;
-  }
-<% } %>
-  throw new Error(`Unsupported EVM origin: ${chain}`);
-}
-
 function getViemChainForOrigin(origin: EvmChain): Chain {
   return VIEM_CHAIN_BY_ORIGIN[origin];
 }
 
-function getEvmWalletClient(origin: EvmChain): WalletClient {
+export function getEvmWalletClient(origin: EvmChain): WalletClient {
   const privateKey = process.env.PRIVATE_KEY;
   if (!privateKey) {
     throw new Error(
@@ -82,24 +54,6 @@ function getEvmWalletClient(origin: EvmChain): WalletClient {
   });
 }
 
-export async function submitEvmTransfer(
-  params: TransferParams,
-): Promise<string> {
-  const { from, to, recipient, amount, currencySymbol } = params;
-
-  if (!isChainEvm(from)) {
-    throw new Error(`Unsupported EVM origin: ${from}`);
-  }
-  const walletClient = getEvmWalletClient(from);
-
-  return await Builder()
-    .from(toSdkEvmFrom(from))
-    .to(to)
-    .currency({
-      symbol: currencySymbol,
-      amount,
-    })
-    .recipient(recipient)
-    .sender(walletClient)
-    .signAndSubmit();
+export function getEvmSenderAddress(origin: EvmChain): string {
+  return getEvmWalletClient(origin).account!.address;
 }

@@ -2,10 +2,7 @@
 to: src/wallet/shared/submitTransfer.ts
 skip_if: <%= (!evm).toString() %>
 ---
-import type { FormValues } from "../../types";
-import { submitEvmTransferFromForm } from "../../xcm/evmTransfer";
-import type { WalletKind } from "../evm/WalletKindSelector";
-import type { WalletSubmitOptions } from "./types";
+import type { WalletKind } from "../evm/WalletKindSelector.vue";
 
 export const connectWalletAlert = (wallet: {
   activeWalletKind: WalletKind;
@@ -15,13 +12,4 @@ export const connectWalletAlert = (wallet: {
       ? "Connect EVM wallet provider first"
       : "No account selected, connect wallet first",
   );
-};
-
-export const submitEvmIfNeeded = async (
-  formValues: FormValues,
-  options: WalletSubmitOptions,
-): Promise<boolean> => {
-  if (options.kind !== "evm") return false;
-  await submitEvmTransferFromForm(formValues, options.walletClient);
-  return true;
 };

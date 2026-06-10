@@ -62,7 +62,7 @@ function getViemChainForOrigin(origin: EvmChain): Chain {
   return VIEM_CHAIN_BY_ORIGIN[origin];
 }
 
-function getEvmWalletClient(origin: EvmChain): WalletClient {
+export function getEvmWalletClient(origin: EvmChain): WalletClient {
   const privateKey = process.env.PRIVATE_KEY;
   if (!privateKey) {
     throw new Error(

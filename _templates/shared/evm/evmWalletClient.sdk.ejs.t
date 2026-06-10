@@ -1,5 +1,5 @@
-import { SUBSTRATE_CHAINS, type TChain } from "<%= sdkPackage %>";
 import type { TEvmChainFrom } from "@paraspell/sdk";
+import type { TChain } from "<%= sdkPackage %>";
 import {
   createWalletClient,
   custom,
@@ -50,10 +50,6 @@ export function toSdkEvmFrom(chain: EvmChain): TEvmChainFrom {
   }
 <% } %>
   throw new Error(`Unsupported EVM origin: ${chain}`);
-}
-
-export function getOriginChains(): TChain[] {
-  return [...new Set<TChain>([...SUBSTRATE_CHAINS, ...EVM_ORIGIN_CHAINS])];
 }
 
 export function getViemChainForOrigin(origin: TChain): Chain {
