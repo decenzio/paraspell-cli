@@ -22,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/decenzio/paraspell-cli.git"
+    "url": "git+https://github.com/paraspell/paraspell-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/decenzio/paraspell-cli/issues"
+    "url": "https://github.com/paraspell/paraspell-cli/issues"
   },
-  "homepage": "https://github.com/decenzio/paraspell-cli#readme",
+  "homepage": "https://github.com/paraspell/paraspell-cli#readme",
   "keywords": [
     "paraspell",
     "xcm",
