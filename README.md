@@ -130,6 +130,11 @@ npm run generate:xcm-api -- vue --name my-api --package-manager npm
     └── shared/               # hygen-runner, parsers, prompts, etc.
 ```
 
+**Updating dependency versions**
+
+To edit package versions see `shared/versions.cjs` (`SDK_VERSION`, `PACKAGE_VERSIONS`).
+More generic packages such as typescript traspiler and node types can be adjusted for each project separately inside the `_templates` folder.
+
 **Publish:**
 
 ```bash
