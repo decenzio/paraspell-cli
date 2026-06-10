@@ -15,7 +15,7 @@ import {
 import { usePapiWallet } from "./wallet/papi";
 import PapiWalletControls from "./wallet/papi/PapiWalletControls.vue";
 import { submitUsingApi } from "./submit/submitUsingApi";
-<% } %>
+<% } -%>
 
 const toError = (error: unknown): Error =>
   error instanceof Error ? error : new Error("An unknown error occurred");
@@ -24,7 +24,6 @@ const errorVisible = ref(false);
 const error = ref<Error | null>(null);
 const loading = ref(false);
 const originChain = ref("Astar");
-
 <% if (evm) { %>
 const wallet = useWallet();
 
@@ -46,7 +45,7 @@ const {
   selectExtension,
   selectAccountByAddress,
 } = usePapiWallet();
-<% } %>
+<% } -%>
 
 const onSubmit = async (formValues: FormValues) => {
   loading.value = true;

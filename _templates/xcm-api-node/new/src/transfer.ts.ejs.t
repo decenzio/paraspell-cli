@@ -56,7 +56,6 @@ async function resolveCurrencyLocation(
 
 export async function transferViaApi(): Promise<string | string[]> {
   const params = defaults;
-
 <% if (evm) { %>
   if (isChainEvm(params.from)) {
     const sender = getEvmSenderAddress(params.from);
@@ -83,7 +82,7 @@ export async function transferViaApi(): Promise<string | string[]> {
     const txHash = await submitEvmTx(serializedTx, walletClient);
     return txHash;
   }
-<% } %>
+<% } -%>
 
   const mnemonic = getSubstrateMnemonic();
   const sender = await getSubstrateSenderAddress(mnemonic);

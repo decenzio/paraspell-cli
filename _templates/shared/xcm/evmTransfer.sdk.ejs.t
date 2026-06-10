@@ -7,7 +7,7 @@ import "@paraspell/evm";
 import "@paraspell/evm-snowbridge";
 <% } %><% if (swap) { %>
 import "@paraspell/swap";
-<% } %>
+<% } -%>
 
 export const submitEvmTransferFromForm = async (
   formValues: FormValues,

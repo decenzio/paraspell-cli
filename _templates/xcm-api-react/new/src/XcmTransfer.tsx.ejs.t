@@ -13,7 +13,7 @@ import {
 <% } else { %>
 import { PapiWalletControls, usePapiWallet } from "./wallet/papi";
 import { submitUsingApi } from "./submit/submitUsingApi";
-<% } %>
+<% } -%>
 
 const toError = (error: unknown): Error =>
   error instanceof Error ? error : new Error("An unknown error occurred");

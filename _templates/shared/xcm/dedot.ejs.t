@@ -17,7 +17,7 @@ export type SubmitOptions =
   | { kind: "substrate"; signer: Signer; senderAddress: string }
   | { kind: "evm"; walletClient: WalletClient };
 <% } %><% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } %>
+import "@paraspell/evm-snowbridge";<% } -%>
 
 export async function buildTransactions(
   formValues: FormValues,

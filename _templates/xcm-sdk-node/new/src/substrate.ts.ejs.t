@@ -82,7 +82,7 @@ function keyringPairToPjsSigner(pair: KeyringPair): TPjsSigner {
 
   return { address: pair.address, signer };
 }
-<% } %>
+<% } -%>
 
 export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'PolkadotSigner' : client === 'pjs' ? 'TPjsSigner' : 'KeyringPair' %>> {
   await ensureCryptoReady();

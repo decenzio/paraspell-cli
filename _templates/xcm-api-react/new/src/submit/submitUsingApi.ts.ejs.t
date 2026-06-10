@@ -36,7 +36,6 @@ const submitApiTransaction = async (
     client.destroy();
   }
 };
-
 <% if (evm) { %>
 export const submitUsingApi = async (
   formValues: FormValues,

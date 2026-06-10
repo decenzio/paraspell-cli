@@ -16,7 +16,7 @@ import {
   useDedotWallet,
   DedotWalletControls,<% } %>
 } from "./wallet/<%= clientDir %>";<% if (!evm) { %>
-import { submitUsingSdk } from "./xcm/<%= client %>";<% } %>
+import { submitUsingSdk } from "./xcm/<%= client %>";<% } -%>
 
 const toError = (error: unknown): Error =>
   error instanceof Error ? error : new Error("An unknown error occurred");

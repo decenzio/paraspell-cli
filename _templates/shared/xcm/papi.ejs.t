@@ -19,7 +19,7 @@ import { submitEvmTransferFromForm } from "./evmTransfer";
 export type SubmitOptions =
   | { kind: "substrate"; signer: PolkadotSigner; senderAddress: string }
   | { kind: "evm"; walletClient: WalletClient };
-<% } %>
+<% } -%>
 
 export const submitUsingSdk = async (
   formValues: FormValues,
