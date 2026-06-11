@@ -16,7 +16,11 @@ import { submitUsingApi } from "./submit/submitUsingApi";
 <% } -%>
 
 const toError = (error: unknown): Error =>
-  error instanceof Error ? error : new Error("An unknown error occurred");
+  error instanceof Error
+    ? error
+    : error instanceof ErrorEvent
+      ? new Error(error.message)
+      : new Error("An unknown error occurred");
 
 const XcmTransfer: FC = () => {
   const [errorVisible, setErrorVisible] = useState(false);

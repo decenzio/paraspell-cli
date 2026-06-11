@@ -13,7 +13,7 @@ app.post("/", async (_req, res) => {
     const result = await transferViaApi();
     res.status(200).json({ success: true, result });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = error instanceof Error || error instanceof ErrorEvent ? error.message : String(error);
     res.status(500).json({ success: false, error: message });
   }
 });
