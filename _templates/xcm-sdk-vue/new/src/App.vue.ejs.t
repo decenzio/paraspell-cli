@@ -15,6 +15,7 @@ import "./App.css";
     <a
       href="https://paraspell.github.io/docs/xcm-sdk/getting-started.html"
       target="_blank"
+      rel="noopener noreferrer"
       class="logo"
     >
       <img src="/paraspell.png" alt="ParaSpell logo" />
