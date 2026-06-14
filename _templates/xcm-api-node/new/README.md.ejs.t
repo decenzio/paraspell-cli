@@ -5,6 +5,8 @@ to: README.md
 
 Headless example: build transfers via the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api), then sign with **Polkadot API** (substrate)<% if (evm) { %> or **viem** (EVM origins)<% } %>.
 
+By default it calls the public ParaSpell API at `https://api.paraspell.xyz/v1` (see `src/consts.ts`). For production, consider [deploying your own API](https://paraspell.github.io/docs/xcm-api/deploy-api-yourself.html).
+
 ## Environment
 
 Add your wallet secrets to `.env`:
@@ -23,9 +25,9 @@ Add your wallet secrets to `.env`:
 curl -X POST http://localhost:3000/
 ```
 
-The server starts without submitting a transfer. Send `POST /` to sign and submit the configured XCM transfer.
+The server starts without submitting a transfer. Send `POST /` to sign and submit the configured XCM transfer (replace `3000` with your `PORT` if you set one).
 
-Keep wallet secrets in `.env`, not on the command line.
+> **Heads up:** the generated example signs and broadcasts a **live** XCM transfer on `POST /`. Use a dev/throwaway account while testing. Keep wallet secrets in `.env` (gitignored) — never on the command line or in version control.
 
 ## Features
 
@@ -35,6 +37,11 @@ Keep wallet secrets in `.env`, not on the command line.
 | Swap | `swapOptions` on API request |<% } %><% if (evm) { %>
 | EVM | `POST /evm-x-transfer` + viem `sendTransaction` |<% } %><% if (snowbridge) { %>
 | Snowbridge | `Ethereum` / `EthereumTestnet` origins via API |<% } %>
+
+## Docs
+
+- [Getting started](https://paraspell.github.io/docs/xcm-api/getting-started.html)
+- [Deploy the API yourself](https://paraspell.github.io/docs/xcm-api/deploy-api-yourself.html)
 
 ## License
 
