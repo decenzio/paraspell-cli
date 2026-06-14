@@ -25,7 +25,7 @@ create-paraspell ✨ — scaffold XCM starter apps
   - **Extensions (optional):** [EVM](https://github.com/paraspell/xcm-tools/tree/main/packages/evm), [Swap](https://paraspell.github.io/docs/xcm-sdk/getting-started.html#install-swap-extension), [Snowbridge](https://github.com/paraspell/xcm-tools/tree/main/packages/evm-snowbridge)
 - **[XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api) ⚡️** — Package-less XCM integration: your app calls the API, signs locally, and stays lean.
 
-**Frameworks** : React (Vite), Vue (Vite), or Node.js (headless scripts).
+**Frameworks** : React (Vite), Vue (Vite), or Node.js (headless Express server).
 
 <br>
 
@@ -37,12 +37,21 @@ Run the CLI in any empty folder (interactive prompts guide you through type, fra
 npm create paraspell@latest
 ```
 
-Then install and start the dev server:
+Then follow the printed next steps. For a **React / Vue** app:
 
 ```bash
 cd my-app
 pnpm install
 pnpm run dev
+```
+
+For a **Node.js** app (a headless Express server):
+
+```bash
+cd my-app
+pnpm install
+pnpm start                          # boots the server — no transfer yet
+curl -X POST http://localhost:3000/ # signs & submits the configured XCM transfer
 ```
 
 <details><summary><b>Other package managers</b></summary>
@@ -64,10 +73,26 @@ create-paraspell
 
 </details>
 
+<details><summary><b>Interactive mode (what it asks)</b></summary>
+<br>
+
+Running with no arguments prompts for, in order:
+
+1. **Project name**
+2. **Package manager** — `npm` / `yarn` / `pnpm` / `bun`
+3. **Framework** — React / Vue / Node.js
+4. **Project type** — XCM SDK or XCM API
+5. **Client** (SDK only) — Polkadot API / Polkadot.js / Dedot
+6. **Feature extensions** — EVM, Swap, Snowbridge (Snowbridge requires EVM)
+
+For the **Node.js** framework it additionally (optionally) prompts for a **Substrate mnemonic**, and — when EVM is enabled — an **EVM private key**. These are written only to the generated project's `.env` (gitignored, `chmod 600`), never logged or committed. Press Enter to skip and add them to `.env` yourself later. See [Security](#security).
+
+</details>
+
 <details><summary><b>For Agents & CI</b></summary>
 <br>
 
-Use `sdk` or `api` as the first argument (or `--type`), plus `--name`. SDK projects also need `--client`.
+Use `sdk` or `api` as the first argument (or `--type`), plus `--name`. SDK projects also accept `--client` (defaults to `pjs`; on a TTY you're prompted for it if omitted).
 
 ```bash
 npx create-paraspell@latest sdk react --name my-app --client pjs --package-manager pnpm
@@ -91,8 +116,23 @@ On a TTY, omitting `--name` or `--client` (SDK) opens prompts. Without a TTY, se
 | `--evm`, `--swap`, `--snowbridge` | `true` / `false` | `false` (`snowbridge` requires `--evm true`) |
 | `--package-manager` | `npm`, `yarn`, `pnpm`, `bun` | `pnpm` |
 | `--name`, `--out` | | `./<name>` in the current directory |
+| `--substrate-mnemonic` | (Node only) seed the generated `.env` | — |
+| `--private-key` | (Node + `--evm true`) seed the generated `.env` | — |
+
+> Avoid passing `--substrate-mnemonic` / `--private-key` on a shared shell or in CI logs — they can leak into shell history. Prefer the interactive masked prompt, or edit the generated `.env` directly. See [Security](#security).
 
 </details>
+
+## Security
+
+This CLI can prompt for wallet secrets to pre-fill a generated **Node.js** app:
+
+- A **Substrate mnemonic** (any Node.js app) and, with `--evm`, an **EVM private key**.
+- Entered secrets are written **only** to the generated project's `.env` — gitignored and created with `chmod 600` — and are never logged or committed.
+- The prompts are **optional** — press Enter to skip and add secrets to `.env` yourself later.
+- Use a **dev / throwaway account** (e.g. `//Alice`) for testing: generated Node apps sign and broadcast **live** XCM transfers on `POST /`.
+
+Found a vulnerability? See [SECURITY.md](SECURITY.md).
 
 <details><summary><b>Repository development</b></summary>
 <br>
