@@ -23,16 +23,16 @@ Add your wallet secrets to `.env`:
 curl -X POST http://localhost:3000/
 ```
 
-The server starts without submitting a transfer. Send `POST /` to sign and submit the configured XCM transfer.
+The server starts without submitting a transfer. Send `POST /` to sign and submit the configured XCM transfer (replace `3000` with your `PORT` if you set one).
 
-Keep wallet secrets in `.env`, not on the command line.
+> **Heads up:** the generated example signs and broadcasts a **live** XCM transfer on `POST /`. Use a dev/throwaway account while testing. Keep wallet secrets in `.env` (gitignored) — never on the command line or in version control.
 
 Default route: `<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>` → `Hydration` — edit `src/transfer.ts` to customize.
 
 ## Docs
 
 - [Send XCM](https://paraspell.github.io/docs/xcm-sdk/send-xcm.html)
-- [Getting started](https://paraspell.github.io/docs/sdk/getting-started.html)
+- [Getting started](https://paraspell.github.io/docs/xcm-sdk/getting-started.html)
 
 ## License
 

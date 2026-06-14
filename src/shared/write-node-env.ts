@@ -25,7 +25,7 @@ export async function writeNodeEnv(
   }
 
   const envPath = path.join(outDir, '.env');
-  const hasSecrets = Boolean(options.substrateMnemonic || options.privateKey);
-  const mode = hasSecrets ? 0o600 : undefined;
-  await fs.promises.writeFile(envPath, `${lines.join('\n')}\n`, { mode });
+  // Always restrict to owner read/write: the file holds (or will soon hold)
+  // wallet secrets, so it should never be created group/world-readable.
+  await fs.promises.writeFile(envPath, `${lines.join('\n')}\n`, { mode: 0o600 });
 }
