@@ -12,8 +12,22 @@ export type EvmAccountOption = {
   label: string;
 };
 
+export type EvmProviderOption = {
+  uuid: string;
+  label: string;
+};
+
 const truncateAddress = (address: string) =>
   `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+function toProviderOptions(
+  availableProviders: readonly EIP6963ProviderDetail[],
+): EvmProviderOption[] {
+  return availableProviders.map((entry) => ({
+    uuid: entry.info.uuid,
+    label: entry.info.name,
+  }));
+}
 
 function parseRequestedAccounts(result: unknown): string[] {
   if (!Array.isArray(result)) {
@@ -32,6 +46,9 @@ export function useEvmWallet() {
   const [selectedAddress, setSelectedAddress] = useState<string>();
   const [selectedProvider, setSelectedProvider] =
     useState<EIP6963ProviderDetail>();
+  const [providerOptions, setProviderOptions] = useState<EvmProviderOption[]>(
+    [],
+  );
 
   useEffect(() => {
     const provider = selectedProvider?.provider;
@@ -62,6 +79,8 @@ export function useEvmWallet() {
     }));
   }, [accounts]);
 
+  const selectedProviderUuid = selectedProvider?.info.uuid;
+
   const connectWithProvider = useCallback(
     async (providerDetail: EIP6963ProviderDetail) => {
       const provider = providerDetail.provider;
@@ -81,7 +100,7 @@ export function useEvmWallet() {
     [],
   );
 
-  const connect = useCallback(async () => {
+  const discoverProviders = useCallback(async () => {
     try {
       const availableProviders = getEip6963Providers();
       if (availableProviders.length === 0) {
@@ -89,34 +108,29 @@ export function useEvmWallet() {
         return;
       }
 
+      const options = toProviderOptions(availableProviders);
+      setProviderOptions(options);
+
       if (availableProviders.length === 1) {
         await connectWithProvider(availableProviders[0]);
-        return;
       }
-
-      const labels = availableProviders
-        .map((entry, index) => `${index + 1}. ${entry.info.name}`)
-        .join("\n");
-      const choice = window.prompt(
-        `Select a wallet provider:\n${labels}\n\nEnter the provider number:`,
-        "1",
-      );
-      if (!choice) return;
-
-      const index = Number.parseInt(choice, 10) - 1;
-      const providerDetail = availableProviders[index];
-      if (!providerDetail) {
-        alert("Invalid wallet provider selection.");
-        return;
-      }
-
-      await connectWithProvider(providerDetail);
     } catch {
       alert(
         "Failed to connect. Install an EVM-compatible wallet (EIP-1193) and try again.",
       );
     }
   }, [connectWithProvider]);
+
+  const selectProvider = useCallback(
+    async (uuid: string) => {
+      const providerDetail = getEip6963Providers().find(
+        (entry) => entry.info.uuid === uuid,
+      );
+      if (!providerDetail) return;
+      await connectWithProvider(providerDetail);
+    },
+    [connectWithProvider],
+  );
 
   const selectAccountByAddress = useCallback((address: string) => {
     setSelectedAddress(address);
@@ -126,6 +140,7 @@ export function useEvmWallet() {
     setAccounts([]);
     setSelectedAddress(undefined);
     setSelectedProvider(undefined);
+    setProviderOptions([]);
   }, []);
 
   const getWalletClient = useCallback(
@@ -155,10 +170,13 @@ export function useEvmWallet() {
   return {
     accounts: accountOptions,
     providers,
+    providerOptions,
     selectedAddress,
     selectedProvider,
-    connect,
+    selectedProviderUuid,
+    discoverProviders,
     connectWithProvider,
+    selectProvider,
     selectAccountByAddress,
     disconnect,
     getWalletClient,

@@ -2,12 +2,13 @@
 to: src/wallet/shared/types.ts
 skip_if: <%= (!evmWallet).toString() %>
 ---
+import type { ComputedRef, Ref } from "vue";
 import type { EIP1193Provider } from "mipd";
 import type { TChain } from "<%= sdkPackage %>";
 import type { WalletClient } from "viem";
 import type { FormValues } from "../../types";
 import type { WalletKind } from "../evm/WalletKindSelector";
-import type { EvmAccountOption } from "../evm/useEvmWallet";
+import type { EvmAccountOption, EvmProviderOption } from "../evm/useEvmWallet";
 
 export type WalletAccountOption = {
   address: string;
@@ -39,11 +40,25 @@ export type UseWalletWithEvmReturn<TSigner = unknown> = SubstrateWalletBase<TSig
   setActiveWalletKind: (kind: WalletKind) => void;
   buildSubmitOptions: (from: TChain) => WalletSubmitOptions<TSigner> | null;
   submitTransfer: (formValues: FormValues) => Promise<boolean>;
-  evmAccounts: EvmAccountOption[];
-  connectEvm: () => Promise<void>;
+  evmAccounts: ComputedRef<EvmAccountOption[]>;
+  evmProviderOptions: Ref<EvmProviderOption[]> | EvmProviderOption[];
+  selectedEvmProviderUuid: ComputedRef<string | undefined> | string | undefined;
+  discoverEvmProviders: () => Promise<void>;
+  selectEvmProvider: (uuid: string) => Promise<void>;
   selectEvmAccount: (address: string) => void;
   disconnectEvm: () => void;
   getEvmWalletClient: (origin: TChain) => WalletClient | undefined;
+};
+
+export type WalletControlsEvmProps = {
+  providerOptions: EvmProviderOption[];
+  selectedProviderUuid: string | undefined;
+  accounts: EvmAccountOption[];
+  selectedAddress: string | undefined;
+  onConnectClick: () => void;
+  onProviderChange: (uuid: string) => void;
+  onAccountChange: (address: string) => void;
+  onDisconnect?: () => void;
 };
 
 export type WalletControlsSubstrateProps = {

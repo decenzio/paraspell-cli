@@ -18,9 +18,16 @@ export function createWalletControls(
     if (wallet.activeWalletKind === "evm") {
       return (
         <EvmWalletControls
+          providerOptions={wallet.evmProviderOptions}
+          selectedProviderUuid={wallet.selectedEvmProviderUuid}
           accounts={wallet.evmAccounts}
           selectedAddress={wallet.selectedAddress}
-          onConnectClick={wallet.connectEvm}
+          onConnectClick={() => {
+            void wallet.discoverEvmProviders();
+          }}
+          onProviderChange={(uuid) => {
+            void wallet.selectEvmProvider(uuid);
+          }}
           onAccountChange={wallet.selectEvmAccount}
           onDisconnect={wallet.disconnectEvm}
         />

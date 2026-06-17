@@ -20,9 +20,16 @@ export function createWalletControls(SubstrateControls: Component) {
         const wallet = props.wallet;
         if (unref(wallet.activeWalletKind) === "evm") {
           return h(EvmWalletControls, {
+            providerOptions: unref(wallet.evmProviderOptions),
+            selectedProviderUuid: unref(wallet.selectedEvmProviderUuid),
             accounts: unref(wallet.evmAccounts),
             selectedAddress: unref(wallet.selectedAddress),
-            onConnectClick: wallet.connectEvm,
+            onConnectClick: () => {
+              void wallet.discoverEvmProviders();
+            },
+            onProviderChange: (uuid: string) => {
+              void wallet.selectEvmProvider(uuid);
+            },
             onAccountChange: wallet.selectEvmAccount,
             onDisconnect: wallet.disconnectEvm,
           });
