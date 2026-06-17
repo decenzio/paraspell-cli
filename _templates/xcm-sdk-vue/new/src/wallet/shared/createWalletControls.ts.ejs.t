@@ -1,6 +1,6 @@
 ---
 to: src/wallet/shared/createWalletControls.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import { defineComponent, h, unref, type Component, type PropType } from "vue";
 import EvmWalletControls from "../evm/EvmWalletControls.vue";

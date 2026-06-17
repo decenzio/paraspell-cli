@@ -2,94 +2,136 @@
 to: src/transfer.ts
 ---
 <% if (swap) { %>import "@paraspell/swap";
-<% } %><% if (client === 'papi') { %>import { Builder } from "@paraspell/sdk";<% } else if (client === 'pjs') { %>import {
+<% } %><% if (client === 'papi') { %>import {
+  Builder,
+  findAssetInfoOrThrow,
+  findNativeAssetInfoOrThrow,
+  getSupportedAssets,
+} from "@paraspell/sdk";<% } else if (client === 'pjs') { %>import {
   Builder,
   createChainClient,
+  findAssetInfoOrThrow,
+  findNativeAssetInfoOrThrow,
+  getSupportedAssets,
 } from "@paraspell/sdk-pjs";<% } else { %>import {
   Builder,
   createChainClient,
-} from "@paraspell/sdk-dedot";<% } %><% if (evm && !snowbridge) { %>
-import { Native } from "@paraspell/sdk";<% } %><% if (evm) { %>
-import { getEvmWalletClient, isChainEvm, submitEvmTransfer } from "./evm.js";<% } %>
+  findAssetInfoOrThrow,
+  findNativeAssetInfoOrThrow,
+  getSupportedAssets,
+} from "@paraspell/sdk-dedot";<% } %><% if (evmWallet) { %>
+import { getEvmWalletClient, isEvmOrigin, submitEvmTransfer } from "./evm.js";<% } %>
 import { getSubstrateSigner } from "./substrate.js";
-import type { TransferParams } from "./types.js";<% if (evm) { %>
-import type { TSubstrateChain } from "@paraspell/sdk";<% } -%>
+import type { TSubstrateChain } from "@paraspell/sdk";
+import type { TransferParams } from "./types.js";
 
 const defaults: TransferParams = {
   from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
   to: "Hydration",
   amount: "0.1",
-<% if (snowbridge) { -%>
-  currencySymbol: "ETH",
-<% } else if (evm) { -%>
-  currencySymbol: Native("GLMR"),
-<% } else { -%>
-  currencySymbol: "ASTR",
-<% } -%>
-  recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
+  recipient: "//Bob",
 };
 
-export async function transferAsset(): Promise<string | string[]> {
+async function resolveCurrencyLocation(
+  from: TransferParams["from"],
+  to: TransferParams["to"],
+  location?: TransferParams["currencyLocation"],
+) {
+  if (location) {
+    findAssetInfoOrThrow(from, { location }, to);
+    return location;
+  }
+  return findNativeAssetInfoOrThrow(from).location;
+}
+
+<% if (swap) { %>async function resolveCurrencyToLocation(
+  from: TransferParams["from"],
+  to: TransferParams["to"],
+  location?: TransferParams["currencyToLocation"],
+) {
+  if (location) {
+    findAssetInfoOrThrow(from, { location }, to);
+    return location;
+  }
+  const assets = await getSupportedAssets(from, to);
+  const targetSymbol = "<%= evm ? 'USDC' : 'DOT' %>";
+  const asset = assets.find((entry) => entry.symbol === targetSymbol);
+  if (!asset) {
+    throw new Error(
+      `Asset ${targetSymbol} not found for ${from} -> ${to}`,
+    );
+  }
+  return asset.location;
+}
+
+<% } %>export async function transferAsset(): Promise<string | string[]> {
   const opts = defaults;
-<% if (evm && client !== 'papi') { %>
-  const substrateFrom = opts.from as TSubstrateChain;
-<% } -%>
-<% if (swap) { %>  if (opts.currencyToSymbol) {
-<% if (evm) { %>    const sender = isChainEvm(opts.from)
-      ? getEvmWalletClient(opts.from)
-      : await getSubstrateSigner();
-<% } else { %>    const sender = await getSubstrateSigner();
-<% } %>
-    const swapBuilder = Builder()
-      .from(opts.from)
-      .to(opts.to)
-      .currency({
-        symbol: opts.currencySymbol,
-        amount: opts.amount,
-      })
-      .recipient(opts.recipient)
-      .sender(sender)
-      .swap({
-        currencyTo: { symbol: opts.currencyToSymbol },
-        ...(opts.exchange ? { exchange: [opts.exchange] } : {}),
-      });
+  const currencyLocation = await resolveCurrencyLocation(
+    opts.from,
+    opts.to,
+    opts.currencyLocation,
+  );
 
-    try {
-      return await swapBuilder.signAndSubmitAll();
-    } finally {
-      await swapBuilder.disconnect();
-    }
+<% if (swap) { %>  const currencyToLocation = await resolveCurrencyToLocation(
+    opts.from,
+    opts.to,
+    opts.currencyToLocation,
+  );
+
+  <% if (evmWallet) { %>const swapSender = isEvmOrigin(opts.from)
+    ? getEvmWalletClient(opts.from)
+    : await getSubstrateSigner();
+  <% } else { %>const swapSender = await getSubstrateSigner();
+  <% } %>
+  const swapBuilder = Builder()
+    .from(opts.from)
+    .to(opts.to)
+    .currency({
+      location: currencyLocation,
+      amount: opts.amount,
+    })
+    .recipient(opts.recipient)
+    .sender(swapSender)
+    .swap({
+      currencyTo: { location: currencyToLocation },
+    });
+
+  try {
+    return await swapBuilder.signAndSubmitAll();
+  } finally {
+    await swapBuilder.disconnect();
   }
 
-<% } -%><% if (evm) { %>  if (isChainEvm(opts.from)) {
-    return await submitEvmTransfer(opts);
+<% } %><% if (evmWallet) { %>  if (isEvmOrigin(opts.from)) {
+    return await submitEvmTransfer({
+      ...opts,
+      currencyLocation,
+    });
   }
 
-<% } -%>
-  const sender = await getSubstrateSigner();
+<% } %>  const sender = await getSubstrateSigner();
 <% if (client === 'papi') { %>
   const builder = Builder()
     .from(opts.from)
     .to(opts.to)
     .currency({
-      symbol: opts.currencySymbol,
+      location: currencyLocation,
       amount: opts.amount,
     })
     .recipient(opts.recipient)
     .sender(sender);
 <% } else { %>
-  const client = await createChainClient(<% if (evm) { %>substrateFrom<% } else { %>opts.from<% } %>);
+  const client = await createChainClient(opts.from as TSubstrateChain);
   const builder = Builder(client)
-    .from(<% if (evm) { %>substrateFrom<% } else { %>opts.from<% } %>)
+    .from(opts.from)
     .to(opts.to)
     .currency({
-      symbol: opts.currencySymbol,
+      location: currencyLocation,
       amount: opts.amount,
     })
     .recipient(opts.recipient)
     .sender(sender);
-<% } -%>
+<% } %>
 
   try {
     return await builder.signAndSubmit();

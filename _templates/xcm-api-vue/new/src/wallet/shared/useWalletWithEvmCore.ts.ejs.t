@@ -1,6 +1,6 @@
 ---
 to: src/wallet/shared/useWalletWithEvmCore.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import { computed, ref, unref } from "vue";
 import { useEvmWallet } from "../evm/useEvmWallet";
@@ -33,8 +33,12 @@ export function useWalletWithEvmCore<
   ): WalletSubmitOptions<TSigner> | null => {
     if (activeWalletKind.value === "evm") {
       const walletClient = evm.getWalletClient(from);
-      if (!walletClient) return null;
-      return { kind: "evm", walletClient };
+      if (!walletClient || !evm.selectedProvider.value) return null;
+      return {
+        kind: "evm",
+        walletClient,
+        provider: evm.selectedProvider.value.provider,
+      };
     }
 
     const substrateConnection = unref(substrate.connection);

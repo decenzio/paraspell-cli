@@ -34,7 +34,7 @@ create-paraspell ✨ — scaffold XCM starter apps
 Run the CLI in any empty folder (interactive prompts guide you through type, framework, client, and features):
 
 ```bash
-npm create paraspell@latest
+pnpm create paraspell
 ```
 
 Then follow the printed next steps. For a **React / Vue** app:
@@ -65,7 +65,7 @@ curl -X POST http://localhost:3000/ # signs & submits the configured XCM transfe
 | **bun** | `bun create paraspell` |
 | **npx** | `npx create-paraspell@latest` |
 
-**Global binary** (after `npm install -g create-paraspell`):
+**Global binary** (after `pnpm install -g create-paraspell`):
 
 ```bash
 create-paraspell
@@ -113,11 +113,11 @@ On a TTY, omitting `--name` or `--client` (SDK) opens prompts. Without a TTY, se
 | `--type` | `sdk`, `api` | required when not using `sdk`/`api` subcommand |
 | `--framework` | `react`, `vue`, `node` | `react` |
 | `--client` (SDK only) | `papi`, `pjs`, `dedot` | `pjs` |
-| `--evm`, `--swap`, `--snowbridge` | `true` / `false` | `false` (`snowbridge` requires `--evm true`) |
+| `--evm`, `--swap`, `--snowbridge` | `true` / `false` | `false` |
 | `--package-manager` | `npm`, `yarn`, `pnpm`, `bun` | `pnpm` |
 | `--name`, `--out` | | `./<name>` in the current directory |
 | `--substrate-mnemonic` | (Node only) seed the generated `.env` | — |
-| `--private-key` | (Node + `--evm true`) seed the generated `.env` | — |
+| `--private-key` | (Node + EVM or Snowbridge) seed the generated `.env` | — |
 
 > Avoid passing `--substrate-mnemonic` / `--private-key` on a shared shell or in CI logs — they can leak into shell history. Prefer the interactive masked prompt, or edit the generated `.env` directly. See [Security](#security).
 
@@ -140,13 +140,13 @@ Found a vulnerability? See [SECURITY.md](SECURITY.md).
 Clone this repo and use the same flags via dev scripts. Output defaults to `generated/` unless you pass `--out`:
 
 ```bash
-npm install
-npm run build
-npm run execute          # run the built CLI locally
-npm run generate         # interactive flow via tsx (source)
+pnpm install
+pnpm build
+pnpm execute          # run the built CLI locally
+pnpm generate         # interactive flow via tsx (source)
 
-npm run generate:sdk -- react --name my-app --client pjs --package-manager pnpm
-npm run generate:xcm-api -- vue --name my-api --package-manager npm
+pnpm generate:sdk -- react --name my-app --client pjs --package-manager pnpm
+pnpm generate:xcm-api -- vue --name my-api --package-manager npm
 ```
 
 **Package layout:**
@@ -173,14 +173,14 @@ npm run generate:xcm-api -- vue --name my-api --package-manager npm
 **Updating dependency versions**
 
 To edit package versions see `shared/versions.cjs` (`SDK_VERSION`, `PACKAGE_VERSIONS`).
-More generic packages such as typescript traspiler and node types can be adjusted for each project separately inside the `_templates` folder.
+More generic packages such as typescript transpiler and node types can be adjusted for each project separately inside the `_templates` folder.
 
 **Publish:**
 
 ```bash
-npm run build
-npm pack
-npm publish --access public
+pnpm run build
+pnpm pack
+pnpm publish --access public
 ```
 
 </details>
@@ -189,13 +189,13 @@ npm publish --access public
 <br>
 
 ```bash
-npm run typecheck          # type-check the CLI
-npm test                   # scaffold variants + check structure
-npm run test:build         # production build each variant (slow)
-npm run test:all           # structure + build
-npm run test:watch         # structure tests in watch mode
-npm run test:generate      # regenerate generated/ only
-SKIP_GENERATE=1 npm test   # skip scaffolding, reuse generated/
+pnpm typecheck          # type-check the CLI
+pnpm test                   # scaffold variants + check structure
+pnpm test:build         # production build each variant (slow)
+pnpm test:all           # structure + build
+pnpm test:watch         # structure tests in watch mode
+pnpm test:generate      # regenerate generated/ only
+SKIP_GENERATE=1 pnpm test   # skip scaffolding, reuse generated/
 ```
 
 </details>

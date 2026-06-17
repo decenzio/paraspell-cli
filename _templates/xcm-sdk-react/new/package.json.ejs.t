@@ -9,6 +9,7 @@ to: package.json
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -16,7 +17,8 @@ to: package.json
     "@paraspell/sdk": "<%= sdkVersion %>"<% if (client !== 'papi') { %>,
     "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
-    "@paraspell/evm": "<%= sdkVersion %>",
+    "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
+    "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
     "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,

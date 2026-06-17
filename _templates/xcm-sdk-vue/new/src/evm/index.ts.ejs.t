@@ -1,5 +1,5 @@
 ---
 to: src/evm/index.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
-<%- h.includeShared('shared/evm/index.ejs.t') %>
+<%- h.includeShared('shared/evm/index.sdk.ejs.t') %>

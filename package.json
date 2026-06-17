@@ -22,12 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paraspell/paraspell-cli.git"
+    "url": "git+https://github.com/paraspell/cli.git"
   },
   "bugs": {
-    "url": "https://github.com/paraspell/paraspell-cli/issues"
+    "url": "https://github.com/paraspell/cli/issues"
   },
-  "homepage": "https://github.com/paraspell/paraspell-cli#readme",
+  "homepage": "https://github.com/paraspell/cli#readme",
   "keywords": [
     "paraspell",
     "xcm",
@@ -47,6 +47,7 @@
     "generate:sdk:examples": "tsx src/generate-sdk-examples.ts",
     "generate:xcm-api:examples": "tsx src/generate-xcm-api-examples.ts",
     "test": "vitest run --project structure",
+    "test:typecheck": "vitest run --project typecheck",
     "test:build": "vitest run --project build",
     "test:all": "vitest run",
     "test:watch": "vitest --project structure",

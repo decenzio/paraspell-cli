@@ -82,13 +82,23 @@ function assertPackageDeps(
     }
   }
 
+  const evmWallet = variant.evm || variant.snowbridge;
+
   if (variant.evm) {
     if (variant.kind === 'sdk') {
       if (!deps['@paraspell/evm']) errors.push('Missing dependency @paraspell/evm');
     }
-    if (!deps['viem']) errors.push('Missing dependency viem');
   } else if (deps['@paraspell/evm']) {
     errors.push('Unexpected dependency @paraspell/evm when evm=false');
+  }
+
+  if (evmWallet) {
+    if (!deps['viem']) errors.push('Missing dependency viem');
+    if (variant.framework !== 'node' && !deps['mipd']) {
+      errors.push('Missing dependency mipd');
+    }
+  } else if (deps['viem']) {
+    errors.push('Unexpected dependency viem when evm and snowbridge are false');
   }
 
   if (variant.framework !== 'node' && deps['dotenv']) {
@@ -122,6 +132,7 @@ function assertPackageDeps(
 function assertConditionalFiles(variant: GeneratedVariant, root: string): string[] {
   const errors: string[] = [];
   const isWeb = variant.framework === 'react' || variant.framework === 'vue';
+  const evmWallet = variant.evm || variant.snowbridge;
 
   if (!fileExists(root, 'package.json')) {
     errors.push('Missing package.json');
@@ -138,9 +149,19 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
     if (!fileExists(root, 'src/substrate.ts')) {
       errors.push('Missing src/substrate.ts');
     }
-    if (variant.evm !== fileExists(root, 'src/evm.ts')) {
+    if (evmWallet !== fileExists(root, 'src/evm.ts')) {
       errors.push(
-        variant.evm ? 'Missing src/evm.ts' : 'Unexpected src/evm.ts when evm=false',
+        evmWallet ? 'Missing src/evm.ts' : 'Unexpected src/evm.ts when wallet origins are disabled',
+      );
+    }
+    if (variant.kind === 'api' && evmWallet !== fileExists(root, 'src/evmOrigins.ts')) {
+      errors.push(
+        evmWallet ? 'Missing src/evmOrigins.ts' : 'Unexpected src/evmOrigins.ts when wallet origins are disabled',
+      );
+    }
+    if (evmWallet !== fileExists(root, 'src/getViemChain.ts')) {
+      errors.push(
+        evmWallet ? 'Missing src/getViemChain.ts' : 'Unexpected src/getViemChain.ts when wallet origins are disabled',
       );
     }
     return errors;
@@ -172,9 +193,24 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
       }
     }
 
-    if (variant.evm) {
+    if (evmWallet) {
       if (!fileExists(root, 'src/evm/index.ts')) {
         errors.push('Missing src/evm/index.ts');
+      }
+      for (const rel of [
+        'src/evm/eip6963.ts',
+        'src/evm/getViemChain.ts',
+        'src/requireAsset.ts',
+      ]) {
+        if (!fileExists(root, rel)) {
+          errors.push(`Missing ${rel}`);
+        }
+      }
+      if (variant.kind === 'sdk' && !fileExists(root, 'src/evm/isEvmOrigin.ts')) {
+        errors.push('Missing src/evm/isEvmOrigin.ts');
+      }
+      if (variant.kind === 'api' && !fileExists(root, 'src/evm/evmOrigins.ts')) {
+        errors.push('Missing src/evm/evmOrigins.ts');
       }
       if (variant.kind === 'sdk' && !fileExists(root, 'src/xcm/evmTransfer.ts')) {
         errors.push('Missing src/xcm/evmTransfer.ts');
@@ -185,7 +221,7 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
     } else {
       for (const rel of ['src/evm/index.ts', 'src/xcm/evmTransfer.ts']) {
         if (fileExists(root, rel)) {
-          errors.push(`Unexpected ${rel} when evm=false`);
+          errors.push(`Unexpected ${rel} when wallet origins are disabled`);
         }
       }
     }
@@ -208,13 +244,14 @@ async function assertNodeEnv(variant: GeneratedVariant, root: string): Promise<s
   if (!content.includes('SUBSTRATE_MNEMONIC=')) {
     errors.push('.env must include SUBSTRATE_MNEMONIC=');
   }
+  const evmWallet = variant.evm || variant.snowbridge;
   const envLines = content.split('\n').filter((line) => line.length > 0);
   const hasEvmPrivateKey = envLines.some((line) => line.startsWith('PRIVATE_KEY='));
-  if (variant.evm && !hasEvmPrivateKey) {
-    errors.push('.env must include PRIVATE_KEY= when evm=true');
+  if (evmWallet && !hasEvmPrivateKey) {
+    errors.push('.env must include PRIVATE_KEY= when EVM or Snowbridge wallet origins are enabled');
   }
-  if (!variant.evm && hasEvmPrivateKey) {
-    errors.push('Unexpected PRIVATE_KEY= in .env when evm=false');
+  if (!evmWallet && hasEvmPrivateKey) {
+    errors.push('Unexpected PRIVATE_KEY= in .env when wallet origins are disabled');
   }
 
   const indexPath = path.join(root, 'src/index.ts');
@@ -246,8 +283,8 @@ export async function assertVariantStructure(
     errors.push(...assertPackageDeps(pkg, variant));
 
     const scripts = pkg.scripts as Record<string, string> | undefined;
+    if (!scripts?.typecheck) errors.push('Missing script: typecheck');
     if (variant.framework === 'node') {
-      if (!scripts?.typecheck) errors.push('Missing script: typecheck');
       if (!scripts?.build) errors.push('Missing script: build');
     } else {
       if (!scripts?.build) errors.push('Missing script: build');

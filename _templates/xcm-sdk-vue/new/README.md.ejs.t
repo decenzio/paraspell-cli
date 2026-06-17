@@ -9,7 +9,7 @@ See the [XCM SDK docs](https://paraspell.github.io/docs/xcm-sdk/send-xcm.html) t
 ## Prerequisites
 
 - A browser wallet extension to sign transactions:
-  - **Substrate:** [Polkadot.js](https://polkadot.js.org/extension/), [Talisman](https://talisman.xyz/), or [SubWallet](https://www.subwallet.app/).<% if (evm) { %>
+  - **Substrate:** [Polkadot.js](https://polkadot.js.org/extension/), [Talisman](https://talisman.xyz/), or [SubWallet](https://www.subwallet.app/).<% if (evmWallet) { %>
   - **EVM:** an EIP-1193 wallet such as [MetaMask](https://metamask.io/) (for EVM-origin transfers).<% } %>
 - A funded account on the origin chain. This app submits **live** transfers — use a small amount and a test/throwaway account.
 
@@ -19,10 +19,10 @@ See the [XCM SDK docs](https://paraspell.github.io/docs/xcm-sdk/send-xcm.html) t
 2. Start the dev server: `<%= devCmd %>` (Vite prints the local URL, usually `http://localhost:5173`)
 3. **Connect a wallet** — click *Connect Wallet*, authorize the dApp in your extension, and pick an account.
 4. Choose the origin and destination chains, currency, amount, and recipient, then **Submit** and approve the transaction in your wallet.
-<% if (evm) { %>
+<% if (evmWallet) { %>
 **EVM** is enabled — use the wallet selector to switch between a Substrate wallet and an EVM wallet (e.g. MetaMask) depending on the origin chain.<% } %><% if (swap) { %>
 **Swap** is enabled — toggle *Add Swap* to also convert to a different currency on the destination via an exchange chain.<% } %><% if (snowbridge) { %>
-**Snowbridge** is enabled — `Ethereum` / `EthereumTestnet` origins route across the bridge.<% } %>
+**Snowbridge** is enabled — `Ethereum` origins route across the bridge.<% } %>
 
 ## Scripts
 

@@ -1,6 +1,6 @@
 ---
 to: src/wallet/shared/createWalletControls.tsx
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import type { FC } from "react";
 import { EvmWalletControls } from "../evm/EvmWalletControls";

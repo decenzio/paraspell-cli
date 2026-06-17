@@ -5,7 +5,7 @@ to: src/XcmTransfer.vue
 import { ref } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
-<% if (evm) { %>
+<% if (evmWallet) { %>
 import {
   useWallet,
   WalletControls,
@@ -33,7 +33,7 @@ const handleOriginChange = (origin: string) => {
   originChain.value = origin;
 };
 
-<% if (evm) { %>
+<% if (evmWallet) { %>
 const wallet = useWallet();
 
 const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {
@@ -57,7 +57,7 @@ const onSubmit = async (formValues: FormValues) => {
   errorVisible.value = false;
 
   try {
-    <% if (evm) { %>
+    <% if (evmWallet) { %>
     const submitted = await wallet.submitTransfer(formValues);
     if (!submitted) return;
     <% } else { %>
@@ -84,7 +84,7 @@ const onSubmit = async (formValues: FormValues) => {
 
 <template>
   <div class="transferLayout">
-    <% if (evm) { %>
+    <% if (evmWallet) { %>
     <div class="formHeader">
       <WalletKindSelector
         :active-wallet-kind="wallet.activeWalletKind.value"

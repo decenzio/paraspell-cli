@@ -3,7 +3,7 @@ to: src/wallet/papi/index.ts
 ---
 export { usePapiWallet } from "./usePapiWallet";
 export { default as PapiWalletControls } from "./PapiWalletControls.vue";
-<% if (evm) { %>
+<% if (evmWallet) { %>
 export {
   useWalletWithEvm as useWallet,
   WalletControls,

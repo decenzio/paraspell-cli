@@ -10,17 +10,17 @@ Thanks for helping improve `create-paraspell`!
 ## Setup
 
 ```bash
-npm install
-npm run build       # build the CLI into dist/
-npm run execute     # run the built CLI locally
-npm run generate    # interactive flow via tsx (source)
+pnpm install
+pnpm build       # build the CLI into dist/
+pnpm execute     # run the built CLI locally
+pnpm generate    # interactive flow via tsx (source)
 ```
 
 Generate specific variants (output defaults to `generated/` unless `--out` is given):
 
 ```bash
-npm run generate:sdk -- react --name my-app --client pjs
-npm run generate:xcm-api -- vue --name my-api --package-manager npm
+pnpm generate:sdk -- react --name my-app --client pjs
+pnpm generate:xcm-api -- vue --name my-api --package-manager npm
 ```
 
 ## Project layout
@@ -42,22 +42,22 @@ conditional output. Pinned dependency versions are centralized in `shared/versio
 ## Tests
 
 ```bash
-npm run typecheck   # type-check the CLI
-npm test            # scaffold all variants + assert structure/deps (fast)
-npm run test:build  # install + build every generated variant (slow)
-npm run test:all    # structure + build
+pnpm typecheck   # type-check the CLI
+pnpm test            # scaffold all variants + assert structure/deps (fast)
+pnpm test:build  # install + build every generated variant (slow)
+pnpm test:all    # structure + build
 ```
 
-Please run `npm run typecheck` and `npm test` before opening a PR. For template changes,
-`npm run test:build` (or a targeted subset, e.g. `TEST_FRAMEWORK=react npm run test:build`) is
+Please run `pnpm typecheck` and `pnpm test` before opening a PR. For template changes,
+`pnpm test:build` (or a targeted subset, e.g. `TEST_FRAMEWORK=react pnpm test:build`) is
 recommended.
 
 ## Releasing
 
 ```bash
-npm run build
-npm pack            # inspect the tarball contents
-npm publish
+pnpm build
+pnpm pack            # inspect the tarball contents
+pnpm publish
 ```
 
 `prepublishOnly` rebuilds `dist/` automatically before publish.

@@ -6,7 +6,7 @@ import TransferForm from "./XcmTransferForm";
 import type { FormValues } from "./types";
 import type { TChain } from "@paraspell/sdk";
 import {
-  <% if (evm) { %>useWallet,
+  <% if (evmWallet) { %>useWallet,
   WalletControls,
   WalletKindSelector,<% } else if (client === 'pjs') { %>
   usePjsWallet,
@@ -15,7 +15,7 @@ import {
   PapiWalletControls,<% } else { %>
   useDedotWallet,
   DedotWalletControls,<% } %>
-} from "./wallet/<%= clientDir %>";<% if (!evm) { %>
+} from "./wallet/<%= clientDir %>";<% if (!evmWallet) { %>
 import { submitUsingSdk } from "./xcm/<%= client %>";<% } -%>
 
 const toError = (error: unknown): Error =>
@@ -30,10 +30,10 @@ const XcmTransfer: FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
 
-  <% if (evm) { %>const wallet = useWallet();<% } else if (client === 'pjs') { %>const wallet = usePjsWallet();<% } else if (client === 'papi') { %>const wallet = usePapiWallet();<% } else { %>const wallet = useDedotWallet();<% } %>
+  <% if (evmWallet) { %>const wallet = useWallet();<% } else if (client === 'pjs') { %>const wallet = usePjsWallet();<% } else if (client === 'papi') { %>const wallet = usePapiWallet();<% } else { %>const wallet = useDedotWallet();<% } %>
   const [originChain, setOriginChain] = useState<TChain>("Astar");
 
-  <% if (evm) { %>const handleOriginChange = useCallback((origin: TChain) => {
+  <% if (evmWallet) { %>const handleOriginChange = useCallback((origin: TChain) => {
     setOriginChain(origin);
   }, []);
 
@@ -51,7 +51,7 @@ const XcmTransfer: FC = () => {
     setErrorVisible(false);
 
     try {
-      <% if (evm) { %>const submitted = await wallet.submitTransfer(formValues);
+      <% if (evmWallet) { %>const submitted = await wallet.submitTransfer(formValues);
       if (!submitted) return;<% } else { %>if (!wallet.connection) {
         alert("No account selected, connect wallet first");
         return;
@@ -77,7 +77,7 @@ const XcmTransfer: FC = () => {
 
   return (
     <div className="transferLayout">
-      <% if (evm) { %>
+      <% if (evmWallet) { %>
       <div className="formHeader">
         <WalletKindSelector
           activeWalletKind={wallet.activeWalletKind}
@@ -95,7 +95,7 @@ const XcmTransfer: FC = () => {
         onConnectClick={() => {
           void wallet.discoverExtensions();
         }}
-        onExtensionChange={(name) => {
+        onExtensionChange={(name: string) => {
           void wallet.selectExtension(name);
         }}
         onAccountChange={wallet.selectAccountByAddress}
@@ -111,7 +111,7 @@ const XcmTransfer: FC = () => {
         onConnectClick={() => {
           void wallet.discoverExtensions();
         }}
-        onExtensionChange={(name) => {
+        onExtensionChange={(name: string) => {
           void wallet.selectExtension(name);
         }}
         onAccountChange={wallet.selectAccountByAddress}
@@ -127,7 +127,7 @@ const XcmTransfer: FC = () => {
         onConnectClick={() => {
           void wallet.discoverExtensions();
         }}
-        onExtensionChange={(name) => {
+        onExtensionChange={(name: string) => {
           void wallet.selectExtension(name);
         }}
         onAccountChange={wallet.selectAccountByAddress}

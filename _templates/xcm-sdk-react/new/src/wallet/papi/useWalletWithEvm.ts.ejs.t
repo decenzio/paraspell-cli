@@ -1,6 +1,6 @@
 ---
 to: src/wallet/papi/useWalletWithEvm.ts
-skip_if: <%= (!(evm && client === 'papi')).toString() %>
+skip_if: <%= (!(evmWallet && client === 'papi')).toString() %>
 ---
 import { useCallback } from "react";
 import type { PolkadotSigner } from "polkadot-api";

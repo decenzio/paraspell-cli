@@ -14,13 +14,10 @@ import type { ApiTransaction } from "./types.js";
 const submitApiTransaction = async (
   apiTx: ApiTransaction,
 ): Promise<string> => {
-  const response = await axios.get(
+  const response = await axios.get<string[]>(
     `${API_URL}/chains/${apiTx.chain}/ws-endpoints`,
   );
-  const endpoints = response.data as string[];
-  if (endpoints.length === 0) {
-    throw new Error(`No WS endpoints found for chain ${apiTx.chain}`);
-  }
+  const endpoints = response.data;
 
   const client = createWsClient(endpoints[0]);
   try {

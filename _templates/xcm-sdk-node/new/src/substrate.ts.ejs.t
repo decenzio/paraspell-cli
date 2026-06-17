@@ -45,6 +45,10 @@ function createKeyringPair(secret: string): KeyringPair {
     );
   }
 }
+
+function signBytes(pair: KeyringPair, input: Uint8Array): Uint8Array {
+  return Uint8Array.from(pair.sign(input));
+}
 <% if (client === 'pjs') { %>
 type SignerPayloadRaw = Parameters<NonNullable<Signer["signRaw"]>>[0];
 type SignerPayloadJSON = Parameters<NonNullable<Signer["signPayload"]>>[0];
@@ -63,20 +67,26 @@ function u8aToHex(bytes: Uint8Array): `0x${string}` {
   return `0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
 }
 
-type KeyringPairWithPayload = KeyringPair & {
-  signPayload(payload: SignerPayloadJSON): Uint8Array;
-};
+function hasSignPayload(
+  pair: KeyringPair,
+): pair is KeyringPair & {
+  signPayload: (payload: SignerPayloadJSON) => Uint8Array;
+} {
+  return "signPayload" in pair && typeof pair.signPayload === "function";
+}
 
 function keyringPairToPjsSigner(pair: KeyringPair): TPjsSigner {
-  const signingPair = pair as KeyringPairWithPayload;
+  if (!hasSignPayload(pair)) {
+    throw new Error("Keyring pair does not support payload signing.");
+  }
   const signer: Signer = {
     signRaw: async (raw: SignerPayloadRaw): Promise<SignerResult> => ({
       id: 1,
-      signature: u8aToHex(pair.sign(hexToU8a(raw.data))),
+      signature: u8aToHex(signBytes(pair, hexToU8a(raw.data))),
     }),
     signPayload: async (payload: SignerPayloadJSON): Promise<SignerResult> => ({
       id: 1,
-      signature: u8aToHex(signingPair.signPayload(payload)),
+      signature: u8aToHex(pair.signPayload(payload)),
     }),
   };
 
@@ -91,7 +101,7 @@ export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'Pol
   return getPolkadotSigner(
     pair.publicKey,
     "Sr25519",
-    (input) => pair.sign(input) as Uint8Array,
+    (input) => signBytes(pair, input),
   );
 <% } else if (client === 'pjs') { %>
   return keyringPairToPjsSigner(pair);

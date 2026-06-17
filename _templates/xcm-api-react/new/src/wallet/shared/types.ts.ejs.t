@@ -1,7 +1,8 @@
 ---
 to: src/wallet/shared/types.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
+import type { EIP1193Provider } from "mipd";
 import type { WalletClient } from "viem";
 import type { FormValues } from "../../types";
 import type { WalletKind } from "../evm/WalletKindSelector";
@@ -29,7 +30,7 @@ export type SubstrateWalletBase<TSigner> = {
 };
 
 export type WalletSubmitOptions<TSigner = unknown> =
-  | { kind: "evm"; walletClient: WalletClient }
+  | { kind: "evm"; walletClient: WalletClient; provider: EIP1193Provider }
   | { kind: "substrate"; signer: TSigner; senderAddress: string };
 
 export type UseWalletWithEvmReturn<TSigner = unknown> = SubstrateWalletBase<TSigner> & {

@@ -17,7 +17,7 @@ to: package.json
     "@polkadot/keyring": "<%= polkadotKeyring %>",
     "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
     "dotenv": "<%= dotenv %>",
-    "express": "<%= express %>"<% if (evm) { %>,
+    "express": "<%= express %>"<% if (evmWallet) { %>,
     "viem": "<%= viem %>"<% } %>
   },
   "devDependencies": {

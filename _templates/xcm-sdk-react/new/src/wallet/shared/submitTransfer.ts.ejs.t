@@ -1,6 +1,6 @@
 ---
 to: src/wallet/shared/submitTransfer.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import type { FormValues } from "../../types";
 import { submitEvmTransferFromForm } from "../../xcm/evmTransfer";
@@ -22,6 +22,10 @@ export const submitEvmIfNeeded = async (
   options: WalletSubmitOptions,
 ): Promise<boolean> => {
   if (options.kind !== "evm") return false;
-  await submitEvmTransferFromForm(formValues, options.walletClient);
+  await submitEvmTransferFromForm(
+    formValues,
+    options.walletClient,
+    options.provider,
+  );
   return true;
 };

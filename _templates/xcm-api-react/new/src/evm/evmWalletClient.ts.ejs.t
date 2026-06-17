@@ -1,5 +1,5 @@
 ---
 to: src/evm/evmWalletClient.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
-<%- h.includeShared('shared/evm/evmWalletClient.api.ejs.t') %>
+<%- h.includeShared('shared/evm/evmWalletClient.ejs.t') %>

@@ -133,7 +133,7 @@ async function generateApp(params: {
 
   if (shouldWriteNodeEnv(opts.framework)) {
     await writeNodeEnv(flags.out, {
-      evm: flags.evm,
+      evmWallet: flags.evmWallet,
       privateKey: opts.privateKey,
       substrateMnemonic: opts.substrateMnemonic,
     });

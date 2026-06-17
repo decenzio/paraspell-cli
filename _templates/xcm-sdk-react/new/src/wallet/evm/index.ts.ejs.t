@@ -1,6 +1,6 @@
 ---
 to: src/wallet/evm/index.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 export { WalletKindSelector } from "./WalletKindSelector";
 export type { WalletKind, WalletKindSelectorProps } from "./WalletKindSelector";

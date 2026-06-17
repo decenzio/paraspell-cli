@@ -6,9 +6,10 @@ import { Binary } from "polkadot-api";
 import type { PolkadotSigner } from "polkadot-api";
 import { createWsClient } from "polkadot-api/ws";
 import { API_URL } from "../consts";
-import { fetchFromApi<% if (evm) { %>, fetchFromEvmApi<% } %> } from "../fetchFromApi";
-<% if (evm) { %>
-import { isChainEvm } from "../evm";
+import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "../fetchFromApi";
+import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
+<% if (evmWallet) { %>
+import { isEvmOrigin } from "../evm";
 import { submitEvmTx } from "./submitEvmTx";
 import type { WalletSubmitOptions } from "../wallet/shared/types";
 <% } %>
@@ -19,13 +20,10 @@ const submitApiTransaction = async (
   apiTx: ApiTransaction,
   signer: PolkadotSigner,
 ) => {
-  const response = await axios.get(
+  const response = await axios.get<string[]>(
     `${API_URL}/chains/${apiTx.chain}/ws-endpoints`,
   );
-  const endpoints = response.data as string[];
-  if (endpoints.length === 0) {
-    throw new Error(`No WS endpoints found for chain ${apiTx.chain}`);
-  }
+  const endpoints = response.data;
 
   const client = createWsClient(endpoints[0]);
   try {
@@ -36,12 +34,19 @@ const submitApiTransaction = async (
     client.destroy();
   }
 };
-<% if (evm) { %>
+<% if (evmWallet) { %>
 export const submitUsingApi = async (
   formValues: FormValues,
   options: WalletSubmitOptions<PolkadotSigner>,
 ): Promise<void> => {
-  if (isChainEvm(formValues.from)) {
+  const currency = requireCurrency(formValues.currency);
+<% if (swap) { %>  const swapCurrencyTo = requireSwapCurrencyTo(
+    formValues.swapEnabled,
+    formValues.currencyTo,
+  );
+<% } %>
+
+  if (isEvmOrigin(formValues.from)) {
     if (options.kind !== "evm") {
       throw new Error("EVM origin requires a connected EVM wallet.");
     }
@@ -57,13 +62,13 @@ export const submitUsingApi = async (
       recipient: formValues.recipient,
       sender,
       currency: {
-        location: formValues.currency!.location,
+        location: currency.location,
         amount: formValues.amount,
       },<% if (swap) { %>
-      ...(formValues.swapEnabled && formValues.currencyTo
+      ...(formValues.swapEnabled && swapCurrencyTo
         ? {
             swapOptions: {
-              currencyTo: { symbol: formValues.currencyTo },
+              currencyTo: { location: swapCurrencyTo.location },
               ...(formValues.exchange
                 ? { exchange: [formValues.exchange] }
                 : {}),
@@ -87,13 +92,13 @@ export const submitUsingApi = async (
     recipient: formValues.recipient,
     sender: options.senderAddress,
     currency: {
-      location: formValues.currency!.location,
+      location: currency.location,
       amount: formValues.amount,
     },<% if (swap) { %>
-    ...(formValues.swapEnabled && formValues.currencyTo
+    ...(formValues.swapEnabled && swapCurrencyTo
       ? {
           swapOptions: {
-            currencyTo: { symbol: formValues.currencyTo },
+            currencyTo: { location: swapCurrencyTo.location },
             ...(formValues.exchange
               ? { exchange: [formValues.exchange] }
               : {}),
@@ -114,19 +119,26 @@ export const submitUsingApi = async (
   signer: PolkadotSigner,
   senderAddress: string,
 ): Promise<void> => {
+  const currency = requireCurrency(formValues.currency);
+<% if (swap) { %>  const swapCurrencyTo = requireSwapCurrencyTo(
+    formValues.swapEnabled,
+    formValues.currencyTo,
+  );
+<% } %>
+
   const apiParams: ApiParams = {
     from: formValues.from,
     to: formValues.to,
     recipient: formValues.recipient,
     sender: senderAddress,
     currency: {
-      location: formValues.currency!.location,
+      location: currency.location,
       amount: formValues.amount,
     },<% if (swap) { %>
-    ...(formValues.swapEnabled && formValues.currencyTo
+    ...(formValues.swapEnabled && swapCurrencyTo
       ? {
           swapOptions: {
-            currencyTo: { symbol: formValues.currencyTo },
+            currencyTo: { location: swapCurrencyTo.location },
             ...(formValues.exchange
               ? { exchange: [formValues.exchange] }
               : {}),

@@ -11,7 +11,7 @@ Add your wallet secrets to `.env`:
 
 | Variable | Used for |
 |----------|----------|
-| `SUBSTRATE_MNEMONIC` | Substrate routes: mnemonic or `//Dev` URI (mnemonics: `"word1 word2 ..."`) |<% if (evm) { %>
+| `SUBSTRATE_MNEMONIC` | Substrate routes: mnemonic or `//Dev` URI (mnemonics: `"word1 word2 ..."`) |<% if (evmWallet) { %>
 | `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |<% } %>
 | `PORT` | Optional. HTTP port (default `3000`) |
 

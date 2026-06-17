@@ -1,6 +1,6 @@
 ---
 to: src/wallet/shared/submitTransfer.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import type { WalletKind } from "../evm/WalletKindSelector.vue";
 

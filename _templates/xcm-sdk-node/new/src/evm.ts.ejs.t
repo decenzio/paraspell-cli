@@ -1,68 +1,37 @@
 ---
 to: src/evm.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
-import { Builder, type TChain, type TDestination } from "<%= sdkPackage %>";
-import type { TEvmChainFrom } from "@paraspell/sdk";
-import { createWalletClient, http, type WalletClient, type Chain } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import {
-  darwinia,
-  moonbeam,
-  moonriver<% if (snowbridge) { %>,
-  mainnet,
-  sepolia<% } %>,
-} from "viem/chains";
-import "@paraspell/evm";<% if (snowbridge) { %>
+<% if (evm) { %>import {
+  Builder,
+  isChainEvm,
+  type TChain,
+} from "@paraspell/sdk";
+import "@paraspell/evm";
+<% } else { %>import { Builder, type TChain } from "@paraspell/sdk";
+<% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %>
+import {
+  createWalletClient,
+  http,
+  isHex,
+  type WalletClient,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import type { TransferParams } from "./types.js";
+import { getViemChainForOrigin } from "./getViemChain.js";
 
-export const EVM_ORIGIN_CHAINS = [
-  "Moonbeam",
-  "Moonriver",
-  "Darwinia",<% if (snowbridge) { %>
-  "Ethereum",
-  "EthereumTestnet",<% } %>
-] as const;
-
-export type EvmChain = (typeof EVM_ORIGIN_CHAINS)[number];
-
-const VIEM_CHAIN_BY_ORIGIN: Record<EvmChain, Chain> = {
-  Moonbeam: moonbeam,
-  Moonriver: moonriver,
-  Darwinia: darwinia,<% if (snowbridge) { %>
-  Ethereum: mainnet,
-  EthereumTestnet: sepolia,<% } %>
-};
-
-export function isChainEvm(chain: TChain): chain is EvmChain {
-  return EVM_ORIGIN_CHAINS.some((origin) => origin === chain);
+export function isEvmOrigin(chain: TChain): boolean {
+<% if (evm) { %>  if (isChainEvm(chain)) {
+    return true;
+  }
+<% } %><% if (snowbridge) { %>  if (chain === "Ethereum") {
+    return true;
+  }
+<% } %>  return false;
 }
 
-function toSdkEvmFrom(chain: EvmChain): TEvmChainFrom {
-  if (
-    chain === "Moonbeam" ||
-    chain === "Moonriver" ||
-    chain === "Darwinia"
-  ) {
-    return chain;
-  }
-<% if (snowbridge) { %>
-  if (chain === "EthereumTestnet") {
-    return "Ethereum" as TEvmChainFrom;
-  }
-  if (chain === "Ethereum") {
-    return chain as TEvmChainFrom;
-  }
-<% } %>
-  throw new Error(`Unsupported EVM origin: ${chain}`);
-}
-
-function getViemChainForOrigin(origin: EvmChain): Chain {
-  return VIEM_CHAIN_BY_ORIGIN[origin];
-}
-
-export function getEvmWalletClient(origin: EvmChain): WalletClient {
+export function getEvmWalletClient(origin: TChain): WalletClient {
   const privateKey = process.env.PRIVATE_KEY;
   if (!privateKey) {
     throw new Error(
@@ -70,7 +39,11 @@ export function getEvmWalletClient(origin: EvmChain): WalletClient {
     );
   }
 
-  const account = privateKeyToAccount(privateKey as `0x${string}`);
+  if (!isHex(privateKey)) {
+    throw new Error("PRIVATE_KEY must be a 0x-prefixed hex string.");
+  }
+
+  const account = privateKeyToAccount(privateKey);
   return createWalletClient({
     account,
     chain: getViemChainForOrigin(origin),
@@ -79,18 +52,22 @@ export function getEvmWalletClient(origin: EvmChain): WalletClient {
 }
 
 export async function submitEvmTransfer(params: TransferParams): Promise<string> {
-  const { from, to, recipient, amount, currencySymbol } = params;
+  const { from, to, recipient, amount, currencyLocation } = params;
 
-  if (!isChainEvm(from)) {
+  if (!isEvmOrigin(from)) {
     throw new Error(`Unsupported EVM origin: ${from}`);
   }
+  if (!currencyLocation) {
+    throw new Error("Currency location is required for EVM transfers.");
+  }
+
   const walletClient = getEvmWalletClient(from);
 
   return await Builder()
-    .from(toSdkEvmFrom(from))
+    .from(from)
     .to(to)
     .currency({
-      symbol: currencySymbol,
+      location: currencyLocation,
       amount,
     })
     .recipient(recipient)

@@ -1,15 +1,13 @@
 ---
 to: src/types.ts
 ---
-import type { TSymbolSpecifier<% if (evm) { %>, TChain, TDestination<% } else { %>, TSubstrateChain<% } %> } from "@paraspell/sdk";<% if (swap) { %>
-import type { TExchangeChain } from "@paraspell/sdk";<% } %>
+import type { TChain, TLocation, TSubstrateChain } from "@paraspell/sdk";
 
 export type TransferParams = {
-  from: <% if (evm) { %>TChain<% } else { %>TSubstrateChain<% } %>;
-  to: <% if (evm) { %>TDestination<% } else { %>TSubstrateChain<% } %>;
+  from: TChain;
+  to: TChain;
   amount: string;
-  currencySymbol: string | TSymbolSpecifier;
-  recipient: string;<% if (swap) { %>
-  currencyToSymbol?: string | TSymbolSpecifier;
-  exchange?: TExchangeChain;<% } %>
+  currencyLocation?: TLocation;
+  recipient: string;
+  currencyToLocation?: TLocation;
 };

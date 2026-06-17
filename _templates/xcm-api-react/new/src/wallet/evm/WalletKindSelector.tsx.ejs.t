@@ -1,6 +1,6 @@
 ---
 to: src/wallet/evm/WalletKindSelector.tsx
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import type { FC } from "react";
 

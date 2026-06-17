@@ -1,6 +1,6 @@
 ---
 to: src/wallet/evm/WalletKindSelector.vue
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 <script setup lang="ts">
 export type WalletKind = "substrate" | "evm";

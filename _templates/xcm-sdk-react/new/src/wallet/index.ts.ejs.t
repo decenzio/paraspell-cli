@@ -1,7 +1,7 @@
 ---
 to: src/wallet/<%= clientDir %>/index.ts
 ---
-<% if (evm) { %>export {
+<% if (evmWallet) { %>export {
   useWalletWithEvm as useWallet,
   WalletControls,
   type UseWalletReturn,

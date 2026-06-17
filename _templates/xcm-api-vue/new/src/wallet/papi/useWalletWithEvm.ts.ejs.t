@@ -1,6 +1,6 @@
 ---
 to: src/wallet/papi/useWalletWithEvm.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import type { PolkadotSigner } from "polkadot-api";
 import type { FormValues } from "../../types";

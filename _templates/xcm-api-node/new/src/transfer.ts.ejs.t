@@ -3,11 +3,11 @@ to: src/transfer.ts
 ---
 import axios from "axios";
 import { API_URL } from "./consts.js";
-import { fetchFromApi<% if (evm) { %>, fetchFromEvmApi<% } %> } from "./fetchFromApi.js";
+import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
 import type { AssetInfo, ApiParams, TransferParams } from "./types.js";
-<% if (evm) { %>
-import { getEvmSenderAddress, getEvmWalletClient, isChainEvm } from "./evm.js";
+<% if (evmWallet) { %>
+import { getEvmSenderAddress, getEvmWalletClient, isEvmOrigin } from "./evm.js";
 import { submitEvmTx } from "./submitEvmTx.js";
 <% } %>
 import { getSubstrateMnemonic, getSubstrateSenderAddress } from "./substrate.js";
@@ -16,9 +16,7 @@ const defaults: TransferParams = {
   from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
   to: "Hydration",
   amount: "0.1",
-  currencySymbol: "<%= snowbridge ? 'ETH' : evm ? 'GLMR' : 'ASTR' %>",
-  recipient: "//Bob",<% if (swap) { %>
-  currencyToSymbol: "<%= evm ? 'USDC' : 'DOT' %>",<% } %>
+  recipient: "//Bob",
 };
 
 type ApiErrorResponse = {
@@ -26,22 +24,31 @@ type ApiErrorResponse = {
 };
 
 async function resolveCurrencyLocation(
-  symbol: TransferParams["currencySymbol"],
+  location: TransferParams["currencyLocation"] | undefined,
   origin: TransferParams["from"],
   destination: TransferParams["to"],
 ): Promise<AssetInfo["location"]> {
   try {
-    const response = await axios.get(
+    const response = await axios.get<AssetInfo[]>(
       `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
     );
-    const assets = response.data as AssetInfo[];
-    const asset = assets.find((a) => a.symbol === symbol);
-    if (!asset) {
-      throw new Error(
-        `Asset ${symbol} not found for ${origin} -> ${destination}`,
+    const assets = response.data;
+    if (location) {
+      const asset = assets.find(
+        (entry) => JSON.stringify(entry.location) === JSON.stringify(location),
       );
+      if (!asset) {
+        throw new Error(
+          `Configured currency location not found for ${origin} -> ${destination}`,
+        );
+      }
+      return asset.location;
     }
-    return asset.location;
+    const nativeAsset = assets.find((entry) => entry.symbol);
+    if (!nativeAsset) {
+      throw new Error(`No supported assets found for ${origin} -> ${destination}`);
+    }
+    return nativeAsset.location;
   } catch (error) {
     if (axios.isAxiosError<ApiErrorResponse>(error)) {
       const message = error.response?.data.message;
@@ -54,10 +61,63 @@ async function resolveCurrencyLocation(
   }
 }
 
-export async function transferViaApi(): Promise<string | string[]> {
+<% if (swap) { %>async function resolveCurrencyToLocation(
+  location: TransferParams["currencyToLocation"] | undefined,
+  origin: TransferParams["from"],
+  destination: TransferParams["to"],
+): Promise<AssetInfo["location"]> {
+  try {
+    const response = await axios.get<AssetInfo[]>(
+      `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
+    );
+    const assets = response.data;
+    if (location) {
+      const asset = assets.find(
+        (entry) => JSON.stringify(entry.location) === JSON.stringify(location),
+      );
+      if (!asset) {
+        throw new Error(
+          `Configured swap currency location not found for ${origin} -> ${destination}`,
+        );
+      }
+      return asset.location;
+    }
+    const targetSymbol = "<%= evm ? 'USDC' : 'DOT' %>";
+    const asset = assets.find((entry) => entry.symbol === targetSymbol);
+    if (!asset) {
+      throw new Error(
+        `Asset ${targetSymbol} not found for ${origin} -> ${destination}`,
+      );
+    }
+    return asset.location;
+  } catch (error) {
+    if (axios.isAxiosError<ApiErrorResponse>(error)) {
+      const message = error.response?.data.message;
+      const serverMessage = message ? ` Server response: ${message}` : "";
+      throw new Error(`Error while resolving swap asset.${serverMessage}`, {
+        cause: error,
+      });
+    }
+    throw error;
+  }
+}
+
+<% } %>export async function transferViaApi(): Promise<string | string[]> {
   const params = defaults;
-<% if (evm) { %>
-  if (isChainEvm(params.from)) {
+  const currencyLocation = await resolveCurrencyLocation(
+    params.currencyLocation,
+    params.from,
+    params.to,
+  );
+<% if (swap) { %>
+  const currencyToLocation = await resolveCurrencyToLocation(
+    params.currencyToLocation,
+    params.from,
+    params.to,
+  );
+<% } %>
+<% if (evmWallet) { %>
+  if (isEvmOrigin(params.from)) {
     const sender = getEvmSenderAddress(params.from);
     const walletClient = getEvmWalletClient(params.from);
     const apiParams: ApiParams = {
@@ -66,17 +126,13 @@ export async function transferViaApi(): Promise<string | string[]> {
       recipient: params.recipient,
       sender,
       currency: {
-        symbol: params.currencySymbol,
+        location: currencyLocation,
         amount: params.amount,
       },<% if (swap) { %>
-      ...(params.currencyToSymbol
-        ? {
-            swapOptions: {
-              currencyTo: { symbol: params.currencyToSymbol },
-              ...(params.exchange ? { exchange: [params.exchange] } : {}),
-            },
-          }
-        : {}),<% } %>
+      swapOptions: {
+        currencyTo: { location: currencyToLocation },
+        ...(params.exchange ? { exchange: [params.exchange] } : {}),
+      },<% } %>
     };
     const serializedTx = await fetchFromEvmApi(apiParams);
     const txHash = await submitEvmTx(serializedTx, walletClient);
@@ -87,29 +143,19 @@ export async function transferViaApi(): Promise<string | string[]> {
   const mnemonic = getSubstrateMnemonic();
   const sender = await getSubstrateSenderAddress(mnemonic);
 
-  const location = await resolveCurrencyLocation(
-    params.currencySymbol,
-    params.from,
-    params.to,
-  );
-
   const apiParams: ApiParams = {
     from: params.from,
     to: params.to,
     recipient: params.recipient,
     sender,
     currency: {
-      location,
+      location: currencyLocation,
       amount: params.amount,
     },<% if (swap) { %>
-    ...(params.currencyToSymbol
-      ? {
-          swapOptions: {
-            currencyTo: { symbol: params.currencyToSymbol },
-            ...(params.exchange ? { exchange: [params.exchange] } : {}),
-          },
-        }
-      : {}),<% } %>
+    swapOptions: {
+      currencyTo: { location: currencyToLocation },
+      ...(params.exchange ? { exchange: [params.exchange] } : {}),
+    },<% } %>
   };
 
   const transactions = await fetchFromApi(apiParams);

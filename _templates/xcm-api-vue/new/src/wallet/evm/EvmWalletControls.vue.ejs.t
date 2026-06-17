@@ -1,6 +1,6 @@
 ---
 to: src/wallet/evm/EvmWalletControls.vue
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 <script setup lang="ts">
 import type { EvmAccountOption } from "./useEvmWallet";

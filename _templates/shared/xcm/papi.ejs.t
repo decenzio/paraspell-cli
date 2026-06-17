@@ -2,41 +2,47 @@ import {
   Builder,
   type TPapiTransaction,
   UnsupportedOperationError,<% if (evm) { %>
-  type TSubstrateChain,<% } %>
+<% } %>
 } from "@paraspell/sdk";
 import {
   InvalidTxError,
   type PolkadotSigner,
   type TxFinalizedPayload,
 } from "polkadot-api";
-import type { FormValues } from "../types";<% if (evm) { %>
+import type { FormValues } from "../types";
+import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
 import "@paraspell/evm";<% } %><% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } %><% if (evm) { %>
-import { isChainEvm } from "../evm";
+import "@paraspell/evm-snowbridge";<% } %><% if (evmWallet) { %>
+import { assertSubstrateOrigin, isEvmOrigin } from "../evm";
 import type { WalletClient } from "viem";
+import type { EIP1193Provider } from "mipd";
 import { submitEvmTransferFromForm } from "./evmTransfer";
 
 export type SubmitOptions =
   | { kind: "substrate"; signer: PolkadotSigner; senderAddress: string }
-  | { kind: "evm"; walletClient: WalletClient };
+  | { kind: "evm"; walletClient: WalletClient; provider: EIP1193Provider };
 <% } -%>
 
 export const submitUsingSdk = async (
   formValues: FormValues,
-  <% if (evm) { %>options: SubmitOptions,<% } else { %>signer: PolkadotSigner,
+  <% if (evmWallet) { %>options: SubmitOptions,<% } else { %>signer: PolkadotSigner,
   senderAddress: string,<% } %>
 ): Promise<void> => {
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
-<% if (evm) { %>  if (isChainEvm(from)) {
+<% if (evmWallet) { %>  if (isEvmOrigin(from)) {
     if (options.kind !== "evm") {
       throw new UnsupportedOperationError(
         "EVM origin requires a connected EVM wallet.",
       );
     }
 
-    await submitEvmTransferFromForm(formValues, options.walletClient);
+    await submitEvmTransferFromForm(
+      formValues,
+      options.walletClient,
+      options.provider,
+    );
     return;
   }
 
@@ -47,16 +53,23 @@ export const submitUsingSdk = async (
   }
 
   const { signer, senderAddress } = options;
-<% } %>  const substrateFrom = from<% if (evm) { %> as TSubstrateChain<% } %>;
+<% } %><% if (evmWallet) { %>
+  assertSubstrateOrigin(from);
+<% } %>
+  const currency = requireCurrency(formValues.currency);
 
 <% if (swap) { %>  if (swapEnabled) {
+    const resolvedCurrencyTo = requireSwapCurrencyTo(swapEnabled, currencyTo);
+    if (!resolvedCurrencyTo) {
+      throw new UnsupportedOperationError("Swap destination currency is required.");
+    }
     const contexts = await Builder()
-      .from(substrateFrom)
+      .from(from)
       .to(to)
-      .currency({ location: formValues.currency!.location, amount })
+      .currency({ location: currency.location, amount })
       .recipient(recipient)
       .swap({
-        currencyTo: { location: currencyTo!.location },
+        currencyTo: { location: resolvedCurrencyTo.location },
         ...(exchange ? { exchange: [exchange] } : {}),
       })
       .sender(senderAddress)
@@ -69,9 +82,9 @@ export const submitUsingSdk = async (
   }
 
 <% } %>  const tx = await Builder()
-    .from(substrateFrom)
+    .from(from)
     .to(to)
-    .currency({ location: formValues.currency!.location, amount })
+    .currency({ location: currency.location, amount })
     .recipient(recipient)
     .sender(senderAddress)
     .build();

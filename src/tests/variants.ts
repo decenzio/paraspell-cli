@@ -27,9 +27,6 @@ export function listVariants(options?: {
     for (const framework of Object.keys(SDK_EXAMPLES) as Framework[]) {
       if (options?.framework && options.framework !== framework) continue;
       for (const ex of SDK_EXAMPLES[framework]) {
-        if (ex.snowbridge && !ex.evm) {
-          throw new Error(`Invalid SDK example ${framework}/${ex.dir}: snowbridge requires evm`);
-        }
         variants.push({
           id: `sdk/${framework}/${ex.dir}`,
           kind: 'sdk',
@@ -49,9 +46,6 @@ export function listVariants(options?: {
     for (const framework of ['react', 'vue', 'node'] as Framework[]) {
       if (options?.framework && options.framework !== framework) continue;
       for (const ex of API_EXAMPLES) {
-        if (ex.snowbridge && !ex.evm) {
-          throw new Error(`Invalid API example ${ex.name}: snowbridge requires evm`);
-        }
         variants.push({
           id: `api/${framework}/${ex.name}`,
           kind: 'api',

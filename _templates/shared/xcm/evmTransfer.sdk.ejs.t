@@ -1,39 +1,42 @@
 import { Builder } from "<%= sdkPackage %>";
 import type { WalletClient } from "viem";
+import type { EIP1193Provider } from "mipd";
 import type { FormValues } from "../types";
-import { ensureEvmWalletClient, isChainEvm, toSdkEvmFrom } from "../evm/evmWalletClient";
-import "@paraspell/evm";
-<% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";
-<% } %><% if (swap) { %>
-import "@paraspell/swap";
+import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
+import { ensureEvmWalletClient, isEvmOrigin } from "../evm";
+<% if (evm) { %>import "@paraspell/evm";
+<% } %><% if (snowbridge) { %>import "@paraspell/evm-snowbridge";
+<% } %><% if (swap) { %>import "@paraspell/swap";
 <% } -%>
 
 export const submitEvmTransferFromForm = async (
   formValues: FormValues,
   walletClient: WalletClient,
+  provider: EIP1193Provider,
 ): Promise<void> => {
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
-  const currency = {
-    location: formValues.currency!.location,
-    amount,
-  };
 
-  if (!isChainEvm(from)) {
+  if (!isEvmOrigin(from)) {
     throw new Error(`Unsupported EVM origin: ${from}`);
   }
-  const signer = await ensureEvmWalletClient(walletClient, from);
+
+  const currency = requireCurrency(formValues.currency);
+  const signer = await ensureEvmWalletClient(walletClient, from, provider);
 
 <% if (swap) { %>  if (swapEnabled) {
+    const resolvedCurrencyTo = requireSwapCurrencyTo(swapEnabled, currencyTo);
+    if (!resolvedCurrencyTo) {
+      throw new Error("Swap destination currency is required.");
+    }
     const builder = Builder()
-      .from(toSdkEvmFrom(from))
+      .from(from)
       .to(to)
-      .currency(currency)
+      .currency({ location: currency.location, amount })
       .recipient(recipient)
       .sender(signer)
       .swap({
-        currencyTo: { location: currencyTo!.location },
+        currencyTo: { location: resolvedCurrencyTo.location },
         ...(exchange ? { exchange: [exchange] } : {}),
       });
 
@@ -46,9 +49,9 @@ export const submitEvmTransferFromForm = async (
   }
 
 <% } %>  await Builder()
-    .from(toSdkEvmFrom(from))
+    .from(from)
     .to(to)
-    .currency(currency)
+    .currency({ location: currency.location, amount })
     .recipient(recipient)
     .sender(signer)
     .signAndSubmit();

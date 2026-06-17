@@ -9,12 +9,14 @@ to: package.json
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.15.0",
-    "polkadot-api": "<%= polkadotApi %>"<% if (evm) { %>,
+    "polkadot-api": "<%= polkadotApi %>"<% if (evmWallet) { %>,
+    "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %>,
     "vue": "^3.5.13"
   },

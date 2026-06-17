@@ -1,6 +1,6 @@
 ---
 to: src/wallet/dedot/useWalletWithEvm.ts
-skip_if: <%= (!(evm && client === 'dedot')).toString() %>
+skip_if: <%= (!(evmWallet && client === 'dedot')).toString() %>
 ---
 
 import type { Signer } from "@polkadot/api/types";

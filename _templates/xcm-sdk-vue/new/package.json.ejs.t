@@ -9,6 +9,7 @@ to: package.json
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "typecheck": "vue-tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -17,7 +18,8 @@ to: package.json
     "<%= sdkPackage %>": "<%= sdkVersion %>",<% } %>
     "vue": "^3.5.13"<% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
-    "@paraspell/evm": "<%= sdkVersion %>",
+    "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
+    "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
     "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,

@@ -120,7 +120,7 @@ export async function runInteractiveGenerate(
     framework === 'node' ? await promptSubstrateMnemonic() : undefined;
 
   const privateKey =
-    framework === 'node' && featureFlags.evm
+    framework === 'node' && featureFlags.evmWallet
       ? await promptEvmPrivateKey()
       : undefined;
 

@@ -2,7 +2,7 @@
 to: src/fetchFromApi.ts
 ---
 import axios from "axios";
-<% if (evm) { -%>
+<% if (evmWallet) { -%>
 import type { Hex } from "viem";
 <% } -%>
 import { API_URL } from "./consts.js";
@@ -29,7 +29,7 @@ export const fetchFromApi = async (
     throw error;
   }
 };
-<% if (evm) { -%>
+<% if (evmWallet) { -%>
 
 export const fetchFromEvmApi = async (params: ApiParams): Promise<Hex> => {
   try {

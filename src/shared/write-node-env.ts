@@ -15,11 +15,15 @@ function formatEnvValue(value: string): string {
 
 export async function writeNodeEnv(
   outDir: string,
-  options: { privateKey?: string; substrateMnemonic?: string; evm?: boolean } = {},
+  options: {
+    privateKey?: string;
+    substrateMnemonic?: string;
+    evmWallet?: boolean;
+  } = {},
 ): Promise<void> {
   const substrateValue = options.substrateMnemonic ?? '';
   const lines = [`SUBSTRATE_MNEMONIC=${formatEnvValue(substrateValue)}`];
-  if (options.evm) {
+  if (options.evmWallet) {
     const evmValue = options.privateKey ?? '';
     lines.push(`PRIVATE_KEY=${formatEnvValue(evmValue)}`);
   }

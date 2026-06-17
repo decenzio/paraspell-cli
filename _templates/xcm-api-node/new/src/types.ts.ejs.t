@@ -11,9 +11,9 @@ export type TransferParams = {
   from: string;
   to: string;
   amount: string;
-  currencySymbol: string;
+  currencyLocation?: object;
   recipient: string;
-  currencyToSymbol?: string;
+  currencyToLocation?: object;
   exchange?: string;
 };
 
@@ -26,7 +26,7 @@ export type ApiParams = {
   recipient: string;
   sender: string;
   swapOptions?: {
-    currencyTo: { symbol: string };
+    currencyTo: { location: object } | { symbol: string };
     exchange?: string[];
   };
 };

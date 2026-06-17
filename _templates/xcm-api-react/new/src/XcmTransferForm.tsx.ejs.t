@@ -23,7 +23,8 @@ const TransferForm: FC<Props> = ({
   const [destinationChain, setDestinationChain] = useState("Hydration");
   const [supportedAssets, setSupportedAssets] = useState<AssetInfo[]>([]);
   const [currencyOptionId, setCurrencyOptionId] = useState("");
-  <% if (swap) { %>const [currencyTo, setCurrencyTo] = useState("DOT");
+  <% if (swap) { %>const [supportedSwapAssets, setSupportedSwapAssets] = useState<AssetInfo[]>([]);
+  const [currencyToOptionId, setCurrencyToOptionId] = useState("");
   const [swapEnabled, setSwapEnabled] = useState(false);
   const [exchange, setExchange] = useState("");
   <% } %>const [recipient, setRecipient] = useState(
@@ -41,15 +42,37 @@ const TransferForm: FC<Props> = ({
 
   useEffect(() => {
     const fetchAssets = async () => {
-      const response = await axios.get(
+      const response = await axios.get<AssetInfo[]>(
         `${API_URL}/supported-assets?origin=${originChain}&destination=${destinationChain}`,
       );
-      const assets = response.data as AssetInfo[];
-      setSupportedAssets(assets);
+      setSupportedAssets(response.data);
     };
     void fetchAssets();
   }, [originChain, destinationChain]);
 
+  <% if (swap) { %>useEffect(() => {
+    if (!swapEnabled) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchSwapAssets = async () => {
+      const response = await axios.get<AssetInfo[]>(
+        `${API_URL}/supported-assets?origin=${destinationChain}&destination=${originChain}`,
+      );
+      if (!cancelled) {
+        setSupportedSwapAssets(response.data);
+      }
+    };
+    void fetchSwapAssets();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [originChain, destinationChain, swapEnabled]);
+
+  <% } %>
   const currencyMap = useMemo(
     () =>
       supportedAssets.reduce(
@@ -77,10 +100,48 @@ const TransferForm: FC<Props> = ({
   )
     ? currencyOptionId
     : currencyOptions.at(-1)?.value;
+<% if (swap) { %>
+
+  const currencyToMap = useMemo(
+    () =>
+      supportedSwapAssets.reduce(
+        (map: Record<string, AssetInfo>, asset: AssetInfo) => {
+          const key = `${asset.symbol ?? "NO_SYMBOL"}-${JSON.stringify(asset.location)}`;
+          map[key] = asset;
+          return map;
+        },
+        {},
+      ),
+    [supportedSwapAssets],
+  );
+
+  const currencyToOptions = useMemo(
+    () =>
+      Object.keys(currencyToMap).map((key) => ({
+        value: key,
+        label: `${currencyToMap[key].symbol ?? "Unknown"} - ${currencyToMap[key].assetId ?? "Location"}`,
+      })),
+    [currencyToMap],
+  );
+
+  const selectedCurrencyToOptionId = currencyToOptions.some(
+    (option) => option.value === currencyToOptionId,
+  )
+    ? currencyToOptionId
+    : currencyToOptions.at(-1)?.value;
+<% } %>
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedCurrencyOptionId) return;
+<% if (swap) { %>
+    let selectedCurrencyTo: AssetInfo | undefined;
+    if (swapEnabled) {
+      if (!selectedCurrencyToOptionId) return;
+      selectedCurrencyTo = currencyToMap[selectedCurrencyToOptionId];
+      if (!selectedCurrencyTo) return;
+    }
+<% } %>
 
     onSubmit({
       from: originChain,
@@ -89,7 +150,7 @@ const TransferForm: FC<Props> = ({
       amount,
       currency: currencyMap[selectedCurrencyOptionId],<% if (swap) { %>
       swapEnabled,
-      currencyTo: swapEnabled ? currencyTo : undefined,
+      currencyTo: selectedCurrencyTo,
       exchange: swapEnabled && exchange ? exchange : undefined,<% } %>
     });
   };
@@ -189,12 +250,17 @@ const TransferForm: FC<Props> = ({
 
               <label>
                 Currency To
-                <input
-                  type="text"
-                  value={currencyTo}
-                  onChange={(e) => setCurrencyTo(e.target.value)}
+                <select
+                  value={selectedCurrencyToOptionId}
+                  onChange={(e) => setCurrencyToOptionId(e.target.value)}
                   required
-                />
+                >
+                  {currencyToOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </label>
             </>
           )}

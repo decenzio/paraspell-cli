@@ -4,7 +4,7 @@ to: src/XcmTransfer.tsx
 import { useCallback, useState, type FC } from "react";
 import TransferForm from "./XcmTransferForm";
 import type { FormValues } from "./types";
-<% if (evm) { %>
+<% if (evmWallet) { %>
 import {
   useWallet,
   WalletControls,
@@ -27,7 +27,7 @@ const XcmTransfer: FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
 
-  <% if (evm) { %>
+  <% if (evmWallet) { %>
   const wallet = useWallet();
   const [originChain, setOriginChain] = useState("Astar");
 
@@ -58,7 +58,7 @@ const XcmTransfer: FC = () => {
     setErrorVisible(false);
 
     try {
-      <% if (evm) { %>
+      <% if (evmWallet) { %>
       const submitted = await wallet.submitTransfer(formValues);
       if (!submitted) return;
       <% } else { %>
@@ -84,7 +84,7 @@ const XcmTransfer: FC = () => {
 
   return (
     <div className="transferLayout">
-      <% if (evm) { %>
+      <% if (evmWallet) { %>
       <div className="formHeader">
         <WalletKindSelector
           activeWalletKind={wallet.activeWalletKind}

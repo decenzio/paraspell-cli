@@ -3,7 +3,7 @@ to: README.md
 ---
 # ParaSpell XCM API — Node.js example
 
-Headless example: build transfers via the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api), then sign with **Polkadot API** (substrate)<% if (evm) { %> or **viem** (EVM origins)<% } %>.
+Headless example: build transfers via the [XCM API](https://github.com/paraspell/xcm-tools/tree/main/apps/xcm-api), then sign with **Polkadot API** (substrate)<% if (evmWallet) { %> or **viem** (EVM origins)<% } %>.
 
 By default it calls the public ParaSpell API at `https://api.paraspell.xyz/v1` (see `src/consts.ts`). For production, consider [deploying your own API](https://paraspell.github.io/docs/xcm-api/deploy-api-yourself.html).
 
@@ -13,7 +13,7 @@ Add your wallet secrets to `.env`:
 
 | Variable | Used for |
 |----------|----------|
-| `SUBSTRATE_MNEMONIC` | Substrate routes: mnemonic or `//Dev` URI (mnemonics: `"word1 word2 ..."`) |<% if (evm) { %>
+| `SUBSTRATE_MNEMONIC` | Substrate routes: mnemonic or `//Dev` URI (mnemonics: `"word1 word2 ..."`) |<% if (evmWallet) { %>
 | `PRIVATE_KEY` | EVM routes: `0x`-prefixed hex for viem |<% } %>
 | `PORT` | Optional. HTTP port (default `3000`) |
 
@@ -34,9 +34,9 @@ The server starts without submitting a transfer. Send `POST /` to sign and submi
 | Feature | Behavior |
 |---------|----------|
 | Base | `POST /x-transfers` + PAPI `signSubmitAndWatch` |<% if (swap) { %>
-| Swap | `swapOptions` on API request |<% } %><% if (evm) { %>
+| Swap | `swapOptions` on API request |<% } %><% if (evmWallet) { %>
 | EVM | `POST /evm-x-transfer` + viem `sendTransaction` |<% } %><% if (snowbridge) { %>
-| Snowbridge | `Ethereum` / `EthereumTestnet` origins via API |<% } %>
+| Snowbridge | `Ethereum` origins via API |<% } %>
 
 ## Docs
 

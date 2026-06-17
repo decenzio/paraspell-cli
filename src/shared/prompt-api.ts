@@ -54,7 +54,7 @@ export async function promptApiOptions(
       : undefined;
 
   const privateKey =
-    partial.framework === 'node' && featureFlags.evm
+    partial.framework === 'node' && featureFlags.evmWallet
       ? await promptEvmPrivateKey()
       : undefined;
 

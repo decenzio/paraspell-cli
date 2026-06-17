@@ -1,7 +1,6 @@
 const { resolvePackageManager } = require('../../../shared/package-manager.cjs');
 const {
   resolveFeatureFlags,
-  snowbridgeRequiresEvmMessage,
 } = require('../../../shared/feature-flags.cjs');
 const { SDK_VERSION, PACKAGE_VERSIONS } = require('../../../shared/versions.cjs');
 
@@ -43,9 +42,7 @@ module.exports = {
     const clientKey = CLIENT_ALIASES[rawClient] ?? 'pjs';
     const meta = CLIENT_META[clientKey];
 
-    const invalid = snowbridgeRequiresEvmMessage(args);
-    if (invalid) throw new Error(invalid);
-    const { evm, swap, snowbridge } = resolveFeatureFlags(args);
+    const { evm, swap, snowbridge, evmWallet } = resolveFeatureFlags(args);
 
     const pm = resolvePackageManager(args.packageManager);
 
@@ -58,6 +55,7 @@ module.exports = {
       evm,
       swap,
       snowbridge,
+      evmWallet,
       projectName: args.name ?? 'my-xcm-app',
       h,
     };

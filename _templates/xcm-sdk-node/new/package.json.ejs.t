@@ -19,7 +19,7 @@ to: package.json
     "express": "<%= express %>"<% if (client !== 'papi') { %>,
     "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
-    "@paraspell/evm": "<%= sdkVersion %>",
+    "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
     "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,

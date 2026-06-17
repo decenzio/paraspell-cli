@@ -13,6 +13,7 @@ const PACKAGE_VERSIONS = {
   polkadotExtensionDapp: '^0.58.10',
   polkadotExtensionInject: '^0.58.10',
   dedot: '^1.3.0',
+  mipd: '^0.0.7',
 };
 
 module.exports = { SDK_VERSION, PACKAGE_VERSIONS };

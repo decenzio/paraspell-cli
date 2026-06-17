@@ -7,13 +7,13 @@ import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
 import type { TChain } from "@paraspell/sdk";
 import {
-  <% if (evm) { %>useWallet,
+  <% if (evmWallet) { %>useWallet,
   WalletControls,
   WalletKindSelector,<% } else if (client === 'pjs') { %>usePjsWallet,
   PjsWalletControls,<% } else if (client === 'papi') { %>usePapiWallet,
   PapiWalletControls,<% } else { %>useDedotWallet,
   DedotWalletControls,<% } %>
-} from "./wallet/<%= clientDir %>";<% if (!evm) { %>
+} from "./wallet/<%= clientDir %>";<% if (!evmWallet) { %>
 import { submitUsingSdk } from "./xcm/<%= client %>";<% } -%>
 
 const toError = (error: unknown): Error =>
@@ -28,7 +28,7 @@ const error = ref<Error | null>(null);
 const loading = ref(false);
 const originChain = ref<TChain>("Astar");
 
-<% if (evm) { %>const wallet = useWallet();
+<% if (evmWallet) { %>const wallet = useWallet();
 
 const handleOriginChange = (origin: TChain) => {
   originChain.value = origin;
@@ -86,7 +86,7 @@ const onSubmit = async (formValues: FormValues) => {
   errorVisible.value = false;
 
   try {
-    <% if (evm) { %>const submitted = await wallet.submitTransfer(formValues);
+    <% if (evmWallet) { %>const submitted = await wallet.submitTransfer(formValues);
     if (!submitted) return;<% } else { %>if (!connection.value) {
       alert("No account selected, connect wallet first");
       return;
@@ -113,7 +113,7 @@ const onSubmit = async (formValues: FormValues) => {
 
 <template>
   <div class="transferLayout">
-    <% if (evm) { %>
+    <% if (evmWallet) { %>
     <div class="formHeader">
       <WalletKindSelector
         :active-wallet-kind="wallet.activeWalletKind.value"

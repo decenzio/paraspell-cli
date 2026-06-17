@@ -14,7 +14,7 @@ export type FormValues = {
   recipient: string;
   amount: string;<% if (swap) { %>
   swapEnabled?: boolean;
-  currencyTo?: string;
+  currencyTo?: AssetInfo;
   exchange?: string;<% } %>
 };
 
@@ -27,7 +27,7 @@ export type ApiParams = {
   recipient: string;
   sender: string;<% if (swap) { %>
   swapOptions?: {
-    currencyTo: { symbol: string };
+    currencyTo: { location: object };
     exchange?: string[];
   };<% } %>
 };

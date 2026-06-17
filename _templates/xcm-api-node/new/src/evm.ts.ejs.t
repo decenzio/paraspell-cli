@@ -1,44 +1,22 @@
 ---
 to: src/evm.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
-import { createWalletClient, http, type WalletClient, type Chain } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
 import {
-  darwinia,
-  moonbeam,
-  moonriver<% if (snowbridge) { %>,
-  mainnet,
-  sepolia<% } %>,
-} from "viem/chains";
+  createWalletClient,
+  http,
+  isHex,
+  type WalletClient,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { getEvmOriginChains } from "./evmOrigins.js";
+import { getViemChainForOrigin } from "./getViemChain.js";
 
-export const EVM_ORIGIN_CHAINS = [
-  "Moonbeam",
-  "Moonriver",
-  "Darwinia",<% if (snowbridge) { %>
-  "Ethereum",
-  "EthereumTestnet",<% } %>
-] as const;
-
-export type EvmChain = (typeof EVM_ORIGIN_CHAINS)[number];
-
-const VIEM_CHAIN_BY_ORIGIN: Record<EvmChain, Chain> = {
-  Moonbeam: moonbeam,
-  Moonriver: moonriver,
-  Darwinia: darwinia,<% if (snowbridge) { %>
-  Ethereum: mainnet,
-  EthereumTestnet: sepolia,<% } %>
-};
-
-export function isChainEvm(chain: string): chain is EvmChain {
-  return EVM_ORIGIN_CHAINS.some((origin) => origin === chain);
+export function isEvmOrigin(chain: string): boolean {
+  return getEvmOriginChains().includes(chain);
 }
 
-function getViemChainForOrigin(origin: EvmChain): Chain {
-  return VIEM_CHAIN_BY_ORIGIN[origin];
-}
-
-export function getEvmWalletClient(origin: EvmChain): WalletClient {
+export function getEvmWalletClient(origin: string): WalletClient {
   const privateKey = process.env.PRIVATE_KEY;
   if (!privateKey) {
     throw new Error(
@@ -46,7 +24,11 @@ export function getEvmWalletClient(origin: EvmChain): WalletClient {
     );
   }
 
-  const account = privateKeyToAccount(privateKey as `0x${string}`);
+  if (!isHex(privateKey)) {
+    throw new Error("PRIVATE_KEY must be a 0x-prefixed hex string.");
+  }
+
+  const account = privateKeyToAccount(privateKey);
   return createWalletClient({
     account,
     chain: getViemChainForOrigin(origin),
@@ -54,6 +36,11 @@ export function getEvmWalletClient(origin: EvmChain): WalletClient {
   });
 }
 
-export function getEvmSenderAddress(origin: EvmChain): string {
-  return getEvmWalletClient(origin).account!.address;
+export function getEvmSenderAddress(origin: string): string {
+  const walletClient = getEvmWalletClient(origin);
+  const account = walletClient.account;
+  if (!account) {
+    throw new Error("EVM wallet client has no account configured.");
+  }
+  return account.address;
 }

@@ -242,9 +242,9 @@ export function shiftPositionalFramework(argv: string[]): {
 
 const SHARED_OPTIONS = `  --framework <id>        react | vue | node
   --name <string>
-  --evm, --swap, --snowbridge <bool>  (snowbridge requires --evm true)
+  --evm, --swap, --snowbridge <bool>  (EVM and Snowbridge are independent)
   --substrate-mnemonic <secret>  optional Substrate mnemonic or //Dev URI for node (non-interactive)
-  --private-key <hex>     optional EVM wallet key for node + --evm (non-interactive)
+  --private-key <hex>     optional wallet key for node when using EVM or Snowbridge origins
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>            default: ./<name> in cwd
   --help`;
@@ -273,7 +273,7 @@ Options:
   --framework <id>        react | vue | node
   --name <string>
   --client <id>           papi | pjs | dedot
-  --evm, --swap, --snowbridge <bool>  (snowbridge requires --evm true)
+  --evm, --swap, --snowbridge <bool>  (EVM and Snowbridge are independent)
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>
   --help
@@ -286,7 +286,7 @@ export function printApiHelp(command = 'npm run generate:xcm-api'): void {
 Options:
   --framework <id>        react | vue | node
   --name <string>
-  --evm, --swap, --snowbridge <bool>  (snowbridge requires --evm true)
+  --evm, --swap, --snowbridge <bool>  (EVM and Snowbridge are independent)
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>
   --help

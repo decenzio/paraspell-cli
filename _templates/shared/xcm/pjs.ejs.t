@@ -5,17 +5,20 @@ import {
   type Extrinsic,
 } from "@paraspell/sdk-pjs";
 import type { Signer } from "@polkadot/api/types";
-import type { FormValues } from "../types";<% if (evm) { %>
+import type { FormValues } from "../types";
+import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
 import "@paraspell/evm";
-import { isChainEvm } from "../evm";
+<% } %><% if (snowbridge) { %>
+import "@paraspell/evm-snowbridge";<% } %><% if (evmWallet) { %>
+import { assertSubstrateOrigin, isEvmOrigin } from "../evm";
 import type { WalletClient } from "viem";
+import type { EIP1193Provider } from "mipd";
 import { submitEvmTransferFromForm } from "./evmTransfer";
 
 export type SubmitOptions =
   | { kind: "substrate"; signer: Signer; senderAddress: string }
-  | { kind: "evm"; walletClient: WalletClient };
-<% } %><% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } -%>
+  | { kind: "evm"; walletClient: WalletClient; provider: EIP1193Provider };
+<% } -%>
 
 export async function buildTransaction(
   formValues: FormValues,
@@ -24,22 +27,22 @@ export async function buildTransaction(
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
-<% if (evm) { %>  if (isChainEvm(from)) {
-    throw new UnsupportedOperationError(
-      "EVM origins are submitted via the EVM wallet path.",
-    );
-  }
+<% if (evmWallet) { %>  assertSubstrateOrigin(from);
 
 <% } %>  const substrateFrom = from as TSubstrateChain;
-
+  const currency = requireCurrency(formValues.currency);
 <% if (swap) { %>  if (swapEnabled) {
+    const resolvedCurrencyTo = requireSwapCurrencyTo(swapEnabled, currencyTo);
+    if (!resolvedCurrencyTo) {
+      throw new UnsupportedOperationError("Swap destination currency is required.");
+    }
     const contexts = await Builder()
       .from(substrateFrom)
       .to(to)
-      .currency({ location: formValues.currency!.location, amount })
+      .currency({ location: currency.location, amount })
       .recipient(recipient)
       .swap({
-        currencyTo: { location: currencyTo!.location },
+        currencyTo: { location: resolvedCurrencyTo.location },
         ...(exchange ? { exchange: [exchange] } : {}),
       })
       .sender(senderAddress)
@@ -52,7 +55,7 @@ export async function buildTransaction(
   const tx = await Builder(api)
     .from(substrateFrom)
     .to(to)
-    .currency({ location: formValues.currency!.location, amount })
+    .currency({ location: currency.location, amount })
     .recipient(recipient)
     .sender(senderAddress)
     .build();
@@ -102,17 +105,21 @@ async function submitTransaction(
 
 export const submitUsingSdk = async (
   formValues: FormValues,
-  <% if (evm) { %>options: SubmitOptions,<% } else { %>signer: Signer,
+  <% if (evmWallet) { %>options: SubmitOptions,<% } else { %>signer: Signer,
   senderAddress: string,<% } %>
 ): Promise<void> => {
-<% if (evm) { %>  if (isChainEvm(formValues.from)) {
+<% if (evmWallet) { %>  if (isEvmOrigin(formValues.from)) {
     if (options.kind !== "evm") {
       throw new UnsupportedOperationError(
         "EVM origin requires a connected EVM wallet.",
       );
     }
 
-    await submitEvmTransferFromForm(formValues, options.walletClient);
+    await submitEvmTransferFromForm(
+      formValues,
+      options.walletClient,
+      options.provider,
+    );
     return;
   }
 

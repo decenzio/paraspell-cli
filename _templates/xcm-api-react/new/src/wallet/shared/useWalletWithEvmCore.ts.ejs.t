@@ -1,6 +1,6 @@
 ---
 to: src/wallet/shared/useWalletWithEvmCore.ts
-skip_if: <%= (!evm).toString() %>
+skip_if: <%= (!evmWallet).toString() %>
 ---
 import { useCallback, useEffect, useState } from "react";
 import { useEvmWallet } from "../evm/useEvmWallet";
@@ -50,8 +50,12 @@ export function useWalletWithEvmCore<
     (from: string): WalletSubmitOptions<TSigner> | null => {
       if (activeWalletKind === "evm") {
         const walletClient = evm.getWalletClient(from);
-        if (!walletClient) return null;
-        return { kind: "evm", walletClient };
+        if (!walletClient || !evm.selectedProvider) return null;
+        return {
+          kind: "evm",
+          walletClient,
+          provider: evm.selectedProvider.provider,
+        };
       }
 
       if (!substrate.connection) return null;
