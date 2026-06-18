@@ -12,12 +12,11 @@ to: package.json
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@paraspell/sdk": "<%= sdkVersion %>",
+    "<%= sdkPackage %>": "<%= sdkVersion %>",
     "@polkadot/keyring": "<%= polkadotKeyring %>",
     "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
     "dotenv": "<%= dotenv %>",
-    "express": "<%= express %>"<% if (client !== 'papi') { %>,
-    "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
+    "express": "<%= express %>"<% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,

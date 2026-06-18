@@ -1,8 +1,4 @@
-<% if (framework === 'vue') { %>import type { ComputedRef, Ref } from "vue";
-<% } %><% if (projectKind === 'api' || projectKind === 'sdk') { %>import type { WalletClient } from "viem";
-import type { EIP1193Provider } from "mipd";
-<% } %><% if (projectKind === 'sdk') { %>
-
+<% if (projectKind === 'sdk') { %>
 export type SubmitOptions =
   | {
       kind: "substrate";

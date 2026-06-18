@@ -1,9 +1,14 @@
 export type WalletKind = "substrate" | "evm";
 
-export const WALLET_KIND_OPTIONS = [
+export type WalletKindOption = {
+  value: WalletKind;
+  label: string;
+};
+
+export const WALLET_KIND_OPTIONS: readonly WalletKindOption[] = [
   { value: "substrate", label: "Substrate" },
   { value: "evm", label: "EVM" },
-] as const satisfies readonly { value: WalletKind; label: string }[];
+];
 
 export function parseWalletKind(value: string): WalletKind {
   const option = WALLET_KIND_OPTIONS.find((item) => item.value === value);

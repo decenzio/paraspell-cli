@@ -1,16 +1,17 @@
-import { UnsupportedOperationError, type TSubstrateChain } from "@paraspell/sdk";
 import {
   Builder,
   createChainClient,
-  type Extrinsic,
+  UnsupportedOperationError,
+  type Extrinsic,<% if (evmWallet) { %>
+  isChainEvm,<% } %>
 } from "@paraspell/sdk-pjs";
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../types";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
 import "@paraspell/evm";
 <% } %><% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } %><% if (evmWallet) { %>
-import { assertSubstrateOrigin, isEvmOrigin } from "../evm";
+import "@paraspell/evm-snowbridge";<% } %>
+import { assertSubstrateOrigin } from "../evm/isEvmOrigin";<% if (evmWallet) { %>
 import { submitEvmTransferFromForm } from "./evmTransfer";
 <% } -%>
 
@@ -21,9 +22,7 @@ export async function buildTransaction(
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
-<% if (evmWallet) { %>  assertSubstrateOrigin(from);
-
-<% } %>  const substrateFrom = from as TSubstrateChain;
+  assertSubstrateOrigin(from);
   const currency = requireCurrency(formValues.currency);
 <% if (swap) { %>  if (swapEnabled) {
     const resolvedCurrencyTo = requireSwapCurrencyTo(swapEnabled, currencyTo);
@@ -31,7 +30,7 @@ export async function buildTransaction(
       throw new UnsupportedOperationError("Swap destination currency is required.");
     }
     const contexts = await Builder()
-      .from(substrateFrom)
+      .from(from)
       .to(to)
       .currency({ location: currency.location, amount })
       .recipient(recipient)
@@ -45,9 +44,9 @@ export async function buildTransaction(
     return contexts.map((ctx) => ctx.tx);
   }
 
-<% } %>  const api = await createChainClient(substrateFrom);
+<% } %>  const api = await createChainClient(from);
   const tx = await Builder(api)
-    .from(substrateFrom)
+    .from(from)
     .to(to)
     .currency({ location: currency.location, amount })
     .recipient(recipient)
@@ -102,7 +101,7 @@ export const submitUsingSdk = async (
   <% if (evmWallet) { %>options: SubmitOptions,<% } else { %>signer: Signer,
   senderAddress: string,<% } %>
 ): Promise<void> => {
-<% if (evmWallet) { %>  if (isEvmOrigin(formValues.from)) {
+<% if (evmWallet) { %>  if (isChainEvm(formValues.from)) {
     if (options.kind !== "evm") {
       throw new UnsupportedOperationError(
         "EVM origin requires a connected EVM wallet.",

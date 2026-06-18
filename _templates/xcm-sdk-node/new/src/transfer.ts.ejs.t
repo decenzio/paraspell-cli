@@ -2,27 +2,22 @@
 to: src/transfer.ts
 ---
 <% if (swap) { %>import "@paraspell/swap";
-<% } %><% if (client === 'papi') { %>import {
+<% } %>import {
   Builder,
   findAssetInfoOrThrow,
   findNativeAssetInfoOrThrow,
-  getSupportedAssets,
-} from "@paraspell/sdk";<% } else if (client === 'pjs') { %>import {
-  Builder,
-  createChainClient,
-  findAssetInfoOrThrow,
-  findNativeAssetInfoOrThrow,
-  getSupportedAssets,
-} from "@paraspell/sdk-pjs";<% } else { %>import {
-  Builder,
-  createChainClient,
-  findAssetInfoOrThrow,
-  findNativeAssetInfoOrThrow,
-  getSupportedAssets,
-} from "@paraspell/sdk-dedot";<% } %><% if (evmWallet) { %>
-import { getEvmWalletClient, isEvmOrigin, submitEvmTransfer } from "./evm.js";<% } %>
+  getSupportedAssets,<% if (client !== 'papi') { %>
+  createChainClient,<% } %><% if (evmWallet) { %>
+  isChainEvm,<% } %>
+} from "<%= sdkPackage %>";<% if (client === 'pjs' || client === 'dedot') { %>
+import { assertSubstrateOrigin } from "./isEvmOrigin.js";
+<% } %><% if (evmWallet) { %>
+import {
+  getEvmWalletClient,
+  submitEvmTransfer,
+} from "./evm.js";<% } %>
 import { getSubstrateSigner } from "./substrate.js";
-import type { TChain, TLocation, TSubstrateChain } from "@paraspell/sdk";
+import type { TChain, TLocation } from "<%= sdkPackage %>";
 import type { TransferParams } from "./types.js";
 
 const defaults: TransferParams = {
@@ -78,7 +73,7 @@ async function resolveCurrencyLocation(
     opts.currencyToLocation,
   );
 
-  <% if (evmWallet) { %>const swapSender = isEvmOrigin(opts.from)
+  <% if (evmWallet) { %>const swapSender = isChainEvm(opts.from)
     ? getEvmWalletClient(opts.from)
     : await getSubstrateSigner();
   <% } else { %>const swapSender = await getSubstrateSigner();
@@ -102,7 +97,7 @@ async function resolveCurrencyLocation(
     await swapBuilder.disconnect();
   }
 
-<% } %><% if (evmWallet) { %>  if (isEvmOrigin(opts.from)) {
+<% } else { %><% if (evmWallet) { %>  if (isChainEvm(opts.from)) {
     return await submitEvmTransfer({
       ...opts,
       currencyLocation,
@@ -121,7 +116,8 @@ async function resolveCurrencyLocation(
     .recipient(opts.recipient)
     .sender(sender);
 <% } else { %>
-  const client = await createChainClient(opts.from as TSubstrateChain);
+  assertSubstrateOrigin(opts.from);
+  const client = await createChainClient(opts.from);
   const builder = Builder(client)
     .from(opts.from)
     .to(opts.to)
@@ -138,4 +134,5 @@ async function resolveCurrencyLocation(
   } finally {
     await builder.disconnect();
   }
+<% } %>
 }

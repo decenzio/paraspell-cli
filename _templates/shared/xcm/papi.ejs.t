@@ -1,7 +1,8 @@
 import {
   Builder,
   type TPapiTransaction,
-  UnsupportedOperationError,<% if (evm) { %>
+  UnsupportedOperationError,<% if (evmWallet) { %>
+  isChainEvm,<% } %><% if (evm) { %>
 <% } %>
 } from "@paraspell/sdk";
 import {
@@ -13,7 +14,7 @@ import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
 import "@paraspell/evm";<% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %><% if (evmWallet) { %>
-import { assertSubstrateOrigin, isEvmOrigin } from "../evm";
+import { assertSubstrateOrigin } from "../evm/isEvmOrigin";
 import { submitEvmTransferFromForm } from "./evmTransfer";
 <% } -%>
 
@@ -25,7 +26,7 @@ export const submitUsingSdk = async (
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
-<% if (evmWallet) { %>  if (isEvmOrigin(from)) {
+<% if (evmWallet) { %>  if (isChainEvm(from)) {
     if (options.kind !== "evm") {
       throw new UnsupportedOperationError(
         "EVM origin requires a connected EVM wallet.",

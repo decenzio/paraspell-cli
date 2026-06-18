@@ -14,8 +14,7 @@ to: package.json
     "preview": "vite preview"
   },
   "dependencies": {
-    "@paraspell/sdk": "<%= sdkVersion %>"<% if (client !== 'papi') { %>,
-    "<%= sdkPackage %>": "<%= sdkVersion %>"<% } %><% if (swap) { %>,
+    "<%= sdkPackage %>": "<%= sdkVersion %>"<% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
     "mipd": "<%= mipd %>",

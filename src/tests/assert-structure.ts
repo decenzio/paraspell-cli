@@ -62,6 +62,9 @@ function assertPackageDeps(
     if (variant.client === 'dedot' && !deps['@paraspell/sdk-dedot']) {
       errors.push('Missing dependency @paraspell/sdk-dedot');
     }
+    if (variant.client !== 'papi' && deps['@paraspell/sdk']) {
+      errors.push('Unexpected dependency @paraspell/sdk when client is not papi');
+    }
     if (variant.swap && !deps['@paraspell/swap']) {
       errors.push('Missing dependency @paraspell/swap');
     }
@@ -159,6 +162,9 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
         evmWallet ? 'Missing src/evmOrigins.ts' : 'Unexpected src/evmOrigins.ts when wallet origins are disabled',
       );
     }
+    if (variant.kind === 'sdk' && !fileExists(root, 'src/isEvmOrigin.ts')) {
+      errors.push('Missing src/isEvmOrigin.ts');
+    }
     if (evmWallet !== fileExists(root, 'src/getViemChain.ts')) {
       errors.push(
         evmWallet ? 'Missing src/getViemChain.ts' : 'Unexpected src/getViemChain.ts when wallet origins are disabled',
@@ -191,6 +197,9 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
           );
         }
       }
+      if (!fileExists(root, 'src/evm/isEvmOrigin.ts')) {
+        errors.push('Missing src/evm/isEvmOrigin.ts');
+      }
     }
 
     if (evmWallet) {
@@ -205,9 +214,6 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
         if (!fileExists(root, rel)) {
           errors.push(`Missing ${rel}`);
         }
-      }
-      if (variant.kind === 'sdk' && !fileExists(root, 'src/evm/isEvmOrigin.ts')) {
-        errors.push('Missing src/evm/isEvmOrigin.ts');
       }
       if (variant.kind === 'api' && !fileExists(root, 'src/evm/evmOrigins.ts')) {
         errors.push('Missing src/evm/evmOrigins.ts');

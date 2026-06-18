@@ -15,13 +15,7 @@ import { PapiWalletControls, usePapiWallet } from "./wallet/papi";
 import { submitUsingApi } from "./submit/submitUsingApi";
 <% } -%>
 
-const toError = (error: unknown): Error =>
-  error instanceof Error
-    ? error
-    : error instanceof ErrorEvent
-      ? new Error(error.message)
-      : new Error("An unknown error occurred");
-
+<%- h.includeShared('shared/spa/toError.ejs.t') %>
 const XcmTransfer: FC = () => {
   const [errorVisible, setErrorVisible] = useState(false);
   const [error, setError] = useState<Error | null>(null);

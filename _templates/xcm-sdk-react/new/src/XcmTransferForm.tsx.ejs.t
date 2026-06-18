@@ -8,7 +8,7 @@ import {
   EXCHANGE_CHAINS,
   type TExchangeChain,<% } %>
   type TChain,
-} from "@paraspell/sdk";
+} from "<%= sdkPackage %>";
 import type { FormValues } from "./types";
 
 type Props = {

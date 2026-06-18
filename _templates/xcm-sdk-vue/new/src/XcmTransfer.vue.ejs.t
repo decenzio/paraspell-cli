@@ -5,7 +5,7 @@ to: src/XcmTransfer.vue
 import { ref } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
-import type { TChain } from "@paraspell/sdk";
+import type { TChain } from "<%= sdkPackage %>";
 import {
   <% if (evmWallet) { %>useWallet,
   WalletControls,
@@ -16,13 +16,7 @@ import {
 } from "./wallet/<%= clientDir %>";<% if (!evmWallet) { %>
 import { submitUsingSdk } from "./xcm/<%= client %>";<% } -%>
 
-const toError = (error: unknown): Error =>
-  error instanceof Error
-    ? error
-    : error instanceof ErrorEvent
-      ? new Error(error.message)
-      : new Error("An unknown error occurred");
-
+<%- h.includeShared('shared/spa/toError.ejs.t') %>
 const errorVisible = ref(false);
 const error = ref<Error | null>(null);
 const loading = ref(false);

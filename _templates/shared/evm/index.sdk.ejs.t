@@ -7,6 +7,5 @@ export {
 export { getViemChainForOrigin } from "./getViemChain";
 export {
   assertSubstrateOrigin,
-  isEvmOrigin,
   isSubstrateOrigin,
 } from "./isEvmOrigin";

@@ -1,6 +1,4 @@
 <% if (client === 'papi' || projectKind === 'api') { %>
-import type { PolkadotSigner } from "polkadot-api";
-
 export type PapiWalletConnection = {
   address: string;
   signer: PolkadotSigner;
@@ -8,9 +6,6 @@ export type PapiWalletConnection = {
 
 export type PapiWalletControlsProps = WalletControlsSubstrateProps;
 <% } %><% if (client === 'pjs') { %>
-import type { Signer } from "@polkadot/api/types";
-import type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-
 export type PjsInjectedAccount = InjectedAccountWithMeta;
 
 export type PjsWalletConnection = {
@@ -20,8 +15,6 @@ export type PjsWalletConnection = {
 
 export type PjsWalletControlsProps = WalletControlsSubstrateProps;
 <% } %><% if (client === 'dedot') { %>
-import type { Signer } from "@polkadot/api/types";
-
 export type ExtensionInjectedSigner = Signer;
 
 export type WindowWithInjectedWeb3 = Window & {

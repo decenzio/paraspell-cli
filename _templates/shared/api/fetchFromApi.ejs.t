@@ -5,38 +5,30 @@ import type { Hex } from "viem";
 import { API_URL } from "./consts<% if (framework === 'node') { %>.js<% } %>";
 import type { ApiParams, ApiTransaction, ApiErrorResponse } from "./types<% if (framework === 'node') { %>.js<% } %>";
 
-export const fetchFromApi = async (
+async function postToApi<T>(
+  url: string,
   params: ApiParams,
-): Promise<ApiTransaction[]> => {
+  errorContext: string,
+): Promise<T> {
   try {
-    const response = await axios.post<% if (framework === 'node') { %><% } else { %><ApiTransaction[]><% } %>(`${API_URL}/x-transfers`, params);
-    return <% if (framework === 'node') { %>response.data as ApiTransaction[]<% } else { %>response.data<% } %>;
+    const response = await axios.post<T>(url, params);
+    return response.data;
   } catch (error) {
     if (axios.isAxiosError<ApiErrorResponse>(error)) {
       const message = error.response?.data.message;
       const serverMessage = message ? ` Server response: ${message}` : "";
-      throw new Error(`Error while fetching data.${serverMessage}`, {
+      throw new Error(`Error while ${errorContext}.${serverMessage}`, {
         cause: error,
       });
     }
     throw error;
   }
-};
-<% if (evmWallet) { -%>
+}
 
-export const fetchFromEvmApi = async (params: ApiParams): Promise<Hex> => {
-  try {
-    const response = await axios.post<% if (framework === 'node') { %><% } else { %><Hex><% } %>(`${API_URL}/evm-x-transfer`, params);
-    return <% if (framework === 'node') { %>response.data as Hex<% } else { %>response.data<% } %>;
-  } catch (error) {
-    if (axios.isAxiosError<ApiErrorResponse>(error)) {
-      const message = error.response?.data.message;
-      const serverMessage = message ? ` Server response: ${message}` : "";
-      throw new Error(`Error while fetching EVM transaction.${serverMessage}`, {
-        cause: error,
-      });
-    }
-    throw error;
-  }
-};
+export const fetchFromApi = (params: ApiParams): Promise<ApiTransaction[]> =>
+  postToApi(`${API_URL}/x-transfers`, params, "fetching data");
+
+<% if (evmWallet) { -%>
+export const fetchFromEvmApi = (params: ApiParams): Promise<Hex> =>
+  postToApi(`${API_URL}/evm-x-transfer`, params, "fetching EVM transaction");
 <% } %>

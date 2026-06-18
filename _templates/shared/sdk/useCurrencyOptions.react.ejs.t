@@ -1,5 +1,5 @@
-import type { TAssetInfo, TChain<% if (swap) { %>, TExchangeInput<% } %> } from "@paraspell/sdk";
-import { getSupportedAssets } from "@paraspell/sdk";<% if (swap) { %>
+import type { TAssetInfo, TChain<% if (swap) { %>, TExchangeInput<% } %> } from "<%= sdkPackage %>";
+import { getSupportedAssets } from "<%= sdkPackage %>";<% if (swap) { %>
 import {
   getSupportedAssetsFrom,
   getSupportedAssetsTo,

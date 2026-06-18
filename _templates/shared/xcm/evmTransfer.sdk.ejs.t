@@ -1,9 +1,9 @@
-import { Builder } from "<%= sdkPackage %>";
+import { Builder, isChainEvm } from "<%= sdkPackage %>";
 import type { WalletClient } from "viem";
 import type { EIP1193Provider } from "mipd";
 import type { FormValues } from "../types";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
-import { ensureEvmWalletClient, isEvmOrigin } from "../evm";
+import { ensureEvmWalletClient } from "../evm";
 <% if (evm) { %>import "@paraspell/evm";
 <% } %><% if (snowbridge) { %>import "@paraspell/evm-snowbridge";
 <% } %><% if (swap) { %>import "@paraspell/swap";
@@ -17,7 +17,7 @@ export const submitEvmTransferFromForm = async (
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
-  if (!isEvmOrigin(from)) {
+  if (!isChainEvm(from)) {
     throw new Error(`Unsupported EVM origin: ${from}`);
   }
 

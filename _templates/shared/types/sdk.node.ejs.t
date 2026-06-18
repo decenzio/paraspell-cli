@@ -1,12 +1,12 @@
-import type { TChain, TLocation, TSubstrateChain } from "@paraspell/sdk";
+import type { TChain, TLocation, TSubstrateChain } from "<%= sdkPackage %>";
 <% if (client === 'pjs') { %>import type { Signer } from "@polkadot/api/types";
-
+<% } %>
+<% if (client === 'pjs') { %>
 export type SignerPayloadRaw = Parameters<NonNullable<Signer["signRaw"]>>[0];
 export type SignerPayloadJSON = Parameters<NonNullable<Signer["signPayload"]>>[0];
 export type SignerResult = Awaited<ReturnType<NonNullable<Signer["signRaw"]>>>;
 
 <% } %>
-
 export type TransferParams = {
   from: TChain;
   to: TChain;
