@@ -7,8 +7,7 @@ export { PapiWalletControls } from "./PapiWalletControls";
 export {
   useWalletWithEvm as useWallet,
   WalletControls,
-  type UseWalletReturn,
 } from "./useWalletWithEvm";
 export { WalletKindSelector } from "../evm/WalletKindSelector";
-export type { WalletKind, WalletKindSelectorProps } from "../evm/WalletKindSelector";
+export type { UseWalletReturn, WalletKind, WalletKindSelectorProps } from "../../types";
 <% } %>

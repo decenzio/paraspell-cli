@@ -6,16 +6,7 @@ import { createWalletClient, custom, isAddress } from "viem";
 import { evmProviderStore, getEip6963Providers } from "../../evm/eip6963";
 import { createEvmWalletClient } from "../../evm/evmWalletClient";
 import { getViemChainForOrigin } from "../../evm/getViemChain";
-
-export type EvmAccountOption = {
-  address: string;
-  label: string;
-};
-
-export type EvmProviderOption = {
-  uuid: string;
-  label: string;
-};
+import type { EvmAccountOption, EvmProviderOption } from "../../types";
 
 const truncateAddress = (address: string) =>
   `${address.slice(0, 6)}…${address.slice(-4)}`;

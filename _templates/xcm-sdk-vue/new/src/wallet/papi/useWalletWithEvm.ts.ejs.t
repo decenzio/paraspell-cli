@@ -14,12 +14,11 @@ import {
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
 import type {
   SubstrateWalletConnection,
-  UseWalletWithEvmReturn,
-} from "../shared/types";
+  UseWalletReturn,
+} from "../../types";
 import PapiWalletControls from "./PapiWalletControls.vue";
-import { usePapiWallet, type PapiWalletConnection } from "./usePapiWallet";
-
-export type UseWalletReturn = UseWalletWithEvmReturn<PolkadotSigner>;
+import { usePapiWallet } from "./usePapiWallet";
+import type { PapiWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(PapiWalletControls);
 

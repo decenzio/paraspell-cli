@@ -4,7 +4,10 @@ skip_if: <%= (!evmWallet).toString() %>
 ---
 export { useEvmWallet } from "./useEvmWallet";
 export { default as EvmWalletControls } from "./EvmWalletControls.vue";
-export {
-  default as WalletKindSelector,
-  type WalletKind,
-} from "./WalletKindSelector.vue";
+export { default as WalletKindSelector } from "./WalletKindSelector.vue";
+export type {
+  EvmAccountOption,
+  EvmProviderOption,
+  WalletKind,
+  WalletKindSelectorProps,
+} from "../../types";

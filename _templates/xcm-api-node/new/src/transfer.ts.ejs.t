@@ -5,7 +5,12 @@ import axios from "axios";
 import { API_URL } from "./consts.js";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
-import type { AssetInfo, ApiParams, TransferParams } from "./types.js";
+import type {
+  AssetInfo,
+  ApiErrorResponse,
+  ApiParams,
+  TransferParams,
+} from "./types.js";
 <% if (evmWallet) { %>
 import { getEvmSenderAddress, getEvmWalletClient, isEvmOrigin } from "./evm.js";
 import { submitEvmTx } from "./submitEvmTx.js";
@@ -19,14 +24,10 @@ const defaults: TransferParams = {
   recipient: "//Bob",
 };
 
-type ApiErrorResponse = {
-  message?: string;
-};
-
 async function resolveCurrencyLocation(
-  location: TransferParams["currencyLocation"] | undefined,
-  origin: TransferParams["from"],
-  destination: TransferParams["to"],
+  location: object | undefined,
+  origin: string,
+  destination: string,
 ): Promise<AssetInfo["location"]> {
   try {
     const response = await axios.get<AssetInfo[]>(
@@ -62,9 +63,9 @@ async function resolveCurrencyLocation(
 }
 
 <% if (swap) { %>async function resolveCurrencyToLocation(
-  location: TransferParams["currencyToLocation"] | undefined,
-  origin: TransferParams["from"],
-  destination: TransferParams["to"],
+  location: object | undefined,
+  origin: string,
+  destination: string,
 ): Promise<AssetInfo["location"]> {
   try {
     const response = await axios.get<AssetInfo[]>(

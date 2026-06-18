@@ -14,15 +14,11 @@ import {
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
 import type {
   SubstrateWalletConnection,
-  UseWalletWithEvmReturn,
-} from "../shared/types";
+  UseWalletReturn,
+} from "../../types";
 import DedotWalletControls from "./DedotWalletControls.vue";
-import {
-  useDedotWallet,
-  type DedotWalletConnection,
-} from "./useDedotWallet";
-
-export type UseWalletReturn = UseWalletWithEvmReturn<Signer>;
+import { useDedotWallet } from "./useDedotWallet";
+import type { DedotWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(DedotWalletControls);
 

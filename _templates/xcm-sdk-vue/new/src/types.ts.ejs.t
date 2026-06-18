@@ -1,16 +1,7 @@
 ---
 to: src/types.ts
 ---
-import type { TAssetInfo, TChain<% if (swap) { %>, TExchangeChain<% } %> } from "@paraspell/sdk";
-
-export type FormValues = {
-  from: TChain;
-  to: TChain;
-  currencyOptionId: string;
-  recipient: string;
-  amount: string;
-  currency: TAssetInfo;<% if (swap) { %>
-  swapEnabled?: boolean;
-  currencyTo?: TAssetInfo;
-  exchange?: TExchangeChain;<% } %>
-};
+<%- h.includeShared('shared/types/sdk.frontend.ejs.t') %>
+<% if (evmWallet) { %>
+<%- h.includeShared('shared/types/wallet.evm.ejs.t') %>
+<% } %>

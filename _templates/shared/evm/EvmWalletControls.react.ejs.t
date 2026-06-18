@@ -1,18 +1,7 @@
 import type { FC } from "react";
-import type { EvmAccountOption, EvmProviderOption } from "./useEvmWallet";
+import type { WalletControlsEvmProps } from "../../types";
 
-export type EvmWalletControlsProps = {
-  providerOptions: EvmProviderOption[];
-  selectedProviderUuid: string | undefined;
-  accounts: EvmAccountOption[];
-  selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onProviderChange: (uuid: string) => void;
-  onAccountChange: (address: string) => void;
-  onDisconnect?: () => void;
-};
-
-export const EvmWalletControls: FC<EvmWalletControlsProps> = ({
+export const EvmWalletControls: FC<WalletControlsEvmProps> = ({
   providerOptions,
   selectedProviderUuid,
   accounts,

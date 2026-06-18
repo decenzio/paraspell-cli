@@ -1,39 +1,7 @@
 ---
 to: src/types.ts
 ---
-export type AssetInfo = {
-  symbol?: string;
-  assetId?: string;
-  location: object;
-};
-
-export type FormValues = {
-  from: string;
-  to: string;
-  currency: AssetInfo;
-  recipient: string;
-  amount: string;<% if (swap) { %>
-  swapEnabled?: boolean;
-  currencyTo?: AssetInfo;
-  exchange?: string;<% } %>
-};
-
-export type ApiParams = {
-  from?: string;
-  to?: string;
-  currency:
-    | { location: object; amount: string }
-    | { symbol: string; amount: string };
-  recipient: string;
-  sender: string;<% if (swap) { %>
-  swapOptions?: {
-    currencyTo: { location: object };
-    exchange?: string[];
-  };<% } %>
-};
-
-export type ApiTransaction = {
-  type: string;
-  chain: string;
-  tx: string;
-};
+<%- h.includeShared('shared/types/api.frontend.ejs.t') %>
+<% if (evmWallet) { %>
+<%- h.includeShared('shared/types/wallet.evm.ejs.t') %>
+<% } %>

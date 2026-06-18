@@ -3,17 +3,7 @@ to: src/wallet/pjs/PjsWalletControls.tsx
 skip_if: <%= (client !== 'pjs').toString() %>
 ---
 import type { FC } from "react";
-import type { ExtensionAccount } from "./usePjsWallet";
-
-export type PjsWalletControlsProps = {
-  extensionNames: string[];
-  selectedExtensionName: string | undefined;
-  accounts: ExtensionAccount[];
-  selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onExtensionChange: (name: string) => void;
-  onAccountChange: (address: string) => void;
-};
+import type { PjsWalletControlsProps } from "../../types";
 
 export const PjsWalletControls: FC<PjsWalletControlsProps> = ({
   extensionNames,

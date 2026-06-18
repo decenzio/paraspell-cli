@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EvmAccountOption, EvmProviderOption } from "./useEvmWallet";
+import type { EvmAccountOption, EvmProviderOption } from "../../types";
 
 defineProps<{
   providerOptions: EvmProviderOption[];

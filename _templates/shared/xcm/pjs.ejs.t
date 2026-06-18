@@ -5,19 +5,13 @@ import {
   type Extrinsic,
 } from "@paraspell/sdk-pjs";
 import type { Signer } from "@polkadot/api/types";
-import type { FormValues } from "../types";
+import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../types";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
 import "@paraspell/evm";
 <% } %><% if (snowbridge) { %>
 import "@paraspell/evm-snowbridge";<% } %><% if (evmWallet) { %>
 import { assertSubstrateOrigin, isEvmOrigin } from "../evm";
-import type { WalletClient } from "viem";
-import type { EIP1193Provider } from "mipd";
 import { submitEvmTransferFromForm } from "./evmTransfer";
-
-export type SubmitOptions =
-  | { kind: "substrate"; signer: Signer; senderAddress: string }
-  | { kind: "evm"; walletClient: WalletClient; provider: EIP1193Provider };
 <% } -%>
 
 export async function buildTransaction(

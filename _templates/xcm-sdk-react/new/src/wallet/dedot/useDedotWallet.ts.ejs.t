@@ -3,22 +3,12 @@ to: src/wallet/dedot/useDedotWallet.ts
 skip_if: <%= (client !== 'dedot').toString() %>
 ---
 import { useCallback, useMemo, useState } from "react";
-import type { Signer } from "@polkadot/api/types";
-export type ExtensionInjectedSigner = Signer;
-
-export type DedotAccount = { address: string; name?: string };
-
-type WindowWithInjectedWeb3 = Window & {
-  injectedWeb3?: Record<
-    string,
-    {
-      enable: (dappName?: string) => Promise<{
-        signer: ExtensionInjectedSigner;
-        accounts: { get: () => Promise<DedotAccount[]> };
-      }>;
-    }
-  >;
-};
+import type {
+  DedotWalletConnection,
+  ExtensionInjectedSigner,
+  WalletAccountOption,
+  WindowWithInjectedWeb3,
+} from "../../types";
 
 function getInjectedWeb3() {
   if (typeof window === "undefined") return undefined;
@@ -26,16 +16,11 @@ function getInjectedWeb3() {
   return (window as WindowWithInjectedWeb3).injectedWeb3;
 }
 
-export type DedotWalletConnection = {
-  address: string;
-  signer: ExtensionInjectedSigner;
-};
-
 export function useDedotWallet() {
   const [extensionNames, setExtensionNames] = useState<string[]>([]);
   const [selectedExtensionName, setSelectedExtensionName] = useState<string>();
   const [signer, setSigner] = useState<ExtensionInjectedSigner | null>(null);
-  const [accounts, setAccounts] = useState<DedotAccount[]>([]);
+  const [accounts, setAccounts] = useState<WalletAccountOption[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>();
 
   const selectExtension = useCallback(async (name: string) => {

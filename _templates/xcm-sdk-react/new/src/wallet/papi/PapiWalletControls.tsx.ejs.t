@@ -3,25 +3,9 @@ to: src/wallet/papi/PapiWalletControls.tsx
 skip_if: <%= (client !== 'papi').toString() %>
 ---
 import type { FC } from "react";
+import type { PapiWalletControlsProps } from "../../types";
 
-type WalletAccountOption = {
-  address: string;
-  name?: string;
-};
-
-export type PapiWalletControlsProps = {
-  extensionNames: string[];
-  selectedExtensionName: string | undefined;
-  accounts: WalletAccountOption[];
-  selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onExtensionChange: (name: string) => void;
-  onAccountChange: (address: string) => void;
-};
-
-export const PapiWalletControls: FC<
-PapiWalletControlsProps
-> = ({
+export const PapiWalletControls: FC<PapiWalletControlsProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,
@@ -31,7 +15,7 @@ PapiWalletControlsProps
   onAccountChange,
 }) => (
   <>
-    {extensionNames && extensionNames.length > 0 ? (
+    {extensionNames.length > 0 ? (
       <div>
         <h4>Select extension:</h4>
         <select
@@ -53,7 +37,7 @@ PapiWalletControlsProps
         Connect Wallet
       </button>
     )}
-    {accounts && accounts.length > 0 && (
+    {accounts.length > 0 && (
       <div>
         <h4>Select account:</h4>
         <select

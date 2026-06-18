@@ -2,21 +2,7 @@
 to: src/wallet/papi/PapiWalletControls.tsx
 ---
 import type { FC } from "react";
-
-type WalletAccountOption = {
-  address: string;
-  name?: string;
-};
-
-export type PapiWalletControlsProps = {
-  extensionNames: string[];
-  selectedExtensionName: string | undefined;
-  accounts: WalletAccountOption[];
-  selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onExtensionChange: (name: string) => void;
-  onAccountChange: (address: string) => void;
-};
+import type { PapiWalletControlsProps } from "../../types";
 
 export const PapiWalletControls: FC<PapiWalletControlsProps> = ({
   extensionNames,

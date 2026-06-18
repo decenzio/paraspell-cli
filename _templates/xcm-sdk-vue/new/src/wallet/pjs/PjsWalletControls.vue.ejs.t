@@ -3,12 +3,12 @@ to: src/wallet/pjs/PjsWalletControls.vue
 skip_if: <%= (client !== 'pjs').toString() %>
 ---
 <script setup lang="ts">
-import type { ExtensionAccount } from "./usePjsWallet";
+import type { WalletAccountOption } from "../../types";
 
 defineProps<{
   extensionNames: string[];
   selectedExtensionName: string | undefined;
-  accounts: ExtensionAccount[];
+  accounts: WalletAccountOption[];
   selectedAddress: string | undefined;
 }>();
 

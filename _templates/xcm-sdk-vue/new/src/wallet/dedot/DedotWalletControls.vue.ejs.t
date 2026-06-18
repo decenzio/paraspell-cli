@@ -3,12 +3,12 @@ to: src/wallet/dedot/DedotWalletControls.vue
 skip_if: <%= (client !== 'dedot').toString() %>
 ---
 <script setup lang="ts">
-import type { DedotAccount } from "./useDedotWallet";
+import type { WalletAccountOption } from "../../types";
 
 defineProps<{
   extensionNames: string[];
   selectedExtensionName: string | undefined;
-  accounts: DedotAccount[];
+  accounts: WalletAccountOption[];
   selectedAddress: string | undefined;
 }>();
 

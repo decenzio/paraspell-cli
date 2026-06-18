@@ -22,7 +22,7 @@ to: src/transfer.ts
 } from "@paraspell/sdk-dedot";<% } %><% if (evmWallet) { %>
 import { getEvmWalletClient, isEvmOrigin, submitEvmTransfer } from "./evm.js";<% } %>
 import { getSubstrateSigner } from "./substrate.js";
-import type { TSubstrateChain } from "@paraspell/sdk";
+import type { TChain, TLocation, TSubstrateChain } from "@paraspell/sdk";
 import type { TransferParams } from "./types.js";
 
 const defaults: TransferParams = {
@@ -33,9 +33,9 @@ const defaults: TransferParams = {
 };
 
 async function resolveCurrencyLocation(
-  from: TransferParams["from"],
-  to: TransferParams["to"],
-  location?: TransferParams["currencyLocation"],
+  from: TChain,
+  to: TChain,
+  location?: TLocation,
 ) {
   if (location) {
     findAssetInfoOrThrow(from, { location }, to);
@@ -45,9 +45,9 @@ async function resolveCurrencyLocation(
 }
 
 <% if (swap) { %>async function resolveCurrencyToLocation(
-  from: TransferParams["from"],
-  to: TransferParams["to"],
-  location?: TransferParams["currencyToLocation"],
+  from: TChain,
+  to: TChain,
+  location?: TLocation,
 ) {
   if (location) {
     findAssetInfoOrThrow(from, { location }, to);

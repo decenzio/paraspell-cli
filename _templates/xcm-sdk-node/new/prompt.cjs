@@ -51,6 +51,8 @@ module.exports = {
       ...meta,
       ...pm,
       ...PACKAGE_VERSIONS,
+      framework: 'node',
+      projectKind: 'sdk',
       clientKey,
       evm,
       swap,

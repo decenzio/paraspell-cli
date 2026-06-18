@@ -9,25 +9,18 @@ import {
   web3FromAddress,
 } from "@polkadot/extension-dapp";
 import type { Signer } from "@polkadot/api/types";
-
-type InjectedAccount = Awaited<ReturnType<typeof web3Accounts>>[number];
-
-export type ExtensionAccount = {
-  address: string;
-  name?: string;
-};
-
-export type PjsWalletConnection = {
-  address: string;
-  signer: Signer;
-};
+import type {
+  PjsInjectedAccount,
+  PjsWalletConnection,
+  WalletAccountOption,
+} from "../../types";
 
 const DAPP_ORIGIN = "ParaSpell XCM SDK";
 
 export function usePjsWallet() {
   const extensionNames = ref<string[]>([]);
   const selectedExtensionName = ref<string>();
-  const accounts = ref<ExtensionAccount[]>([]);
+  const accounts = ref<WalletAccountOption[]>([]);
   const selectedAddress = ref<string>();
   const signer = ref<Signer | null>(null);
 
@@ -35,7 +28,7 @@ export function usePjsWallet() {
     await web3Enable(DAPP_ORIGIN);
     const filtered = await web3Accounts({ extensions: [name] });
     const nextAccounts = filtered.map(
-      (account: InjectedAccount): ExtensionAccount => ({
+      (account: PjsInjectedAccount): WalletAccountOption => ({
         address: account.address,
         name: account.meta.name,
       }),

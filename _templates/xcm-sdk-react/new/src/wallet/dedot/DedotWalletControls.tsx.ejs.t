@@ -3,21 +3,9 @@ to: src/wallet/dedot/DedotWalletControls.tsx
 skip_if: <%= (client !== 'dedot').toString() %>
 ---
 import type { FC } from "react";
-import type { DedotAccount } from "./useDedotWallet";
+import type { DedotWalletControlsProps } from "../../types";
 
-export type DedotWalletControlsProps = {
-  extensionNames: string[];
-  selectedExtensionName: string | undefined;
-  accounts: DedotAccount[];
-  selectedAddress: string | undefined;
-  onConnectClick: () => void;
-  onExtensionChange: (name: string) => void;
-  onAccountChange: (address: string) => void;
-};
-
-export const DedotWalletControls: FC<
-DedotWalletControlsProps
-> = ({
+export const DedotWalletControls: FC<DedotWalletControlsProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,

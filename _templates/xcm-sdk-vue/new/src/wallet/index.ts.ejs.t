@@ -4,10 +4,9 @@ to: src/wallet/<%= clientDir %>/index.ts
 <% if (evmWallet) { %>export {
   useWalletWithEvm as useWallet,
   WalletControls,
-  type UseWalletReturn,
 } from "./useWalletWithEvm";
 export { WalletKindSelector } from "../evm";
-export type { WalletKind } from "../evm";
+export type { UseWalletReturn, WalletKind, WalletKindSelectorProps } from "../../types";
 <% } else if (client === 'pjs') { %>export { usePjsWallet } from "./usePjsWallet";
 export { default as PjsWalletControls } from "./PjsWalletControls.vue";
 <% } else if (client === 'papi') { %>export { usePapiWallet } from "./usePapiWallet";

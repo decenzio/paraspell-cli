@@ -2,14 +2,4 @@
 to: src/wallet/shared/submitTransfer.ts
 skip_if: <%= (!evmWallet).toString() %>
 ---
-import type { WalletKind } from "../evm/WalletKindSelector";
-
-export const connectWalletAlert = (wallet: {
-  activeWalletKind: WalletKind;
-}): void => {
-  alert(
-    wallet.activeWalletKind === "evm"
-      ? "Connect EVM wallet provider first"
-      : "No account selected, connect wallet first",
-  );
-};
+<%- h.includeShared('shared/wallet/submitTransfer.api.ejs.t') %>
