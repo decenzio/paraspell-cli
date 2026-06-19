@@ -8,4 +8,7 @@ export {
   getEvmOriginChains,
   isEvmOrigin,
 } from "./evmOrigins";
+<% if (framework !== 'node') { -%>
+export { useEvmOriginChains } from "./useEvmOriginChains";
+<% } -%>
 export { getViemChainForOrigin } from "./getViemChain";

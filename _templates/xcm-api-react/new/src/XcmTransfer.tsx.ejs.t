@@ -5,6 +5,7 @@ import { useCallback, useState, type FC } from "react";
 import TransferForm from "./XcmTransferForm";
 import type { FormValues } from "./types";
 <% if (evmWallet) { %>
+import { useEvmOriginChains } from "./evm/useEvmOriginChains";
 import {
   useWallet,
   WalletControls,
@@ -22,6 +23,7 @@ const XcmTransfer: FC = () => {
   const [loading, setLoading] = useState(false);
 
   <% if (evmWallet) { %>
+  useEvmOriginChains();
   const wallet = useWallet();
   const [originChain, setOriginChain] = useState("Astar");
 

@@ -2,7 +2,7 @@
 to: src/App.tsx
 ---
 import "./App.css";
-<%- h.includeShared('shared/paraspell-side-effects.ejs.t') %>import XcmTransfer from "./XcmTransfer";
+import XcmTransfer from "./XcmTransfer";
 
 const App = () => (
   <>

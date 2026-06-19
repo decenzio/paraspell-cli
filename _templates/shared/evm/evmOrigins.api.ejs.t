@@ -1,24 +1,33 @@
-<% if (evm) { %>const PLACEHOLDER_EVM_ORIGINS = [
-  "Moonbeam",
-  "Moonriver",
-  "Darwinia",
-] as const;
+import axios from "axios";
+import { API_URL } from "<% if (framework === 'node') { %>./consts.js<% } else { %>../consts<% } %>";
 
-<% } %><% if (snowbridge) { %>const PLACEHOLDER_SNOWBRIDGE_ORIGINS = ["Ethereum"] as const;
+let cachedEvmOriginChains: readonly string[] = [];
+let fetchPromise: Promise<readonly string[]> | null = null;
 
-<% } %>export async function fetchEvmOriginChains(): Promise<readonly string[]> {
-  // TODO: GET `${API_URL}/evm/origin-chains` when the XCM API endpoint ships.
-  return [<% if (evm) { %>
-    ...PLACEHOLDER_EVM_ORIGINS,<% } %><% if (snowbridge) { %>
-    ...PLACEHOLDER_SNOWBRIDGE_ORIGINS,<% } %>
-  ];
+export async function fetchEvmOriginChains(): Promise<readonly string[]> {
+  if (cachedEvmOriginChains.length > 0) {
+    return cachedEvmOriginChains;
+  }
+
+  if (fetchPromise) {
+    return fetchPromise;
+  }
+
+  fetchPromise = axios
+    .get<string[]>(`${API_URL}/chains/evm`)
+    .then((response) => {
+      cachedEvmOriginChains = response.data;
+      return cachedEvmOriginChains;
+    })
+    .finally(() => {
+      fetchPromise = null;
+    });
+
+  return fetchPromise;
 }
 
 export function getEvmOriginChains(): readonly string[] {
-  return [<% if (evm) { %>
-    ...PLACEHOLDER_EVM_ORIGINS,<% } %><% if (snowbridge) { %>
-    ...PLACEHOLDER_SNOWBRIDGE_ORIGINS,<% } %>
-  ];
+  return cachedEvmOriginChains;
 }
 
 export function isEvmOrigin(chain: string): boolean {

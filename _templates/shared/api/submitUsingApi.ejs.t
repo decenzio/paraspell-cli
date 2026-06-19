@@ -5,7 +5,7 @@ import { createWsClient } from "polkadot-api/ws";
 import { API_URL } from "../consts";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "../fetchFromApi";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
-<% if (evmWallet) { %>import { isEvmOrigin } from "../evm";
+<% if (evmWallet) { %>import { fetchEvmOriginChains, isEvmOrigin } from "../evm";
 import { submitEvmTx } from "./submitEvmTx";
 <% } %>import { submitTransaction } from "../utils";
 import type { ApiParams, ApiTransaction, FormValues<% if (evmWallet) { %>, WalletSubmitOptions<% } %> } from "../types";
@@ -39,6 +39,8 @@ export const submitUsingApi = async (
     formValues.currencyTo,
   );
 <% } %>
+
+  await fetchEvmOriginChains();
 
   if (isEvmOrigin(formValues.from)) {
     if (options.kind !== "evm") {

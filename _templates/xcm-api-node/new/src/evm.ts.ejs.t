@@ -4,4 +4,4 @@ skip_if: <%= (!evmWallet).toString() %>
 ---
 <%- h.includeShared('shared/node/getEvmWalletClient.ejs.t') %>
 <%- h.includeShared('shared/node/getEvmSenderAddress.ejs.t') %>
-export { isEvmOrigin } from "./evmOrigins.js";
+export { fetchEvmOriginChains, isEvmOrigin } from "./evmOrigins.js";

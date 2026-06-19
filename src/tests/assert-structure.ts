@@ -218,6 +218,13 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
       if (variant.kind === 'api' && !fileExists(root, 'src/evm/evmOrigins.ts')) {
         errors.push('Missing src/evm/evmOrigins.ts');
       }
+      if (
+        variant.kind === 'api' &&
+        variant.framework !== 'node' &&
+        !fileExists(root, 'src/evm/useEvmOriginChains.ts')
+      ) {
+        errors.push('Missing src/evm/useEvmOriginChains.ts');
+      }
       if (variant.kind === 'sdk' && !fileExists(root, 'src/xcm/evmTransfer.ts')) {
         errors.push('Missing src/xcm/evmTransfer.ts');
       }

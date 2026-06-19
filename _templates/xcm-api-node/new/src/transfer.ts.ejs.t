@@ -5,7 +5,12 @@ import axios from "axios";
 import { API_URL } from "./consts.js";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
-<% if (evmWallet) { %>import { getEvmSenderAddress, getEvmWalletClient, isEvmOrigin } from "./evm.js";
+<% if (evmWallet) { %>import {
+  fetchEvmOriginChains,
+  getEvmSenderAddress,
+  getEvmWalletClient,
+  isEvmOrigin,
+} from "./evm.js";
 import { submitEvmTx } from "./submitEvmTx.js";
 <% } %>import { getSubstrateMnemonic, getSubstrateSenderAddress } from "./substrate.js";
 import type {
@@ -116,6 +121,8 @@ async function resolveCurrencyLocation(
   );
 <% } %>
 <% if (evmWallet) { %>
+  await fetchEvmOriginChains();
+
   if (isEvmOrigin(params.from)) {
     const sender = getEvmSenderAddress(params.from);
     const walletClient = getEvmWalletClient(params.from);
