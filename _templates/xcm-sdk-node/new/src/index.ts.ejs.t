@@ -2,7 +2,7 @@
 to: src/index.ts
 ---
 import "dotenv/config";
-import express from "express";
+<%- h.includeShared('shared/paraspell-side-effects.ejs.t') %>import express from "express";
 import { transferAsset } from "./transfer.js";
 
 const app = express();

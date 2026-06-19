@@ -4,9 +4,7 @@ to: src/App.vue
 <script setup lang="ts">
 import "./App.css";
 <% if (swap) { %>import "@paraspell/swap";
-<% } %><% if (evm) { %>import "@paraspell/evm";
-<% } %><% if (snowbridge) { %>import "@paraspell/evm-snowbridge";
-<% } %>import XcmTransfer from "./XcmTransfer.vue";
+<% } %><%- h.includeShared('shared/paraspell-side-effects.ejs.t') %>import XcmTransfer from "./XcmTransfer.vue";
 </script>
 
 <template>

@@ -1,16 +1,19 @@
 ---
 to: src/substrate.ts
 ---
-<%- h.includeShared('shared/node/substrate-keyring.ejs.t') %><% if (client === 'papi') { %>
+<% if (client === 'papi') { -%>
 import { getPolkadotSigner } from "polkadot-api/signer";
-import type { PolkadotSigner } from "polkadot-api";<% } else if (client === 'pjs') { %>
+import type { PolkadotSigner } from "polkadot-api";
+<% } else if (client === 'pjs') { -%>
 import type { Signer } from "@polkadot/api/types";
 import type { TPjsSigner } from "@paraspell/sdk-pjs";
 import type {
   SignerPayloadJSON,
   SignerPayloadRaw,
   SignerResult,
-} from "./types.js";<% } %>
+} from "./types.js";
+<% } -%>
+<%- h.includeShared('shared/node/substrate-keyring.ejs.t') %>
 <% if (client === 'pjs') { %>
 function hexToU8a(value: string): Uint8Array {
   const hex = value.startsWith("0x") ? value.slice(2) : value;
@@ -50,7 +53,7 @@ function keyringPairToPjsSigner(pair: KeyringPair): TPjsSigner {
 
   return { address: pair.address, signer };
 }
-<% } -%>
+<% } %>
 
 export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'PolkadotSigner' : client === 'pjs' ? 'TPjsSigner' : 'KeyringPair' %>> {
   await ensureCryptoReady();

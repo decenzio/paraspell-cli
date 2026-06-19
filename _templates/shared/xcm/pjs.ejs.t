@@ -7,10 +7,7 @@ import {
 } from "@paraspell/sdk-pjs";
 import type { Signer } from "@polkadot/api/types";
 import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../types";
-import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
-import "@paraspell/evm";
-<% } %><% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } %>
+import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
 import { assertSubstrateOrigin } from "../evm/isEvmOrigin";<% if (evmWallet) { %>
 import { submitEvmTransferFromForm } from "./evmTransfer";
 <% } -%>

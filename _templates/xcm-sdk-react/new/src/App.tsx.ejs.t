@@ -3,9 +3,7 @@ to: src/App.tsx
 ---
 import "./App.css";
 <% if (swap) { %>import "@paraspell/swap";
-<% } %><% if (evm) { %>import "@paraspell/evm";
-<% } %><% if (snowbridge) { %>import "@paraspell/evm-snowbridge";
-<% } %>import XcmTransfer from "./XcmTransfer";
+<% } %><%- h.includeShared('shared/paraspell-side-effects.ejs.t') %>import XcmTransfer from "./XcmTransfer";
 
 const App = () => (
   <>

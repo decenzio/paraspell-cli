@@ -5,13 +5,10 @@ import { createWsClient } from "polkadot-api/ws";
 import { API_URL } from "../consts";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "../fetchFromApi";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
-<% if (evmWallet) { %>
-import { isEvmOrigin } from "../evm";
+<% if (evmWallet) { %>import { isEvmOrigin } from "../evm";
 import { submitEvmTx } from "./submitEvmTx";
-import type { WalletSubmitOptions } from "../types";
-<% } %>
-import { submitTransaction } from "../utils";
-import type { ApiParams, ApiTransaction, FormValues } from "../types";
+<% } %>import { submitTransaction } from "../utils";
+import type { ApiParams, ApiTransaction, FormValues<% if (evmWallet) { %>, WalletSubmitOptions<% } %> } from "../types";
 
 const submitApiTransaction = async (
   apiTx: ApiTransaction,

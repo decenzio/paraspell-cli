@@ -11,9 +11,7 @@ import {
   type TxFinalizedPayload,
 } from "polkadot-api";
 import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../types";
-import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evm) { %>
-import "@paraspell/evm";<% } %><% if (snowbridge) { %>
-import "@paraspell/evm-snowbridge";<% } %><% if (evmWallet) { %>
+import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evmWallet) { %>
 import { assertSubstrateOrigin } from "../evm/isEvmOrigin";
 import { submitEvmTransferFromForm } from "./evmTransfer";
 <% } -%>

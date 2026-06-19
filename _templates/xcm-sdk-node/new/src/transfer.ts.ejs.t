@@ -10,8 +10,7 @@ to: src/transfer.ts
   createChainClient,<% } %><% if (evmWallet) { %>
   isChainEvm,<% } %>
 } from "<%= sdkPackage %>";<% if (client === 'pjs' || client === 'dedot') { %>
-import { assertSubstrateOrigin } from "./isEvmOrigin.js";
-<% } %><% if (evmWallet) { %>
+import { assertSubstrateOrigin } from "./isEvmOrigin.js";<% } %><% if (evmWallet) { %>
 import {
   getEvmWalletClient,
   submitEvmTransfer,

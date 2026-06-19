@@ -3,7 +3,7 @@ to: src/App.vue
 ---
 <script setup lang="ts">
 import "./App.css";
-import XcmTransfer from "./XcmTransfer.vue";
+<%- h.includeShared('shared/paraspell-side-effects.ejs.t') %>import XcmTransfer from "./XcmTransfer.vue";
 </script>
 
 <template>

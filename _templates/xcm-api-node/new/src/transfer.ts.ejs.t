@@ -5,17 +5,15 @@ import axios from "axios";
 import { API_URL } from "./consts.js";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "./fetchFromApi.js";
 import { submitSubstrateTransfers } from "./submitSubstrate.js";
+<% if (evmWallet) { %>import { getEvmSenderAddress, getEvmWalletClient, isEvmOrigin } from "./evm.js";
+import { submitEvmTx } from "./submitEvmTx.js";
+<% } %>import { getSubstrateMnemonic, getSubstrateSenderAddress } from "./substrate.js";
 import type {
   AssetInfo,
   ApiErrorResponse,
   ApiParams,
   TransferParams,
 } from "./types.js";
-<% if (evmWallet) { %>
-import { getEvmSenderAddress, getEvmWalletClient, isEvmOrigin } from "./evm.js";
-import { submitEvmTx } from "./submitEvmTx.js";
-<% } %>
-import { getSubstrateMnemonic, getSubstrateSenderAddress } from "./substrate.js";
 
 const defaults: TransferParams = {
   from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",

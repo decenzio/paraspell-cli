@@ -1,13 +1,10 @@
-import { Builder, isChainEvm } from "<%= sdkPackage %>";
+import { Builder, isChainEvm } from "<%= sdkPackage %>";<% if (swap) { %>
+import "@paraspell/swap";<% } %>
 import type { WalletClient } from "viem";
 import type { EIP1193Provider } from "mipd";
 import type { FormValues } from "../types";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
 import { ensureEvmWalletClient } from "../evm";
-<% if (evm) { %>import "@paraspell/evm";
-<% } %><% if (snowbridge) { %>import "@paraspell/evm-snowbridge";
-<% } %><% if (swap) { %>import "@paraspell/swap";
-<% } -%>
 
 export const submitEvmTransferFromForm = async (
   formValues: FormValues,
