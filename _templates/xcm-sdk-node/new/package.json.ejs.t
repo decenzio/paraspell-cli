@@ -23,7 +23,8 @@ to: package.json
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
     "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
     "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
-    "@polkadot/api": "<%= polkadotJsApi %>"<% } %><% if (client === 'dedot') { %>,
+    "@polkadot/api": "<%= polkadotJsApi %>",
+    "@polkadot/types": "<%= polkadotJsApi %>"<% } %><% if (client === 'dedot') { %>,
     "dedot": "<%= dedot %>"<% } %>
   },
   "devDependencies": {

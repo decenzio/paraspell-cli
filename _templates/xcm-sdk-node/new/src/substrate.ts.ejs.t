@@ -6,12 +6,8 @@ import { getPolkadotSigner } from "polkadot-api/signer";
 import type { PolkadotSigner } from "polkadot-api";
 <% } else if (client === 'pjs') { -%>
 import type { Signer } from "@polkadot/api/types";
+import { TypeRegistry } from "@polkadot/types/create";
 import type { TPjsSigner } from "@paraspell/sdk-pjs";
-import type {
-  SignerPayloadJSON,
-  SignerPayloadRaw,
-  SignerResult,
-} from "./types.js";
 <% } -%>
 <%- h.includeShared('shared/node/substrate-keyring.ejs.t') %>
 <% if (client === 'pjs') { %>
@@ -27,26 +23,22 @@ const hexToU8a = (value: string): Uint8Array => {
 const u8aToHex = (bytes: Uint8Array): `0x${string}` =>
   `0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
 
-const hasSignPayload = (
-  pair: KeyringPair,
-): pair is KeyringPair & {
-  signPayload: (payload: SignerPayloadJSON) => Uint8Array;
-} => "signPayload" in pair && typeof pair.signPayload === "function";
+const typeRegistry = new TypeRegistry();
 
 const keyringPairToPjsSigner = (pair: KeyringPair): TPjsSigner => {
-  if (!hasSignPayload(pair)) {
-    throw new Error("Keyring pair does not support payload signing.");
-  }
-  const signer: Signer = {
-    signRaw: async (raw: SignerPayloadRaw): Promise<SignerResult> => ({
+  const signer = {
+    signRaw: async (raw) => ({
       id: 1,
       signature: u8aToHex(signBytes(pair, hexToU8a(raw.data))),
     }),
-    signPayload: async (payload: SignerPayloadJSON): Promise<SignerResult> => ({
-      id: 1,
-      signature: u8aToHex(pair.signPayload(payload)),
-    }),
-  };
+    signPayload: async (payload) => {
+      const { signature } = typeRegistry
+        .createType("ExtrinsicPayload", payload, { version: payload.version })
+        .sign(pair);
+
+      return { id: 1, signature };
+    },
+  } satisfies Signer;
 
   return { address: pair.address, signer };
 };

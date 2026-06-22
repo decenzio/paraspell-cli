@@ -33,7 +33,7 @@ const resolveCurrencyLocation = async (
   location: object | undefined,
   origin: string,
   destination: string,
-): Promise<AssetInfo["location"]> => {
+): Promise<object> => {
   try {
     const response = await axios.get<AssetInfo[]>(
       `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
@@ -71,7 +71,7 @@ const resolveCurrencyLocation = async (
   location: object | undefined,
   origin: string,
   destination: string,
-): Promise<AssetInfo["location"]> => {
+): Promise<object> => {
   try {
     const response = await axios.get<AssetInfo[]>(
       `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
