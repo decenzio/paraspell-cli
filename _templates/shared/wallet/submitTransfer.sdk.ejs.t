@@ -1,16 +1,8 @@
+<%- h.includeShared('shared/wallet/connectWalletAlert.ejs.t') %>
+
 import type { FormValues } from "../../types";
 import { submitEvmTransferFromForm } from "../../xcm/evmTransfer";
-import type { WalletKind, WalletSubmitOptions } from "../../types";
-
-export const connectWalletAlert = (wallet: {
-  activeWalletKind: WalletKind;
-}): void => {
-  alert(
-    wallet.activeWalletKind === "evm"
-      ? "Connect EVM wallet provider first"
-      : "No account selected, connect wallet first",
-  );
-};
+import type { WalletSubmitOptions } from "../../types";
 
 export const submitEvmIfNeeded = async (
   formValues: FormValues,

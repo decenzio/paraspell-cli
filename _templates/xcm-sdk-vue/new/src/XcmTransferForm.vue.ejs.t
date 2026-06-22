@@ -8,6 +8,7 @@ import {
   CHAINS,<% if (swap) { %>
   EXCHANGE_CHAINS,
   type TExchangeChain,<% } %>
+  isChain,
   type TChain,
 } from "<%= sdkPackage %>";
 import type { FormValues } from "./types";
@@ -57,11 +58,23 @@ watch(
 );<% } %>
 
 <% if (swap) { %>const onExchangeChange = (e: Event) => {
-  const value = (e.target as HTMLSelectElement).value;
-  exchange.value = value ? (value as TExchangeChain) : undefined;
+  const target = e.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  exchange.value = EXCHANGE_CHAINS.find((chain) => chain === target.value);
 };
 
-<% } %>const handleSubmit = (e: Event) => {
+<% } %>const onOriginChange = (e: Event) => {
+  const target = e.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  const chain = target.value;
+  if (isChain(chain)) {
+    emit("originChange", chain);
+  }
+};
+
+const handleSubmit = (e: Event) => {
   e.preventDefault();
   if (!currencyOptionId.value) return;<% if (swap) { %>
   if (swapEnabled.value && !currencyToOptionId.value) return;
@@ -90,12 +103,7 @@ watch(
         :value="originChain"
         required
         :disabled="loading"
-        @change="
-          emit(
-            'originChange',
-            ($event.target as HTMLSelectElement).value as TChain,
-          )
-        "
+        @change="onOriginChange"
       >
         <option
           v-for="chain in CHAINS"

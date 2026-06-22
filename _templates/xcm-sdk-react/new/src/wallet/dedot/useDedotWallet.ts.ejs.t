@@ -2,54 +2,86 @@
 to: src/wallet/dedot/useDedotWallet.ts
 skip_if: <%= (client !== 'dedot').toString() %>
 ---
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  web3Accounts,
+  web3Enable,
+  web3FromAddress,
+} from "@polkadot/extension-dapp";
+import type { Signer } from "@polkadot/api/types";
 import type {
-  DedotWalletConnection,
-  ExtensionInjectedSigner,
+  ExtensionInjectedAccount,
+  ExtensionWalletConnection,
   WalletAccountOption,
-  WindowWithInjectedWeb3,
 } from "../../types";
 
-const getInjectedWeb3 = () => {
-  if (typeof window === "undefined") return undefined;
-
-  return (window as WindowWithInjectedWeb3).injectedWeb3;
-};
+const DAPP_ORIGIN = "ParaSpell XCM SDK";
 
 export const useDedotWallet = () => {
   const [extensionNames, setExtensionNames] = useState<string[]>([]);
   const [selectedExtensionName, setSelectedExtensionName] = useState<string>();
-  const [signer, setSigner] = useState<ExtensionInjectedSigner | null>(null);
   const [accounts, setAccounts] = useState<WalletAccountOption[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<string>();
+  const [signer, setSigner] = useState<Signer | null>(null);
 
   const selectExtension = useCallback(async (name: string) => {
-    const entry = getInjectedWeb3()?.[name];
-    if (!entry) {
-      alert("Extension not available");
-      return;
-    }
-    const injected = await entry.enable("ParaSpell XCM SDK");
-    setSigner(injected.signer);
+    await web3Enable(DAPP_ORIGIN);
+    const filtered = await web3Accounts({ extensions: [name] });
+    const nextAccounts = filtered.map(
+      (account: ExtensionInjectedAccount): WalletAccountOption => ({
+        address: account.address,
+        name: account.meta.name,
+      }),
+    );
     setSelectedExtensionName(name);
-    const accs = await injected.accounts.get();
-    setAccounts(accs);
-    if (accs[0]) setSelectedAddress(accs[0].address);
-    else setSelectedAddress(undefined);
+    setAccounts(nextAccounts);
+    if (nextAccounts[0]) {
+      setSelectedAddress(nextAccounts[0].address);
+    } else {
+      setSelectedAddress(undefined);
+    }
   }, []);
 
   const discoverExtensions = useCallback(async () => {
-    const raw = getInjectedWeb3();
-    const names = Object.keys(raw ?? {}).filter((n) => raw?.[n]);
-    if (names.length === 0) {
-      alert("No window.injectedWeb3 extensions found.");
-      throw new Error("No injectedWeb3 extensions");
+    const injected = await web3Enable(DAPP_ORIGIN);
+    if (!injected.length) {
+      alert(
+        "No Polkadot{.js} extension responded. Install a compatible wallet.",
+      );
+      return;
     }
+    const names = injected.map((e) => e.name);
     setExtensionNames(names);
     await selectExtension(names[0]);
   }, [selectExtension]);
 
-  const connection = useMemo((): DedotWalletConnection | null => {
+  useEffect(() => {
+    if (!selectedAddress) {
+      return;
+    }
+    void web3Enable(DAPP_ORIGIN);
+  }, [selectedAddress]);
+
+  useEffect(() => {
+    if (!selectedAddress) {
+      return;
+    }
+    let cancelled = false;
+    void web3FromAddress(selectedAddress)
+      .then((injector) => {
+        if (cancelled) return;
+        setSigner(injector.signer);
+      })
+      .catch(() => {
+        if (!cancelled) setSigner(null);
+      });
+    return () => {
+      cancelled = true;
+      setSigner(null);
+    };
+  }, [selectedAddress]);
+
+  const connection = useMemo((): ExtensionWalletConnection | null => {
     if (!selectedAddress || !signer) return null;
     return { address: selectedAddress, signer };
   }, [selectedAddress, signer]);

@@ -18,7 +18,7 @@ import type {
 } from "../../types";
 import { DedotWalletControls } from "./DedotWalletControls";
 import { useDedotWallet } from "./useDedotWallet";
-import type { DedotWalletConnection } from "../../types";
+import type { ExtensionWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(DedotWalletControls);
 
@@ -27,7 +27,7 @@ export const useWalletWithEvm = (): UseWalletReturn => {
 
   const toSubstratePayload = useCallback(
     (
-      connection: SubstrateWalletConnection<Signer> | DedotWalletConnection,
+      connection: SubstrateWalletConnection<Signer> | ExtensionWalletConnection,
     ) => ({
       signer: connection.signer,
       senderAddress: connection.address,

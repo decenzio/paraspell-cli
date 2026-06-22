@@ -37,11 +37,7 @@ export const submitEvmTransferFromForm = async (
         ...(exchange ? { exchange: [exchange] } : {}),
       });
 
-    try {
-      await builder.signAndSubmitAll();
-    } finally {
-      await builder.disconnect();
-    }
+    await builder.signAndSubmitAll();
     return;
   }
 

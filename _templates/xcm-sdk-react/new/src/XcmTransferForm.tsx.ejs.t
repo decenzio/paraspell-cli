@@ -7,6 +7,7 @@ import {
   CHAINS,<% if (swap) { %>
   EXCHANGE_CHAINS,
   type TExchangeChain,<% } %>
+  isChain,
   type TChain,
 } from "<%= sdkPackage %>";
 import type { FormValues } from "./types";
@@ -77,7 +78,12 @@ const TransferForm: FC<Props> = ({
         Origin chain
         <select
           value={originChain}
-          onChange={(e) => onOriginChange(e.target.value as TChain)}
+          onChange={(e) => {
+            const chain = e.target.value;
+            if (isChain(chain)) {
+              onOriginChange(chain);
+            }
+          }}
           disabled={loading}
           required
         >
@@ -93,7 +99,12 @@ const TransferForm: FC<Props> = ({
         Destination chain
         <select
           value={destinationChain}
-          onChange={(e) => setDestinationChain(e.target.value as TChain)}
+          onChange={(e) => {
+            const chain = e.target.value;
+            if (isChain(chain)) {
+              setDestinationChain(chain);
+            }
+          }}
           disabled={loading}
           required
         >

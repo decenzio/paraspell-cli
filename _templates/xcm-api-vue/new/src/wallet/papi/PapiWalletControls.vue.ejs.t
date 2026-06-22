@@ -16,6 +16,21 @@ const emit = defineEmits<{
   extensionChange: [name: string];
   accountChange: [address: string];
 }>();
+
+const onExtensionChange = (event: Event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  const name = target.value;
+  if (name) emit("extensionChange", name);
+};
+
+const onAccountChange = (event: Event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  emit("accountChange", target.value);
+};
 </script>
 
 <template>
@@ -23,10 +38,7 @@ const emit = defineEmits<{
       <h4>Select extension:</h4>
       <select
         :value="selectedExtensionName"
-        @change="
-          ($event.target as HTMLSelectElement).value &&
-            emit('extensionChange', ($event.target as HTMLSelectElement).value)
-        "
+        @change="onExtensionChange"
       >
         <option
           disabled
@@ -55,7 +67,7 @@ const emit = defineEmits<{
       <h4>Select account:</h4>
       <select
         :value="selectedAddress"
-        @change="emit('accountChange', ($event.target as HTMLSelectElement).value)"
+        @change="onAccountChange"
       >
         <option
           v-for="{ name, address } in accounts"

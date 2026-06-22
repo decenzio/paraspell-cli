@@ -10,8 +10,7 @@ import {
 } from "@polkadot/extension-dapp";
 import type { Signer } from "@polkadot/api/types";
 import type {
-  PjsInjectedAccount,
-  PjsWalletConnection,
+  ExtensionWalletConnection,
   WalletAccountOption,
 } from "../../types";
 
@@ -28,7 +27,7 @@ export const usePjsWallet = () => {
     await web3Enable(DAPP_ORIGIN);
     const filtered = await web3Accounts({ extensions: [name] });
     const nextAccounts = filtered.map(
-      (account: PjsInjectedAccount): WalletAccountOption => ({
+      (account): WalletAccountOption => ({
         address: account.address,
         name: account.meta.name,
       }),
@@ -81,7 +80,7 @@ export const usePjsWallet = () => {
     };
   }, [selectedAddress]);
 
-  const connection = useMemo((): PjsWalletConnection | null => {
+  const connection = useMemo((): ExtensionWalletConnection | null => {
     if (!selectedAddress || !signer) return null;
     return { address: selectedAddress, signer };
   }, [selectedAddress, signer]);

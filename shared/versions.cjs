@@ -1,4 +1,4 @@
-const SDK_VERSION = '13.5.0';
+const SDK_VERSION = '13.8.0';
 
 /** @type {Record<string, string>} */
 const PACKAGE_VERSIONS = {
@@ -11,7 +11,6 @@ const PACKAGE_VERSIONS = {
   galacticcouncilApiAugment: '^0.10.0',
   polkadotJsApi: '^16.5.6',
   polkadotExtensionDapp: '^0.58.10',
-  polkadotExtensionInject: '^0.58.10',
   dedot: '^1.3.0',
   mipd: '^0.0.7',
 };

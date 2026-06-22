@@ -86,15 +86,11 @@ const onSubmit = async (formValues: FormValues) => {
       return;
     }
 
-    <% if (client === 'papi') { %>await submitUsingSdk(
+    await submitUsingSdk(
       formValues,
       connection.value.signer,
       connection.value.address,
-    );<% } else { %>await submitUsingSdk(
-      formValues,
-      connection.value.signer,
-      connection.value.address,
-    );<% } %><% } %>
+    );<% } %>
     alert("Transaction was successful!");
   } catch (e) {
     error.value = toError(e);

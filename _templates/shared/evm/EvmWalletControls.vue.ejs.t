@@ -14,6 +14,21 @@ const emit = defineEmits<{
   accountChange: [address: string];
   disconnect: [];
 }>();
+
+const onProviderChange = (event: Event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  const uuid = target.value;
+  if (uuid) emit("providerChange", uuid);
+};
+
+const onAccountChange = (event: Event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  emit("accountChange", target.value);
+};
 </script>
 
 <template>
@@ -21,10 +36,7 @@ const emit = defineEmits<{
     <h4>Select provider:</h4>
     <select
       :value="selectedProviderUuid ?? ''"
-      @change="
-        ($event.target as HTMLSelectElement).value &&
-          emit('providerChange', ($event.target as HTMLSelectElement).value)
-      "
+      @change="onProviderChange"
     >
       <option disabled value="">
         -- select an option --
@@ -50,7 +62,7 @@ const emit = defineEmits<{
     <h4>Select account:</h4>
     <select
       :value="selectedAddress"
-      @change="emit('accountChange', ($event.target as HTMLSelectElement).value)"
+      @change="onAccountChange"
     >
       <option
         v-for="{ label, address } in accounts"

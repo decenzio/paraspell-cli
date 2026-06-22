@@ -18,7 +18,7 @@ import type {
 } from "../../types";
 import { PjsWalletControls } from "./PjsWalletControls";
 import { usePjsWallet } from "./usePjsWallet";
-import type { PjsWalletConnection } from "../../types";
+import type { ExtensionWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(PjsWalletControls);
 
@@ -26,7 +26,7 @@ export const useWalletWithEvm = (): UseWalletReturn => {
   const pjs = usePjsWallet();
 
   const toSubstratePayload = useCallback(
-    (connection: SubstrateWalletConnection<Signer> | PjsWalletConnection) => ({
+    (connection: SubstrateWalletConnection<Signer> | ExtensionWalletConnection) => ({
       signer: connection.signer,
       senderAddress: connection.address,
     }),

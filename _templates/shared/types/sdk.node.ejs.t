@@ -1,4 +1,4 @@
-import type { TChain, TLocation, TSubstrateChain } from "<%= sdkPackage %>";
+import type { TChain, TDestination, TLocation, TSubstrateChain } from "<%= sdkPackage %>";
 <% if (client === 'pjs') { %>import type { Signer } from "@polkadot/api/types";
 <% } %>
 <% if (client === 'pjs') { %>
@@ -9,7 +9,7 @@ export type SignerResult = Awaited<ReturnType<NonNullable<Signer["signRaw"]>>>;
 <% } %>
 export type TransferParams = {
   from: TChain;
-  to: TChain;
+  to: TDestination;
   amount: string;
   currencyLocation?: TLocation;
   recipient: string;

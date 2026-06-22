@@ -155,8 +155,6 @@ const TransferForm: FC<Props> = ({
     });
   };
 
-  const chainOptions = chains;
-
   return (
     <form onSubmit={handleSubmit}>
       <label>
@@ -167,7 +165,7 @@ const TransferForm: FC<Props> = ({
           disabled={loading}
           required
         >
-          {chainOptions.map((chain) => (
+          {chains.map((chain) => (
             <option key={chain} value={chain}>
               {chain}
             </option>

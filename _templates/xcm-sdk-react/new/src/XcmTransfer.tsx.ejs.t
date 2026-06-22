@@ -51,15 +51,11 @@ const XcmTransfer: FC = () => {
         return;
       }
 
-      <% if (client === 'papi') { %>await submitUsingSdk(
+      await submitUsingSdk(
         formValues,
         wallet.connection.signer,
         wallet.connection.address,
-      );<% } else { %>await submitUsingSdk(
-        formValues,
-        wallet.connection.signer,
-        wallet.connection.address,
-      );<% } %><% } %>
+      );<% } %>
       alert("Transaction was successful!");
     } catch (error) {
       setError(toError(error));

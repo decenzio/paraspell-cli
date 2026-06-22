@@ -6,7 +6,8 @@ to: src/transfer.ts
   Builder,
   findAssetInfoOrThrow,
   findNativeAssetInfoOrThrow,
-  getSupportedAssets,<% if (client !== 'papi') { %>
+  getSupportedAssets,
+  assertToIsString,<% if (client !== 'papi') { %>
   createChainClient,<% } %><% if (evmWallet) { %>
   isChainEvm,<% } %>
 } from "<%= sdkPackage %>";<% if (client === 'pjs' || client === 'dedot') { %>
@@ -16,7 +17,7 @@ import {
   submitEvmTransfer,
 } from "./evm.js";<% } %>
 import { getSubstrateSigner } from "./substrate.js";
-import type { TChain, TLocation } from "<%= sdkPackage %>";
+import type { TChain, TDestination, TLocation } from "<%= sdkPackage %>";
 import type { TransferParams } from "./types.js";
 
 const defaults: TransferParams = {
@@ -28,10 +29,11 @@ const defaults: TransferParams = {
 
 const resolveCurrencyLocation = async (
   from: TChain,
-  to: TChain,
+  to: TDestination,
   location?: TLocation,
 ) => {
   if (location) {
+    assertToIsString(to);
     findAssetInfoOrThrow(from, { location }, to);
     return location;
   }
@@ -40,9 +42,10 @@ const resolveCurrencyLocation = async (
 
 <% if (swap) { %>const resolveCurrencyToLocation = async (
   from: TChain,
-  to: TChain,
+  to: TDestination,
   location?: TLocation,
 ) => {
+  assertToIsString(to);
   if (location) {
     findAssetInfoOrThrow(from, { location }, to);
     return location;
@@ -90,11 +93,7 @@ const resolveCurrencyLocation = async (
       currencyTo: { location: currencyToLocation },
     });
 
-  try {
-    return await swapBuilder.signAndSubmitAll();
-  } finally {
-    await swapBuilder.disconnect();
-  }
+  return await swapBuilder.signAndSubmitAll();
 
 <% } else { %><% if (evmWallet) { %>  if (isChainEvm(opts.from)) {
     return await submitEvmTransfer({
@@ -128,10 +127,6 @@ const resolveCurrencyLocation = async (
     .sender(sender);
 <% } %>
 
-  try {
-    return await builder.signAndSubmit();
-  } finally {
-    await builder.disconnect();
-  }
+  return await builder.signAndSubmit();
 <% } %>
 };

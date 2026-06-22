@@ -23,10 +23,10 @@ to: package.json
     "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
     "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
     "@polkadot/api": "<%= polkadotJsApi %>",
-    "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>",
-    "@polkadot/extension-inject": "<%= polkadotExtensionInject %>"<% } %><% if (client === 'dedot') { %>,
+    "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>"<% } %><% if (client === 'dedot') { %>,
     "dedot": "<%= dedot %>",
-    "@polkadot/api": "<%= polkadotJsApi %>"<% } %>
+    "@polkadot/api": "<%= polkadotJsApi %>",
+    "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>"<% } %>
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
