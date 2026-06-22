@@ -9,10 +9,10 @@ const VIEM_CHAIN_BY_ORIGIN: Record<string, Chain> = {<% if (evm) { %>
   Ethereum: mainnet,<% } %>
 };
 
-export function getViemChainForOrigin(origin: string): Chain {
+export const getViemChainForOrigin = (origin: string): Chain => {
   const chain = VIEM_CHAIN_BY_ORIGIN[origin];
   if (!chain) {
     throw new Error(`No viem chain configured for origin: ${origin}`);
   }
   return chain;
-}
+};

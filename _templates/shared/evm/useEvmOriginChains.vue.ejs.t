@@ -7,7 +7,7 @@ import {
 
 const chains = ref<readonly string[]>(getEvmOriginChains());
 
-export function useEvmOriginChains() {
+export const useEvmOriginChains = () => {
   onMounted(() => {
     void fetchEvmOriginChains().then((result) => {
       chains.value = result;
@@ -15,4 +15,4 @@ export function useEvmOriginChains() {
   });
 
   return { chains, isEvmOrigin };
-}
+};

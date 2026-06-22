@@ -17,7 +17,7 @@ import type {
 
 const DAPP_ORIGIN = "ParaSpell XCM SDK";
 
-export function usePjsWallet() {
+export const usePjsWallet = () => {
   const extensionNames = ref<string[]>([]);
   const selectedExtensionName = ref<string>();
   const accounts = ref<WalletAccountOption[]>([]);
@@ -96,4 +96,4 @@ export function usePjsWallet() {
     selectExtension,
     selectAccountByAddress,
   };
-}
+};

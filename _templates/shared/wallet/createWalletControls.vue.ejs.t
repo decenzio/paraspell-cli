@@ -5,8 +5,7 @@ import type {
   WalletControlsSubstrateProps,
 } from "../../types";
 
-export function createWalletControls(SubstrateControls: Component) {
-  return defineComponent({
+export const createWalletControls = (SubstrateControls: Component) => defineComponent({
     name: "WalletControls",
     props: {
       wallet: {
@@ -52,4 +51,3 @@ export function createWalletControls(SubstrateControls: Component) {
       };
     },
   });
-}

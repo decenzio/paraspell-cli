@@ -12,10 +12,10 @@ import { assertSubstrateOrigin } from "../evm/isEvmOrigin";<% if (evmWallet) { %
 import { submitEvmTransferFromForm } from "./evmTransfer";
 <% } -%>
 
-export async function buildTransactions(
+export const buildTransactions = async (
   formValues: FormValues,
   senderAddress: string,
-): Promise<TDedotExtrinsic[]> {
+): Promise<TDedotExtrinsic[]> => {
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
@@ -52,15 +52,15 @@ export async function buildTransactions(
     .build();
 
   return [tx];
-}
+};
 
-async function submitTransaction(
+const submitTransaction = async (
   tx: TDedotExtrinsic,
   senderAddress: string,
   signer: Signer,
-): Promise<void> {
+): Promise<void> => {
   await tx.signAndSend(senderAddress, { signer }).untilFinalized();
-}
+};
 
 export const submitUsingSdk = async (
   formValues: FormValues,

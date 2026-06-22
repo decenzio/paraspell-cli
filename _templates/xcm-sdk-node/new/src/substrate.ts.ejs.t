@@ -15,28 +15,25 @@ import type {
 <% } -%>
 <%- h.includeShared('shared/node/substrate-keyring.ejs.t') %>
 <% if (client === 'pjs') { %>
-function hexToU8a(value: string): Uint8Array {
+const hexToU8a = (value: string): Uint8Array => {
   const hex = value.startsWith("0x") ? value.slice(2) : value;
   const bytes = new Uint8Array(hex.length / 2);
   for (let i = 0; i < bytes.length; i++) {
     bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
   }
   return bytes;
-}
+};
 
-function u8aToHex(bytes: Uint8Array): `0x${string}` {
-  return `0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
-}
+const u8aToHex = (bytes: Uint8Array): `0x${string}` =>
+  `0x${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
 
-function hasSignPayload(
+const hasSignPayload = (
   pair: KeyringPair,
 ): pair is KeyringPair & {
   signPayload: (payload: SignerPayloadJSON) => Uint8Array;
-} {
-  return "signPayload" in pair && typeof pair.signPayload === "function";
-}
+} => "signPayload" in pair && typeof pair.signPayload === "function";
 
-function keyringPairToPjsSigner(pair: KeyringPair): TPjsSigner {
+const keyringPairToPjsSigner = (pair: KeyringPair): TPjsSigner => {
   if (!hasSignPayload(pair)) {
     throw new Error("Keyring pair does not support payload signing.");
   }
@@ -52,10 +49,10 @@ function keyringPairToPjsSigner(pair: KeyringPair): TPjsSigner {
   };
 
   return { address: pair.address, signer };
-}
+};
 <% } %>
 
-export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'PolkadotSigner' : client === 'pjs' ? 'TPjsSigner' : 'KeyringPair' %>> {
+export const getSubstrateSigner = async (): Promise<<%= client === 'papi' ? 'PolkadotSigner' : client === 'pjs' ? 'TPjsSigner' : 'KeyringPair' %>> => {
   await ensureCryptoReady();
   const pair = createKeyringPair(getSubstrateMnemonic());
 <% if (client === 'papi') { %>
@@ -69,4 +66,4 @@ export async function getSubstrateSigner(): Promise<<%= client === 'papi' ? 'Pol
 <% } else { %>
   return pair;
 <% } %>
-}
+};

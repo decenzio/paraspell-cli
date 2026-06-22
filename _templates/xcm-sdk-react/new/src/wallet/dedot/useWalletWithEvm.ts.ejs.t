@@ -22,7 +22,7 @@ import type { DedotWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(DedotWalletControls);
 
-export function useWalletWithEvm(): UseWalletReturn {
+export const useWalletWithEvm = (): UseWalletReturn => {
   const dedot = useDedotWallet();
 
   const toSubstratePayload = useCallback(
@@ -68,4 +68,4 @@ export function useWalletWithEvm(): UseWalletReturn {
   );
 
   return { ...core, submitTransfer };
-}
+};

@@ -7,7 +7,7 @@ import {
 } from "polkadot-api/pjs-signer";
 import type { PapiWalletConnection } from "../../types";
 
-export function usePapiWallet() {
+export const usePapiWallet = () => {
   const [extensionNames, setExtensionNames] = useState<string[]>([]);
   const [selectedExtension, setSelectedExtension] =
     useState<InjectedExtension | null>(null);
@@ -62,4 +62,4 @@ export function usePapiWallet() {
     selectExtension,
     selectAccountByAddress,
   };
-}
+};

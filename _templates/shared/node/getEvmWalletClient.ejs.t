@@ -7,7 +7,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { getViemChainForOrigin } from "./getViemChain.js";
 
-export function getEvmWalletClient(origin: string): WalletClient {
+export const getEvmWalletClient = (origin: string): WalletClient => {
   const privateKey = process.env.PRIVATE_KEY;
   if (!privateKey) {
     throw new Error(
@@ -25,4 +25,4 @@ export function getEvmWalletClient(origin: string): WalletClient {
     chain: getViemChainForOrigin(origin),
     transport: http(),
   });
-}
+};

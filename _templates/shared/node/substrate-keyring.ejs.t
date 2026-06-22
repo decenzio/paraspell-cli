@@ -4,14 +4,14 @@ import type { KeyringPair } from "@polkadot/keyring/types";
 
 let cryptoReady: Promise<boolean> | null = null;
 
-export async function ensureCryptoReady(): Promise<void> {
+export const ensureCryptoReady = async (): Promise<void> => {
   if (!cryptoReady) {
     cryptoReady = cryptoWaitReady();
   }
   await cryptoReady;
-}
+};
 
-export function getSubstrateMnemonic(): string {
+export const getSubstrateMnemonic = (): string => {
   const secret = process.env.SUBSTRATE_MNEMONIC;
   if (!secret) {
     throw new Error(
@@ -19,9 +19,9 @@ export function getSubstrateMnemonic(): string {
     );
   }
   return secret;
-}
+};
 
-export function createKeyringPair(secret: string): KeyringPair {
+export const createKeyringPair = (secret: string): KeyringPair => {
   const keyring = new Keyring({ type: "sr25519" });
   try {
     if (secret.startsWith("//")) {
@@ -36,8 +36,7 @@ export function createKeyringPair(secret: string): KeyringPair {
       "SUBSTRATE_MNEMONIC must be a BIP39 mnemonic (quote it in .env) or a //Dev URI like //Alice.",
     );
   }
-}
+};
 
-export function signBytes(pair: KeyringPair, input: Uint8Array): Uint8Array {
-  return Uint8Array.from(pair.sign(input));
-}
+export const signBytes = (pair: KeyringPair, input: Uint8Array): Uint8Array =>
+  Uint8Array.from(pair.sign(input));

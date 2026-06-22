@@ -5,7 +5,7 @@ import {
   isEvmOrigin,
 } from "./evmOrigins";
 
-export function useEvmOriginChains() {
+export const useEvmOriginChains = () => {
   const [chains, setChains] = useState<readonly string[]>(getEvmOriginChains);
 
   useEffect(() => {
@@ -13,4 +13,4 @@ export function useEvmOriginChains() {
   }, []);
 
   return { chains, isEvmOrigin };
-}
+};

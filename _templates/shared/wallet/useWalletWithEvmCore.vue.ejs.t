@@ -9,7 +9,7 @@ import type {
   WalletSubmitOptions,
 } from "../../types";
 
-export function useWalletWithEvmCore<
+export const useWalletWithEvmCore = <
   TSigner,
   TSubstrate extends SubstrateWalletBase<TSigner>,
 >(
@@ -17,7 +17,7 @@ export function useWalletWithEvmCore<
   toSubstratePayload: (
     connection: SubstrateWalletConnection<TSigner>,
   ) => SubstrateSubmitPayload<TSigner>,
-) {
+) => {
   const evm = useEvmWallet();
   const activeWalletKind = ref<WalletKind>("substrate");
 
@@ -92,4 +92,4 @@ export function useWalletWithEvmCore<
     disconnectEvm: evm.disconnect,
     getEvmWalletClient: evm.getWalletClient,
   };
-}
+};

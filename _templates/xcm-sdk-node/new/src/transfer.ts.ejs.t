@@ -26,23 +26,23 @@ const defaults: TransferParams = {
   recipient: "//Bob",
 };
 
-async function resolveCurrencyLocation(
+const resolveCurrencyLocation = async (
   from: TChain,
   to: TChain,
   location?: TLocation,
-) {
+) => {
   if (location) {
     findAssetInfoOrThrow(from, { location }, to);
     return location;
   }
   return findNativeAssetInfoOrThrow(from).location;
-}
+};
 
-<% if (swap) { %>async function resolveCurrencyToLocation(
+<% if (swap) { %>const resolveCurrencyToLocation = async (
   from: TChain,
   to: TChain,
   location?: TLocation,
-) {
+) => {
   if (location) {
     findAssetInfoOrThrow(from, { location }, to);
     return location;
@@ -56,9 +56,9 @@ async function resolveCurrencyLocation(
     );
   }
   return asset.location;
-}
+};
 
-<% } %>export async function transferAsset(): Promise<string | string[]> {
+<% } %>export const transferAsset = async (): Promise<string | string[]> => {
   const opts = defaults;
   const currencyLocation = await resolveCurrencyLocation(
     opts.from,
@@ -134,4 +134,4 @@ async function resolveCurrencyLocation(
     await builder.disconnect();
   }
 <% } %>
-}
+};

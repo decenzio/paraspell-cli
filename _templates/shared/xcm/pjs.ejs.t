@@ -12,10 +12,10 @@ import { assertSubstrateOrigin } from "../evm/isEvmOrigin";<% if (evmWallet) { %
 import { submitEvmTransferFromForm } from "./evmTransfer";
 <% } -%>
 
-export async function buildTransaction(
+export const buildTransaction = async (
   formValues: FormValues,
   senderAddress: string,
-): Promise<Extrinsic[]> {
+): Promise<Extrinsic[]> => {
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =
     formValues;
 
@@ -51,13 +51,13 @@ export async function buildTransaction(
     .build();
 
   return [tx];
-}
+};
 
-async function submitTransaction(
+const submitTransaction = async (
   tx: Extrinsic,
   senderAddress: string,
   signer: Signer,
-): Promise<void> {
+): Promise<void> => {
   await tx.signAsync(senderAddress, { signer });
 
   await new Promise<void>((resolve, reject) => {
@@ -91,7 +91,7 @@ async function submitTransaction(
         reject(error);
       });
   });
-}
+};
 
 export const submitUsingSdk = async (
   formValues: FormValues,

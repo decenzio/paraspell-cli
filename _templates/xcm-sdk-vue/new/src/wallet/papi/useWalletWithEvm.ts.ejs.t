@@ -22,7 +22,7 @@ import type { PapiWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(PapiWalletControls);
 
-export function useWalletWithEvm(): UseWalletReturn {
+export const useWalletWithEvm = (): UseWalletReturn => {
   const papi = usePapiWallet();
 
   const toSubstratePayload = (
@@ -64,4 +64,4 @@ export function useWalletWithEvm(): UseWalletReturn {
   };
 
   return { ...core, submitTransfer };
-}
+};

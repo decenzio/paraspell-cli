@@ -7,12 +7,11 @@ import {
   getSupportedAssetsTo,
 } from "@paraspell/swap";<% } %>
 
-function assetKey(asset: TAssetInfo): string {
-  return `${asset.symbol ?? "NO_SYMBOL"}-${
+const assetKey = (asset: TAssetInfo): string =>
+  `${asset.symbol ?? "NO_SYMBOL"}-${
     ("assetId" in asset ? asset.assetId : JSON.stringify(asset?.location)) ??
     "NO_ID"
   }`;
-}
 
 const useCurrencyOptions = (
   from: Ref<TChain>,

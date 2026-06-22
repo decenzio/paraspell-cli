@@ -1,16 +1,16 @@
-export function requireCurrency<T extends { location: object }>(
+export const requireCurrency = <T extends { location: object }>(
   currency: T | undefined,
-): T {
+): T => {
   if (!currency?.location) {
     throw new Error("Currency is required.");
   }
   return currency;
-}
+};
 
-export function requireSwapCurrencyTo<T extends { location: object }>(
+export const requireSwapCurrencyTo = <T extends { location: object }>(
   swapEnabled: boolean | undefined,
   currencyTo: T | undefined,
-): T | undefined {
+): T | undefined => {
   if (!swapEnabled) {
     return undefined;
   }
@@ -18,4 +18,4 @@ export function requireSwapCurrencyTo<T extends { location: object }>(
     throw new Error("Swap destination currency is required.");
   }
   return currencyTo;
-}
+};

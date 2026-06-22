@@ -11,23 +11,22 @@ import type { EvmAccountOption, EvmProviderOption } from "../../types";
 const truncateAddress = (address: string) =>
   `${address.slice(0, 6)}…${address.slice(-4)}`;
 
-function toProviderOptions(
+const toProviderOptions = (
   availableProviders: readonly EIP6963ProviderDetail[],
-): EvmProviderOption[] {
-  return availableProviders.map((entry) => ({
+): EvmProviderOption[] =>
+  availableProviders.map((entry) => ({
     uuid: entry.info.uuid,
     label: entry.info.name,
   }));
-}
 
-function parseRequestedAccounts(result: unknown): string[] {
+const parseRequestedAccounts = (result: unknown): string[] => {
   if (!Array.isArray(result)) {
     throw new Error("Wallet returned an invalid accounts response.");
   }
   return result.filter((value): value is string => typeof value === "string");
-}
+};
 
-export function useEvmWallet() {
+export const useEvmWallet = () => {
   const providers = useSyncExternalStore(
     (onStoreChange) => evmProviderStore?.subscribe(onStoreChange) ?? (() => undefined),
     () => getEip6963Providers(),
@@ -173,4 +172,4 @@ export function useEvmWallet() {
     getWalletClient,
     getConnectedWalletClient,
   };
-}
+};

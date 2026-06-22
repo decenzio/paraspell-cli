@@ -5,9 +5,9 @@ import type {
   WalletControlsSubstrateProps,
 } from "../../types";
 
-export function createWalletControls(
+export const createWalletControls = (
   SubstrateControls: FC<WalletControlsSubstrateProps>,
-) {
+) => {
   const WalletControls: FC<{ wallet: UseWalletWithEvmReturn }> = ({
     wallet,
   }) => {
@@ -48,4 +48,4 @@ export function createWalletControls(
   };
 
   return WalletControls;
-}
+};

@@ -11,7 +11,9 @@ import type { TransferParams } from "./types.js";
 
 export { assertSubstrateOrigin } from "./isEvmOrigin.js";
 
-export async function submitEvmTransfer(params: TransferParams): Promise<string> {
+export const submitEvmTransfer = async (
+  params: TransferParams,
+): Promise<string> => {
   const { from, to, recipient, amount, currencyLocation } = params;
 
   if (!isChainEvm(from)) {
@@ -33,4 +35,4 @@ export async function submitEvmTransfer(params: TransferParams): Promise<string>
     .recipient(recipient)
     .sender(walletClient)
     .signAndSubmit();
-}
+};

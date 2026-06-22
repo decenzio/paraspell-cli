@@ -5,11 +5,11 @@ import type { Hex } from "viem";
 import { API_URL } from "./consts<% if (framework === 'node') { %>.js<% } %>";
 import type { ApiParams, ApiTransaction, ApiErrorResponse } from "./types<% if (framework === 'node') { %>.js<% } %>";
 
-async function postToApi<T>(
+const postToApi = async <T>(
   url: string,
   params: ApiParams,
   errorContext: string,
-): Promise<T> {
+): Promise<T> => {
   try {
     const response = await axios.post<T>(url, params);
     return response.data;
@@ -23,7 +23,7 @@ async function postToApi<T>(
     }
     throw error;
   }
-}
+};
 
 export const fetchFromApi = (params: ApiParams): Promise<ApiTransaction[]> =>
   postToApi(`${API_URL}/x-transfers`, params, "fetching data");

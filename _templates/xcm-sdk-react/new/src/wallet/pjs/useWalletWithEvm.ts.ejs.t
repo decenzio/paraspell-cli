@@ -22,7 +22,7 @@ import type { PjsWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(PjsWalletControls);
 
-export function useWalletWithEvm(): UseWalletReturn {
+export const useWalletWithEvm = (): UseWalletReturn => {
   const pjs = usePjsWallet();
 
   const toSubstratePayload = useCallback(
@@ -66,4 +66,4 @@ export function useWalletWithEvm(): UseWalletReturn {
   );
 
   return { ...core, submitTransfer };
-}
+};

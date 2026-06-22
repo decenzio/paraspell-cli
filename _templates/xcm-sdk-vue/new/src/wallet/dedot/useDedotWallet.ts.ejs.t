@@ -10,13 +10,13 @@ import type {
   WindowWithInjectedWeb3,
 } from "../../types";
 
-function getInjectedWeb3() {
+const getInjectedWeb3 = () => {
   if (typeof window === "undefined") return undefined;
 
   return (window as WindowWithInjectedWeb3).injectedWeb3;
-}
+};
 
-export function useDedotWallet() {
+export const useDedotWallet = () => {
   const extensionNames = ref<string[]>([]);
   const selectedExtensionName = ref<string>();
   const signer = ref<ExtensionInjectedSigner | null>(null);
@@ -68,4 +68,4 @@ export function useDedotWallet() {
     selectExtension,
     selectAccountByAddress,
   };
-}
+};

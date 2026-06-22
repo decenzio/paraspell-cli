@@ -7,21 +7,20 @@ import {
 } from "viem";
 import { getViemChainForOrigin } from "./getViemChain";
 
-export function createEvmWalletClient(
+export const createEvmWalletClient = (
   origin: string,
   provider: EIP1193Provider,
-): WalletClient {
-  return createWalletClient({
+): WalletClient =>
+  createWalletClient({
     chain: getViemChainForOrigin(origin),
     transport: custom(provider),
   });
-}
 
-export async function ensureEvmWalletClient(
+export const ensureEvmWalletClient = async (
   walletClient: WalletClient,
   origin: string,
   provider: EIP1193Provider,
-): Promise<WalletClient> {
+): Promise<WalletClient> => {
   if (!walletClient.account) {
     throw new Error(
       "EVM wallet has no account. Disconnect and connect again.",
@@ -34,4 +33,4 @@ export async function ensureEvmWalletClient(
     chain: getViemChainForOrigin(origin),
     transport: custom(provider),
   });
-}
+};

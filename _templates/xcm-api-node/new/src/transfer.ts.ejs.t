@@ -27,11 +27,11 @@ const defaults: TransferParams = {
   recipient: "//Bob",
 };
 
-async function resolveCurrencyLocation(
+const resolveCurrencyLocation = async (
   location: object | undefined,
   origin: string,
   destination: string,
-): Promise<AssetInfo["location"]> {
+): Promise<AssetInfo["location"]> => {
   try {
     const response = await axios.get<AssetInfo[]>(
       `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
@@ -63,13 +63,13 @@ async function resolveCurrencyLocation(
     }
     throw error;
   }
-}
+};
 
-<% if (swap) { %>async function resolveCurrencyToLocation(
+<% if (swap) { %>const resolveCurrencyToLocation = async (
   location: object | undefined,
   origin: string,
   destination: string,
-): Promise<AssetInfo["location"]> {
+): Promise<AssetInfo["location"]> => {
   try {
     const response = await axios.get<AssetInfo[]>(
       `${API_URL}/supported-assets?origin=${origin}&destination=${destination}`,
@@ -104,9 +104,9 @@ async function resolveCurrencyLocation(
     }
     throw error;
   }
-}
+};
 
-<% } %>export async function transferViaApi(): Promise<string | string[]> {
+<% } %>export const transferViaApi = async (): Promise<string | string[]> => {
   const params = defaults;
   const currencyLocation = await resolveCurrencyLocation(
     params.currencyLocation,
@@ -166,4 +166,4 @@ async function resolveCurrencyLocation(
 
   const transactions = await fetchFromApi(apiParams);
   return await submitSubstrateTransfers(transactions);
-}
+};

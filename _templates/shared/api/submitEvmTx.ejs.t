@@ -6,10 +6,10 @@ import {
   type WalletClient,
 } from "viem";
 
-export async function submitEvmTx(
+export const submitEvmTx = async (
   serializedTx: Hex,
   walletClient: WalletClient,
-): Promise<Hex> {
+): Promise<Hex> => {
   const account = walletClient.account;
   if (!account) {
     throw new Error("Wallet has no account. Connect wallet and try again.");
@@ -49,4 +49,4 @@ export async function submitEvmTx(
     maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
     nonce,
   });
-}
+};

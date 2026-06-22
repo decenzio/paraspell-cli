@@ -10,13 +10,13 @@ export const WALLET_KIND_OPTIONS: readonly WalletKindOption[] = [
   { value: "evm", label: "EVM" },
 ];
 
-export function parseWalletKind(value: string): WalletKind {
+export const parseWalletKind = (value: string): WalletKind => {
   const option = WALLET_KIND_OPTIONS.find((item) => item.value === value);
   if (!option) {
     throw new Error(`Unsupported wallet kind: ${value}`);
   }
   return option.value;
-}
+};
 
 export type WalletAccountOption = {
   address: string;
