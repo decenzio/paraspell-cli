@@ -1,4 +1,4 @@
-const SDK_VERSION = '13.8.0';
+const SDK_VERSION = '13.9.0';
 
 /** @type {Record<string, string>} */
 const PACKAGE_VERSIONS = {

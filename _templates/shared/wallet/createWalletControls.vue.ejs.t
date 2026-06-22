@@ -1,19 +1,13 @@
-import { defineComponent, h, unref, type Component, type PropType } from "vue";
+import { defineComponent, h, unref, type Component } from "vue";
 import EvmWalletControls from "../evm/EvmWalletControls.vue";
 import type {
   UseWalletWithEvmReturn,
   WalletControlsSubstrateProps,
 } from "../../types";
 
-export const createWalletControls = (SubstrateControls: Component) => defineComponent({
-    name: "WalletControls",
-    props: {
-      wallet: {
-        type: Object as PropType<UseWalletWithEvmReturn>,
-        required: true,
-      },
-    },
-    setup(props) {
+export const createWalletControls = (SubstrateControls: Component) =>
+  defineComponent(
+    (props: { wallet: UseWalletWithEvmReturn }) => {
       return () => {
         const wallet = props.wallet;
         if (unref(wallet.activeWalletKind) === "evm") {
@@ -50,4 +44,13 @@ export const createWalletControls = (SubstrateControls: Component) => defineComp
         return h(SubstrateControls, substrateProps);
       };
     },
-  });
+    {
+      name: "WalletControls",
+      props: {
+        wallet: {
+          type: Object,
+          required: true,
+        },
+      },
+    },
+  );

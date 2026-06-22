@@ -63,7 +63,7 @@ export const submitUsingSdk = async (
       .recipient(recipient)
       .swap({
         currencyTo: { location: resolvedCurrencyTo.location },
-        ...(exchange ? { exchange: [exchange] } : {}),
+        ...(exchange?.length ? { exchange } : {}),
       })
       .sender(senderAddress)
       .buildAll();

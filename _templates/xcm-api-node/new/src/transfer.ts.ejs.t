@@ -20,6 +20,8 @@ import type {
   TransferParams,
 } from "./types.js";
 
+<%- h.includeShared('shared/api/buildApiParams.ejs.t') %>
+
 const defaults: TransferParams = {
   from: "<%= snowbridge ? 'Ethereum' : evm ? 'Moonbeam' : 'Astar' %>",
   to: "Hydration",
@@ -126,21 +128,18 @@ const resolveCurrencyLocation = async (
   if (isEvmOrigin(params.from)) {
     const sender = getEvmSenderAddress(params.from);
     const walletClient = getEvmWalletClient(params.from);
-    const apiParams: ApiParams = {
-      from: params.from,
-      to: params.to,
-      recipient: params.recipient,
-      sender,
-      currency: {
-        location: currencyLocation,
-        amount: params.amount,
-      },<% if (swap) { %>
-      swapOptions: {
-        currencyTo: { location: currencyToLocation },
-        ...(params.exchange ? { exchange: [params.exchange] } : {}),
-      },<% } %>
-    };
-    const serializedTx = await fetchFromEvmApi(apiParams);
+    const serializedTx = await fetchFromEvmApi(
+      buildApiParams(
+        params.from,
+        params.to,
+        params.recipient,
+        sender,
+        params.amount,
+        currencyLocation,<% if (swap) { %>
+        currencyToLocation,
+        params.exchange,<% } %>
+      ),
+    );
     const txHash = await submitEvmTx(serializedTx, walletClient);
     return txHash;
   }
@@ -149,21 +148,17 @@ const resolveCurrencyLocation = async (
   const mnemonic = getSubstrateMnemonic();
   const sender = await getSubstrateSenderAddress(mnemonic);
 
-  const apiParams: ApiParams = {
-    from: params.from,
-    to: params.to,
-    recipient: params.recipient,
-    sender,
-    currency: {
-      location: currencyLocation,
-      amount: params.amount,
-    },<% if (swap) { %>
-    swapOptions: {
-      currencyTo: { location: currencyToLocation },
-      ...(params.exchange ? { exchange: [params.exchange] } : {}),
-    },<% } %>
-  };
-
-  const transactions = await fetchFromApi(apiParams);
+  const transactions = await fetchFromApi(
+    buildApiParams(
+      params.from,
+      params.to,
+      params.recipient,
+      sender,
+      params.amount,
+      currencyLocation,<% if (swap) { %>
+      currencyToLocation,
+      params.exchange,<% } %>
+    ),
+  );
   return await submitSubstrateTransfers(transactions);
 };

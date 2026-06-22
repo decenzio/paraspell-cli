@@ -6,6 +6,7 @@ import useCurrencyOptions from "./useCurrencyOptions";
 import {
   CHAINS,<% if (swap) { %>
   EXCHANGE_CHAINS,
+  isExchange,
   type TExchangeChain,<% } %>
   isChain,
   type TChain,
@@ -29,7 +30,7 @@ const TransferForm: FC<Props> = ({
   const [currencyOptionId, setCurrencyOptionId] = useState("");
   <% if (swap) { %>const [currencyToOptionId, setCurrencyToOptionId] = useState("");
   const [swapEnabled, setSwapEnabled] = useState(false);
-  const [exchange, setExchange] = useState<TExchangeChain | undefined>(undefined);
+  const [exchange, setExchange] = useState<TExchangeChain[]>([]);
   <% } %>const [recipient, setRecipient] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
   );
@@ -164,16 +165,16 @@ const TransferForm: FC<Props> = ({
           <label>
             Exchange
             <select
+              multiple
               value={exchange}
               onChange={(e) =>
                 setExchange(
-                  e.target.value
-                    ? (e.target.value as TExchangeChain)
-                    : undefined,
+                  Array.from(e.target.selectedOptions, (o) => o.value).filter(
+                    isExchange,
+                  ),
                 )
               }
             >
-              <option value="">Auto</option>
               {EXCHANGE_CHAINS.map((chain) => (
                 <option key={chain} value={chain}>
                   {chain}

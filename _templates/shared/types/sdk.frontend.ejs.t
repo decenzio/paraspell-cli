@@ -21,7 +21,7 @@ export type FormValues = {
   currency: TAssetInfo;<% if (swap) { %>
   swapEnabled?: boolean;
   currencyTo?: TAssetInfo;
-  exchange?: TExchangeChain;<% } %>
+  exchange?: TExchangeChain[];<% } %>
 };
 
 <% if (evmWallet) { %>

@@ -7,6 +7,7 @@ import useCurrencyOptions from "./useCurrencyOptions";
 import {
   CHAINS,<% if (swap) { %>
   EXCHANGE_CHAINS,
+  isExchange,
   type TExchangeChain,<% } %>
   isChain,
   type TChain,
@@ -27,7 +28,7 @@ const destinationChain = ref<TChain>("Hydration");
 const currencyOptionId = ref("");
 <% if (swap) { %>const currencyToOptionId = ref("");
 const swapEnabled = ref(false);
-const exchange = ref<TExchangeChain | undefined>(undefined);
+const exchange = ref<TExchangeChain[]>([]);
 <% } %>const recipient = ref("5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96");
 const amount = ref("5");
 
@@ -61,7 +62,9 @@ watch(
   const target = e.target;
   if (!(target instanceof HTMLSelectElement)) return;
 
-  exchange.value = EXCHANGE_CHAINS.find((chain) => chain === target.value);
+  exchange.value = Array.from(target.selectedOptions, (o) => o.value).filter(
+    isExchange,
+  );
 };
 
 <% } %>const onOriginChange = (e: Event) => {
@@ -178,12 +181,10 @@ const handleSubmit = (e: Event) => {
       <label>
         Exchange
         <select
+          multiple
           :value="exchange"
           @change="onExchangeChange"
         >
-          <option value="">
-            Auto
-          </option>
           <option
             v-for="chain in EXCHANGE_CHAINS"
             :key="chain"

@@ -34,7 +34,7 @@ export const submitEvmTransferFromForm = async (
       .sender(signer)
       .swap({
         currencyTo: { location: resolvedCurrencyTo.location },
-        ...(exchange ? { exchange: [exchange] } : {}),
+        ...(exchange?.length ? { exchange } : {}),
       });
 
     await builder.signAndSubmitAll();

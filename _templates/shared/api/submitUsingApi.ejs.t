@@ -8,7 +8,14 @@ import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "
 <% if (evmWallet) { %>import { fetchEvmOriginChains, isEvmOrigin } from "../evm";
 import { submitEvmTx } from "./submitEvmTx";
 <% } %>import { submitTransaction } from "../utils";
-import type { ApiParams, ApiTransaction, FormValues<% if (evmWallet) { %>, WalletSubmitOptions<% } %> } from "../types";
+import type {
+  ApiParams,
+  ApiTransaction,
+  FormValues<% if (evmWallet) { %>,
+  WalletSubmitOptions<% } %>,
+} from "../types";
+
+<%- h.includeShared('shared/api/buildApiParams.ejs.t') %>
 
 const submitApiTransaction = async (
   apiTx: ApiTransaction,
@@ -52,28 +59,20 @@ export const submitUsingApi = async (
       throw new Error("EVM wallet has no connected account.");
     }
 
-    const apiParams: ApiParams = {
-      from: formValues.from,
-      to: formValues.to,
-      recipient: formValues.recipient,
-      sender,
-      currency: {
-        location: currency.location,
-        amount: formValues.amount,
-      },<% if (swap) { %>
-      ...(formValues.swapEnabled && swapCurrencyTo
-        ? {
-            swapOptions: {
-              currencyTo: { location: swapCurrencyTo.location },
-              ...(formValues.exchange
-                ? { exchange: [formValues.exchange] }
-                : {}),
-            },
-          }
-        : {}),<% } %>
-    };
-
-    const serializedTx = await fetchFromEvmApi(apiParams);
+    const serializedTx = await fetchFromEvmApi(
+      buildApiParams(
+        formValues.from,
+        formValues.to,
+        formValues.recipient,
+        sender,
+        formValues.amount,
+        currency.location,<% if (swap) { %>
+        formValues.swapEnabled && swapCurrencyTo
+          ? swapCurrencyTo.location
+          : undefined,
+        formValues.exchange,<% } %>
+      ),
+    );
     await submitEvmTx(serializedTx, options.walletClient);
     return;
   }
@@ -82,28 +81,20 @@ export const submitUsingApi = async (
     throw new Error("Substrate origin requires a Polkadot extension wallet.");
   }
 
-  const apiParams: ApiParams = {
-    from: formValues.from,
-    to: formValues.to,
-    recipient: formValues.recipient,
-    sender: options.senderAddress,
-    currency: {
-      location: currency.location,
-      amount: formValues.amount,
-    },<% if (swap) { %>
-    ...(formValues.swapEnabled && swapCurrencyTo
-      ? {
-          swapOptions: {
-            currencyTo: { location: swapCurrencyTo.location },
-            ...(formValues.exchange
-              ? { exchange: [formValues.exchange] }
-              : {}),
-          },
-        }
-      : {}),<% } %>
-  };
-
-  const transactions = await fetchFromApi(apiParams);
+  const transactions = await fetchFromApi(
+    buildApiParams(
+      formValues.from,
+      formValues.to,
+      formValues.recipient,
+      options.senderAddress,
+      formValues.amount,
+      currency.location,<% if (swap) { %>
+      formValues.swapEnabled && swapCurrencyTo
+        ? swapCurrencyTo.location
+        : undefined,
+      formValues.exchange,<% } %>
+    ),
+  );
 
   for (const apiTx of transactions) {
     await submitApiTransaction(apiTx, options.signer);
@@ -122,28 +113,20 @@ export const submitUsingApi = async (
   );
 <% } %>
 
-  const apiParams: ApiParams = {
-    from: formValues.from,
-    to: formValues.to,
-    recipient: formValues.recipient,
-    sender: senderAddress,
-    currency: {
-      location: currency.location,
-      amount: formValues.amount,
-    },<% if (swap) { %>
-    ...(formValues.swapEnabled && swapCurrencyTo
-      ? {
-          swapOptions: {
-            currencyTo: { location: swapCurrencyTo.location },
-            ...(formValues.exchange
-              ? { exchange: [formValues.exchange] }
-              : {}),
-          },
-        }
-      : {}),<% } %>
-  };
-
-  const transactions = await fetchFromApi(apiParams);
+  const transactions = await fetchFromApi(
+    buildApiParams(
+      formValues.from,
+      formValues.to,
+      formValues.recipient,
+      senderAddress,
+      formValues.amount,
+      currency.location,<% if (swap) { %>
+      formValues.swapEnabled && swapCurrencyTo
+        ? swapCurrencyTo.location
+        : undefined,
+      formValues.exchange,<% } %>
+    ),
+  );
 
   for (const apiTx of transactions) {
     await submitApiTransaction(apiTx, signer);
