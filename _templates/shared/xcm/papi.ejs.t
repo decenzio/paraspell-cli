@@ -10,7 +10,7 @@ import {
   type PolkadotSigner,
   type TxFinalizedPayload,
 } from "polkadot-api";
-import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../types";
+import type { FormValues<% if (evmWallet) { %>, WalletSubmitOptions<% } %> } from "../types";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";<% if (evmWallet) { %>
 import { assertSubstrateOrigin } from "../evm/isEvmOrigin";
 import { submitEvmTransferFromForm } from "./evmTransfer";
@@ -18,7 +18,7 @@ import { submitEvmTransferFromForm } from "./evmTransfer";
 
 export const submitUsingSdk = async (
   formValues: FormValues,
-  <% if (evmWallet) { %>options: SubmitOptions,<% } else { %>signer: PolkadotSigner,
+  <% if (evmWallet) { %>options: WalletSubmitOptions<PolkadotSigner>,<% } else { %>signer: PolkadotSigner,
   senderAddress: string,<% } %>
 ): Promise<void> => {
   const { from, to, recipient, amount<% if (swap) { %>, swapEnabled, currencyTo, exchange<% } %> } =

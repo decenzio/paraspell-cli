@@ -2,9 +2,9 @@
 to: src/wallet/papi/PapiWalletControls.tsx
 ---
 import type { FC } from "react";
-import type { PapiWalletControlsProps } from "../../types";
+import type { WalletControlsSubstrateProps } from "../../types";
 
-export const PapiWalletControls: FC<PapiWalletControlsProps> = ({
+export const PapiWalletControls: FC<WalletControlsSubstrateProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,

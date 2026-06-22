@@ -3,9 +3,9 @@ to: src/wallet/papi/PapiWalletControls.tsx
 skip_if: <%= (client !== 'papi').toString() %>
 ---
 import type { FC } from "react";
-import type { PapiWalletControlsProps } from "../../types";
+import type { WalletControlsSubstrateProps } from "../../types";
 
-export const PapiWalletControls: FC<PapiWalletControlsProps> = ({
+export const PapiWalletControls: FC<WalletControlsSubstrateProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,

@@ -5,7 +5,8 @@ import {
   type InjectedExtension,
   type InjectedPolkadotAccount,
 } from "polkadot-api/pjs-signer";
-import type { PapiWalletConnection } from "../../types";
+import type { PolkadotSigner } from "polkadot-api";
+import type { SubstrateWalletConnection } from "../../types";
 
 export const usePapiWallet = () => {
   const extensionNames = ref<string[]>([]);
@@ -13,7 +14,7 @@ export const usePapiWallet = () => {
   const accounts = ref<InjectedPolkadotAccount[]>([]);
   const selectedAccount = ref<InjectedPolkadotAccount>();
 
-  const connection = computed((): PapiWalletConnection | null => {
+  const connection = computed((): SubstrateWalletConnection<PolkadotSigner> | null => {
     if (!selectedAccount.value) return null;
     return {
       address: selectedAccount.value.address,

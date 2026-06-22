@@ -3,20 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 <% } %>import { useEvmWallet } from "../evm/useEvmWallet";
 import type {
   SubstrateWalletBase,
-  SubstrateWalletConnection,
-  SubstrateSubmitPayload,
   WalletKind,
   WalletSubmitOptions,
 } from "../../types";
 
-export const useWalletWithEvmCore = <
-  TSigner,
-  TSubstrate extends SubstrateWalletBase<TSigner>,
->(
-  substrate: TSubstrate,
-  toSubstratePayload: (
-    connection: SubstrateWalletConnection<TSigner>,
-  ) => SubstrateSubmitPayload<TSigner>,
+export const useWalletWithEvmCore = <TSigner>(
+  substrate: SubstrateWalletBase<TSigner>,
 ) => {
   const evm = useEvmWallet();
 
@@ -52,14 +44,13 @@ export const useWalletWithEvmCore = <
       }
 
       if (!substrate.connection) return null;
-      const payload = toSubstratePayload(substrate.connection);
       return {
         kind: "substrate",
-        signer: payload.signer,
-        senderAddress: payload.senderAddress,
+        signer: substrate.connection.signer,
+        senderAddress: substrate.connection.address,
       };
     },
-    [activeWalletKind, evm, substrate.connection, toSubstratePayload],
+    [activeWalletKind, evm, substrate.connection],
   );
 
   return {

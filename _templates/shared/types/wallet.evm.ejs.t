@@ -1,13 +1,3 @@
-<% if (projectKind === 'sdk') { %>
-export type SubmitOptions =
-  | {
-      kind: "substrate";
-      signer: <%= client === 'papi' ? 'PolkadotSigner' : 'Signer' %>;
-      senderAddress: string;
-    }
-  | { kind: "evm"; walletClient: WalletClient; provider: EIP1193Provider };
-<% } %>
-
 export type WalletKindSelectorProps = {
   activeWalletKind: <%- framework === 'vue' ? 'Ref<WalletKind>' : 'WalletKind' %>;
   setActiveWalletKind: (kind: WalletKind) => void;
@@ -29,11 +19,6 @@ export type SubstrateWalletBase<TSigner> = {
 export type WalletSubmitOptions<TSigner = unknown> =
   | { kind: "evm"; walletClient: WalletClient; provider: EIP1193Provider }
   | { kind: "substrate"; signer: TSigner; senderAddress: string };
-
-export type SubstrateSubmitPayload<TSigner> = {
-  signer: TSigner;
-  senderAddress: string;
-};
 
 export type UseWalletWithEvmReturn<TSigner = unknown> = SubstrateWalletBase<TSigner> & {
   activeWalletKind: <%- framework === 'vue' ? 'Ref<WalletKind>' : 'WalletKind' %>;

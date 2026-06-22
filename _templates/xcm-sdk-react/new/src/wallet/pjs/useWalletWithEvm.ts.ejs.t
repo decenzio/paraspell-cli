@@ -12,40 +12,25 @@ import {
   submitEvmIfNeeded,
 } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
-import type {
-  SubstrateWalletConnection,
-  UseWalletReturn,
-} from "../../types";
+import type { UseWalletReturn } from "../../types";
 import { PjsWalletControls } from "./PjsWalletControls";
 import { usePjsWallet } from "./usePjsWallet";
-import type { ExtensionWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(PjsWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
   const pjs = usePjsWallet();
 
-  const toSubstratePayload = useCallback(
-    (connection: SubstrateWalletConnection<Signer> | ExtensionWalletConnection) => ({
-      signer: connection.signer,
-      senderAddress: connection.address,
-    }),
-    [],
-  );
-
-  const core = useWalletWithEvmCore(
-    {
-      extensionNames: pjs.extensionNames,
-      selectedExtensionName: pjs.selectedExtensionName,
-      accounts: pjs.accounts,
-      selectedAddress: pjs.selectedAddress,
-      connection: pjs.connection,
-      discoverExtensions: pjs.discoverExtensions,
-      selectExtension: pjs.selectExtension,
-      selectAccountByAddress: pjs.selectAccountByAddress,
-    },
-    toSubstratePayload,
-  );
+  const core = useWalletWithEvmCore<Signer>({
+    extensionNames: pjs.extensionNames,
+    selectedExtensionName: pjs.selectedExtensionName,
+    accounts: pjs.accounts,
+    selectedAddress: pjs.selectedAddress,
+    connection: pjs.connection,
+    discoverExtensions: pjs.discoverExtensions,
+    selectExtension: pjs.selectExtension,
+    selectAccountByAddress: pjs.selectAccountByAddress,
+  });
 
   const submitTransfer = useCallback(
     async (formValues: FormValues) => {

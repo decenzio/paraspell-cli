@@ -3,9 +3,9 @@ to: src/wallet/pjs/PjsWalletControls.tsx
 skip_if: <%= (client !== 'pjs').toString() %>
 ---
 import type { FC } from "react";
-import type { ExtensionWalletControlsProps } from "../../types";
+import type { WalletControlsSubstrateProps } from "../../types";
 
-export const PjsWalletControls: FC<ExtensionWalletControlsProps> = ({
+export const PjsWalletControls: FC<WalletControlsSubstrateProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,

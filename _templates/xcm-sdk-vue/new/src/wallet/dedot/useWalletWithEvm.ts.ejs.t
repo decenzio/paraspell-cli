@@ -12,39 +12,25 @@ import {
   submitEvmIfNeeded,
 } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
-import type {
-  SubstrateWalletConnection,
-  UseWalletReturn,
-} from "../../types";
+import type { UseWalletReturn } from "../../types";
 import DedotWalletControls from "./DedotWalletControls.vue";
 import { useDedotWallet } from "./useDedotWallet";
-import type { ExtensionWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(DedotWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
   const dedot = useDedotWallet();
 
-  const toSubstratePayload = (
-    connection: SubstrateWalletConnection<Signer> | ExtensionWalletConnection,
-  ) => ({
-    signer: connection.signer,
-    senderAddress: connection.address,
+  const core = useWalletWithEvmCore<Signer>({
+    extensionNames: dedot.extensionNames,
+    selectedExtensionName: dedot.selectedExtensionName,
+    accounts: dedot.accounts,
+    selectedAddress: dedot.selectedAddress,
+    connection: dedot.connection,
+    discoverExtensions: dedot.discoverExtensions,
+    selectExtension: dedot.selectExtension,
+    selectAccountByAddress: dedot.selectAccountByAddress,
   });
-
-  const core = useWalletWithEvmCore(
-    {
-      extensionNames: dedot.extensionNames,
-      selectedExtensionName: dedot.selectedExtensionName,
-      accounts: dedot.accounts,
-      selectedAddress: dedot.selectedAddress,
-      connection: dedot.connection,
-      discoverExtensions: dedot.discoverExtensions,
-      selectExtension: dedot.selectExtension,
-      selectAccountByAddress: dedot.selectAccountByAddress,
-    },
-    toSubstratePayload,
-  );
 
   const submitTransfer = async (formValues: FormValues) => {
     const options = core.buildSubmitOptions(formValues.from);

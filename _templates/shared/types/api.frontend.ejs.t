@@ -1,5 +1,6 @@
+<% if (evmWallet) { %>
 import type { PolkadotSigner } from "polkadot-api";
-<% if (evmWallet) { %><% if (framework === 'vue') { %>
+<% if (framework === 'vue') { %>
 import type { ComputedRef, Ref } from "vue";
 <% } %>
 import type { WalletClient } from "viem";
@@ -20,7 +21,6 @@ export type FormValues = {
   exchange?: string;<% } %>
 };
 
-<%- h.includeShared('shared/types/wallet.client.ejs.t') %>
 <% if (evmWallet) { %>
 <%- h.includeShared('shared/types/wallet.evm.ejs.t') %>
 <% } %>

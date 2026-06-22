@@ -3,9 +3,9 @@ to: src/wallet/dedot/DedotWalletControls.tsx
 skip_if: <%= (client !== 'dedot').toString() %>
 ---
 import type { FC } from "react";
-import type { ExtensionWalletControlsProps } from "../../types";
+import type { WalletControlsSubstrateProps } from "../../types";
 
-export const DedotWalletControls: FC<ExtensionWalletControlsProps> = ({
+export const DedotWalletControls: FC<WalletControlsSubstrateProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,

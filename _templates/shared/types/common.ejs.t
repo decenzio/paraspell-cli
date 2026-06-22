@@ -58,5 +58,3 @@ export type WalletControlsEvmProps = {
   onAccountChange: (address: string) => void;
   onDisconnect?: () => void;
 };
-
-export type WalletControlsProps = WalletControlsSubstrateProps;

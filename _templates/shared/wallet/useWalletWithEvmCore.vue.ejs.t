@@ -3,20 +3,12 @@ import { computed, ref, unref, watch } from "vue";
 <% } %>import { useEvmWallet } from "../evm/useEvmWallet";
 import type {
   SubstrateWalletBase,
-  SubstrateWalletConnection,
-  SubstrateSubmitPayload,
   WalletKind,
   WalletSubmitOptions,
 } from "../../types";
 
-export const useWalletWithEvmCore = <
-  TSigner,
-  TSubstrate extends SubstrateWalletBase<TSigner>,
->(
-  substrate: TSubstrate,
-  toSubstratePayload: (
-    connection: SubstrateWalletConnection<TSigner>,
-  ) => SubstrateSubmitPayload<TSigner>,
+export const useWalletWithEvmCore = <TSigner>(
+  substrate: SubstrateWalletBase<TSigner>,
 ) => {
   const evm = useEvmWallet();
   const activeWalletKind = ref<WalletKind>("substrate");
@@ -54,11 +46,10 @@ export const useWalletWithEvmCore = <
 
     const substrateConnection = unref(substrate.connection);
     if (!substrateConnection) return null;
-    const payload = toSubstratePayload(substrateConnection);
     return {
       kind: "substrate",
-      signer: payload.signer,
-      senderAddress: payload.senderAddress,
+      signer: substrateConnection.signer,
+      senderAddress: substrateConnection.address,
     };
   };
 

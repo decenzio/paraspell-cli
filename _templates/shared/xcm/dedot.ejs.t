@@ -6,7 +6,7 @@ import {
   isChainEvm,<% } %>
 } from "@paraspell/sdk-dedot";
 import type { Signer } from "@polkadot/api/types";
-import type { FormValues<% if (evmWallet) { %>, SubmitOptions<% } %> } from "../types";
+import type { FormValues<% if (evmWallet) { %>, WalletSubmitOptions<% } %> } from "../types";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
 import { assertSubstrateOrigin } from "../evm/isEvmOrigin";<% if (evmWallet) { %>
 import { submitEvmTransferFromForm } from "./evmTransfer";
@@ -64,7 +64,7 @@ const submitTransaction = async (
 
 export const submitUsingSdk = async (
   formValues: FormValues,
-  <% if (evmWallet) { %>options: SubmitOptions,<% } else { %>signer: Signer,
+  <% if (evmWallet) { %>options: WalletSubmitOptions<Signer>,<% } else { %>signer: Signer,
   senderAddress: string,<% } %>
 ): Promise<void> => {
 <% if (evmWallet) { %>  if (isChainEvm(formValues.from)) {

@@ -5,7 +5,8 @@ import {
   type InjectedExtension,
   type InjectedPolkadotAccount,
 } from "polkadot-api/pjs-signer";
-import type { PapiWalletConnection } from "../../types";
+import type { PolkadotSigner } from "polkadot-api";
+import type { SubstrateWalletConnection } from "../../types";
 
 export const usePapiWallet = () => {
   const [extensionNames, setExtensionNames] = useState<string[]>([]);
@@ -15,7 +16,7 @@ export const usePapiWallet = () => {
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedPolkadotAccount>();
 
-  const connection = useMemo((): PapiWalletConnection | null => {
+  const connection = useMemo((): SubstrateWalletConnection<PolkadotSigner> | null => {
     if (!selectedAccount) return null;
     return {
       address: selectedAccount.address,

@@ -10,7 +10,7 @@ import {
 } from "@polkadot/extension-dapp";
 import type { Signer } from "@polkadot/api/types";
 import type {
-  ExtensionWalletConnection,
+  SubstrateWalletConnection,
   WalletAccountOption,
 } from "../../types";
 
@@ -80,7 +80,7 @@ export const usePjsWallet = () => {
     };
   }, [selectedAddress]);
 
-  const connection = useMemo((): ExtensionWalletConnection | null => {
+  const connection = useMemo((): SubstrateWalletConnection<Signer> | null => {
     if (!selectedAddress || !signer) return null;
     return { address: selectedAddress, signer };
   }, [selectedAddress, signer]);

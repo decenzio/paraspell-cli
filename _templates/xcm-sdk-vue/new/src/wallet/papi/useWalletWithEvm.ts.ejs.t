@@ -12,41 +12,25 @@ import {
   submitEvmIfNeeded,
 } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
-import type {
-  SubstrateWalletConnection,
-  UseWalletReturn,
-} from "../../types";
+import type { UseWalletReturn } from "../../types";
 import PapiWalletControls from "./PapiWalletControls.vue";
 import { usePapiWallet } from "./usePapiWallet";
-import type { PapiWalletConnection } from "../../types";
 
 export const WalletControls = createWalletControls(PapiWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
   const papi = usePapiWallet();
 
-  const toSubstratePayload = (
-    connection:
-      | SubstrateWalletConnection<PolkadotSigner>
-      | PapiWalletConnection,
-  ) => ({
-    signer: connection.signer,
-    senderAddress: connection.address,
+  const core = useWalletWithEvmCore<PolkadotSigner>({
+    extensionNames: papi.extensionNames,
+    selectedExtensionName: papi.selectedExtensionName,
+    accounts: papi.accounts,
+    selectedAddress: papi.selectedAddress,
+    connection: papi.connection,
+    discoverExtensions: papi.discoverExtensions,
+    selectExtension: papi.selectExtension,
+    selectAccountByAddress: papi.selectAccountByAddress,
   });
-
-  const core = useWalletWithEvmCore(
-    {
-      extensionNames: papi.extensionNames,
-      selectedExtensionName: papi.selectedExtensionName,
-      accounts: papi.accounts,
-      selectedAddress: papi.selectedAddress,
-      connection: papi.connection,
-      discoverExtensions: papi.discoverExtensions,
-      selectExtension: papi.selectExtension,
-      selectAccountByAddress: papi.selectAccountByAddress,
-    },
-    toSubstratePayload,
-  );
 
   const submitTransfer = async (formValues: FormValues) => {
     const options = core.buildSubmitOptions(formValues.from);

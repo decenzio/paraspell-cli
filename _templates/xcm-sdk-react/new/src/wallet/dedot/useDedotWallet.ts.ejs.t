@@ -10,8 +10,7 @@ import {
 } from "@polkadot/extension-dapp";
 import type { Signer } from "@polkadot/api/types";
 import type {
-  ExtensionInjectedAccount,
-  ExtensionWalletConnection,
+  SubstrateWalletConnection,
   WalletAccountOption,
 } from "../../types";
 
@@ -28,7 +27,7 @@ export const useDedotWallet = () => {
     await web3Enable(DAPP_ORIGIN);
     const filtered = await web3Accounts({ extensions: [name] });
     const nextAccounts = filtered.map(
-      (account: ExtensionInjectedAccount): WalletAccountOption => ({
+      (account): WalletAccountOption => ({
         address: account.address,
         name: account.meta.name,
       }),
@@ -81,7 +80,7 @@ export const useDedotWallet = () => {
     };
   }, [selectedAddress]);
 
-  const connection = useMemo((): ExtensionWalletConnection | null => {
+  const connection = useMemo((): SubstrateWalletConnection<Signer> | null => {
     if (!selectedAddress || !signer) return null;
     return { address: selectedAddress, signer };
   }, [selectedAddress, signer]);
