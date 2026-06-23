@@ -28,7 +28,7 @@ jobs:
 
   templates:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -49,3 +49,6 @@ jobs:
 
       - name: Typecheck tests
         run: pnpm test:typecheck
+
+      - name: Build tests
+        run: pnpm test:build
