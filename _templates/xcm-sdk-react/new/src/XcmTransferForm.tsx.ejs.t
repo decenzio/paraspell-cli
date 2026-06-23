@@ -31,6 +31,9 @@ const TransferForm: FC<Props> = ({
   <% if (swap) { %>const [currencyToOptionId, setCurrencyToOptionId] = useState("");
   const [swapEnabled, setSwapEnabled] = useState(false);
   const [exchange, setExchange] = useState<TExchangeChain[]>([]);
+  const AUTO_EXCHANGE_VALUE = "";
+  const exchangeSelectValue =
+    exchange.length > 0 ? exchange : [AUTO_EXCHANGE_VALUE];
   <% } %>const [recipient, setRecipient] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
   );
@@ -49,7 +52,14 @@ const TransferForm: FC<Props> = ({
     (option) => option.value === currencyToOptionId,
   )
     ? currencyToOptionId
-    : currencyToOptions.at(-1)?.value;<% } %>
+    : currencyToOptions.at(-1)?.value;
+
+  const handleExchangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setExchange(
+      Array.from(e.target.selectedOptions, (o) => o.value).filter(isExchange),
+    );
+  };
+  <% } %>
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -164,17 +174,16 @@ const TransferForm: FC<Props> = ({
         <>
           <label>
             Exchange
+            <small>
+              Optional. Auto lets the router pick a route. Hold Ctrl/Cmd to select specific exchanges.
+            </small>
             <select
               multiple
-              value={exchange}
-              onChange={(e) =>
-                setExchange(
-                  Array.from(e.target.selectedOptions, (o) => o.value).filter(
-                    isExchange,
-                  ),
-                )
-              }
+              size={EXCHANGE_CHAINS.length + 1}
+              value={exchangeSelectValue}
+              onChange={handleExchangeChange}
             >
+              <option value={AUTO_EXCHANGE_VALUE}>Auto</option>
               {EXCHANGE_CHAINS.map((chain) => (
                 <option key={chain} value={chain}>
                   {chain}

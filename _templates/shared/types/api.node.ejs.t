@@ -7,5 +7,5 @@ export type TransferParams = {
   currencyLocation?: object;
   recipient: string;
   currencyToLocation?: object;
-  exchange?: string;
+  exchange?: string[];
 };

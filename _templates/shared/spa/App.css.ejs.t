@@ -93,6 +93,14 @@ label {
   color: #333;
 }
 
+label small {
+  margin-top: 4px;
+  font-weight: 400;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
 input[type="text"],
 input[type="number"],
 select {
@@ -123,6 +131,11 @@ select {
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
+}
+
+select[multiple] {
+  background-image: none;
+  padding-right: 10px;
 }
 
 input[type="text"]:focus,

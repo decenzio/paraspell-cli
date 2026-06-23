@@ -5,7 +5,8 @@ to: src/XcmTransferForm.vue
 import axios from "axios";
 import { ref, computed, watch, onMounted } from "vue";
 import { API_URL } from "./consts";
-import type { AssetInfo, FormValues } from "./types";
+import type { AssetInfo, FormValues } from "./types";<% if (swap) { %>
+import { useExchangeChains } from "./swap";<% } %>
 
 const props = defineProps<{
   loading: boolean;
@@ -24,7 +25,13 @@ const currencyOptionId = ref("");
 <% if (swap) { %>const supportedSwapAssets = ref<AssetInfo[]>([]);
 const currencyToOptionId = ref("");
 const swapEnabled = ref(false);
-const exchange = ref("");
+const exchange = ref<string[]>([]);
+const AUTO_EXCHANGE_VALUE = "";
+const exchangeSelectValue = computed(() =>
+  exchange.value.length > 0 ? exchange.value : [AUTO_EXCHANGE_VALUE],
+);
+const { chains: exchangeChains } = useExchangeChains();
+const exchangeSelectSize = computed(() => exchangeChains.value.length + 1);
 <% } %>const recipient = ref(
   "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
 );
@@ -123,6 +130,15 @@ watch(
   { immediate: true },
 );
 
+const onExchangeChange = (e: Event) => {
+  const target = e.target;
+  if (!(target instanceof HTMLSelectElement)) return;
+
+  const selected = Array.from(target.selectedOptions, (o) => o.value);
+  const exchanges = selected.filter((value) => value !== AUTO_EXCHANGE_VALUE);
+  exchange.value = exchanges.length > 0 ? exchanges : [];
+};
+
 <% } %>
 const onOriginSelect = (e: Event) => {
   const target = e.target;
@@ -148,7 +164,7 @@ const handleSubmit = (e: Event) => {
     currency,<% if (swap) { %>
     swapEnabled: swapEnabled.value,
     currencyTo: selectedCurrencyTo,
-    exchange: swapEnabled.value && exchange.value ? exchange.value : undefined,<% } %>
+    exchange: swapEnabled.value ? exchange.value : undefined,<% } %>
   });
 };
 </script>
@@ -237,11 +253,27 @@ const handleSubmit = (e: Event) => {
       <template v-if="swapEnabled">
         <label>
           Exchange
-          <input
-            v-model="exchange"
-            type="text"
-            placeholder="Leave empty for auto"
+          <small>
+            Optional. Auto lets the router pick a route. Hold Ctrl/Cmd to select
+            specific exchanges.
+          </small>
+          <select
+            multiple
+            :size="exchangeSelectSize"
+            :value="exchangeSelectValue"
+            @change="onExchangeChange"
           >
+            <option :value="AUTO_EXCHANGE_VALUE">
+              Auto
+            </option>
+            <option
+              v-for="chain in exchangeChains"
+              :key="chain"
+              :value="chain"
+            >
+              {{ chain }}
+            </option>
+          </select>
         </label>
 
         <label>

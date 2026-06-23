@@ -4,7 +4,8 @@ to: src/XcmTransferForm.tsx
 import axios from "axios";
 import { useState, useMemo, FormEvent, FC, useEffect } from "react";
 import { API_URL } from "./consts";
-import type { AssetInfo, FormValues } from "./types";
+import type { AssetInfo, FormValues } from "./types";<% if (swap) { %>
+import { useExchangeChains } from "./swap";<% } %>
 
 type Props = {
   onSubmit: (values: FormValues) => void;
@@ -26,7 +27,11 @@ const TransferForm: FC<Props> = ({
   <% if (swap) { %>const [supportedSwapAssets, setSupportedSwapAssets] = useState<AssetInfo[]>([]);
   const [currencyToOptionId, setCurrencyToOptionId] = useState("");
   const [swapEnabled, setSwapEnabled] = useState(false);
-  const [exchange, setExchange] = useState("");
+  const [exchange, setExchange] = useState<string[]>([]);
+  const AUTO_EXCHANGE_VALUE = "";
+  const exchangeSelectValue =
+    exchange.length > 0 ? exchange : [AUTO_EXCHANGE_VALUE];
+  const { chains: exchangeChains } = useExchangeChains();
   <% } %>const [recipient, setRecipient] = useState(
     "5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96",
   );
@@ -129,6 +134,12 @@ const TransferForm: FC<Props> = ({
   )
     ? currencyToOptionId
     : currencyToOptions.at(-1)?.value;
+
+  const handleExchangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = Array.from(e.target.selectedOptions, (o) => o.value);
+    const exchanges = selected.filter((value) => value !== AUTO_EXCHANGE_VALUE);
+    setExchange(exchanges.length > 0 ? exchanges : []);
+  };
 <% } %>
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -151,7 +162,7 @@ const TransferForm: FC<Props> = ({
       currency: currencyMap[selectedCurrencyOptionId],<% if (swap) { %>
       swapEnabled,
       currencyTo: selectedCurrencyTo,
-      exchange: swapEnabled && exchange ? exchange : undefined,<% } %>
+      exchange: swapEnabled ? exchange : undefined,<% } %>
     });
   };
 
@@ -238,12 +249,23 @@ const TransferForm: FC<Props> = ({
             <>
               <label>
                 Exchange
-                <input
-                  type="text"
-                  value={exchange}
-                  onChange={(e) => setExchange(e.target.value)}
-                  placeholder="Leave empty for auto"
-                />
+                <small>
+                  Optional. Auto lets the router pick a route. Hold Ctrl/Cmd to
+                  select specific exchanges.
+                </small>
+                <select
+                  multiple
+                  size={exchangeChains.length + 1}
+                  value={exchangeSelectValue}
+                  onChange={handleExchangeChange}
+                >
+                  <option value={AUTO_EXCHANGE_VALUE}>Auto</option>
+                  {exchangeChains.map((chain) => (
+                    <option key={chain} value={chain}>
+                      {chain}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label>

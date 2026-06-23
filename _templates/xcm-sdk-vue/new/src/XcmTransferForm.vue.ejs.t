@@ -29,6 +29,11 @@ const currencyOptionId = ref("");
 <% if (swap) { %>const currencyToOptionId = ref("");
 const swapEnabled = ref(false);
 const exchange = ref<TExchangeChain[]>([]);
+const AUTO_EXCHANGE_VALUE = "";
+const exchangeSelectValue = computed(() =>
+  exchange.value.length > 0 ? exchange.value : [AUTO_EXCHANGE_VALUE],
+);
+const exchangeSelectSize = EXCHANGE_CHAINS.length + 1;
 <% } %>const recipient = ref("5F5586mfsnM6durWRLptYt3jSUs55KEmahdodQ5tQMr9iY96");
 const amount = ref("5");
 
@@ -180,11 +185,18 @@ const handleSubmit = (e: Event) => {
     <template v-if="swapEnabled">
       <label>
         Exchange
+        <small>
+          Optional. Auto lets the router pick a route. Hold Ctrl/Cmd to select specific exchanges.
+        </small>
         <select
           multiple
-          :value="exchange"
+          :size="exchangeSelectSize"
+          :value="exchangeSelectValue"
           @change="onExchangeChange"
         >
+          <option :value="AUTO_EXCHANGE_VALUE">
+            Auto
+          </option>
           <option
             v-for="chain in EXCHANGE_CHAINS"
             :key="chain"

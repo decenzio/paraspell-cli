@@ -18,7 +18,7 @@ export type FormValues = {
   amount: string;<% if (swap) { %>
   swapEnabled?: boolean;
   currencyTo?: AssetInfo;
-  exchange?: string;<% } %>
+  exchange?: string[];<% } %>
 };
 
 <% if (evmWallet) { %>

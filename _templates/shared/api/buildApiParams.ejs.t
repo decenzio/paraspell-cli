@@ -6,7 +6,7 @@ const buildApiParams = (
   amount: string,
   currencyLocation: object,<% if (swap) { %>
   currencyToLocation?: object,
-  exchange?: string,<% } %>
+  exchange?: string[],<% } %>
 ): ApiParams => ({
   from,
   to,
@@ -20,7 +20,7 @@ const buildApiParams = (
     ? {
         swapOptions: {
           currencyTo: { location: currencyToLocation },
-          ...(exchange ? { exchange: [exchange] } : {}),
+          ...(exchange?.length ? { exchange } : {}),
         },
       }
     : {}),<% } %>
