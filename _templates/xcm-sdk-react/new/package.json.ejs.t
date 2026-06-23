@@ -20,8 +20,7 @@ to: package.json
     "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
-    "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
-    "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
+    "polkadot-api": "<%= polkadotApi %>"<% } %><% if (client === 'pjs') { %>,
     "@polkadot/api": "<%= polkadotJsApi %>",
     "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>"<% } %><% if (client === 'dedot') { %>,
     "dedot": "<%= dedot %>",
@@ -29,19 +28,19 @@ to: package.json
     "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>"<% } %>
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.2.0",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.5.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8",
-    "vite-plugin-wasm": "^3.6.0"
+    "@eslint/js": "<%= eslintJs %>",
+    "@types/react": "<%= typesReact %>",
+    "@types/react-dom": "<%= typesReactDom %>",
+    "@vitejs/plugin-react": "<%= vitejsPluginReact %>",
+    "eslint": "<%= eslint %>",
+    "eslint-plugin-react-hooks": "<%= eslintPluginReactHooks %>",
+    "eslint-plugin-react-refresh": "<%= eslintPluginReactRefresh %>",
+    "globals": "<%= globals %>",
+    "react": "<%= react %>",
+    "react-dom": "<%= reactDom %>",
+    "typescript": "<%= typescript %>",
+    "typescript-eslint": "<%= typescriptEslint %>",
+    "vite": "<%= vite %>",
+    "vite-plugin-wasm": "<%= vitePluginWasm %>"
   }
 }

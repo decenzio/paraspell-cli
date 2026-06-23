@@ -14,24 +14,24 @@ to: package.json
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.15.0",
+    "axios": "<%= axios %>",
     "polkadot-api": "<%= polkadotApi %>"<% if (evmWallet) { %>,
     "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %>
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.2.0",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.5.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8"
+    "@eslint/js": "<%= eslintJs %>",
+    "@types/react": "<%= typesReact %>",
+    "@types/react-dom": "<%= typesReactDom %>",
+    "@vitejs/plugin-react": "<%= vitejsPluginReact %>",
+    "eslint": "<%= eslint %>",
+    "eslint-plugin-react-hooks": "<%= eslintPluginReactHooks %>",
+    "eslint-plugin-react-refresh": "<%= eslintPluginReactRefresh %>",
+    "globals": "<%= globals %>",
+    "react": "<%= react %>",
+    "react-dom": "<%= reactDom %>",
+    "typescript": "<%= typescript %>",
+    "typescript-eslint": "<%= typescriptEslint %>",
+    "vite": "<%= vite %>"
   }
 }

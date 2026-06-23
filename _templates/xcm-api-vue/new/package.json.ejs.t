@@ -14,22 +14,22 @@ to: package.json
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.15.0",
+    "axios": "<%= axios %>",
     "polkadot-api": "<%= polkadotApi %>"<% if (evmWallet) { %>,
     "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %>,
-    "vue": "^3.5.13"
+    "vue": "<%= vue %>"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@vitejs/plugin-vue": "^6.0.1",
-    "eslint": "^10.2.0",
-    "eslint-plugin-vue": "^10.8.0",
-    "globals": "^17.5.0",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8",
-    "vue-eslint-parser": "^10.0.0",
-    "vue-tsc": "^3.2.5"
+    "@eslint/js": "<%= eslintJs %>",
+    "@vitejs/plugin-vue": "<%= vitejsPluginVue %>",
+    "eslint": "<%= eslint %>",
+    "eslint-plugin-vue": "<%= eslintPluginVue %>",
+    "globals": "<%= globals %>",
+    "typescript": "<%= typescript %>",
+    "typescript-eslint": "<%= typescriptEslint %>",
+    "vite": "<%= vite %>",
+    "vue-eslint-parser": "<%= vueEslintParser %>",
+    "vue-tsc": "<%= vueTsc %>"
   }
 }

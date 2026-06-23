@@ -21,16 +21,15 @@ to: package.json
     "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
-    "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
-    "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
+    "polkadot-api": "<%= polkadotApi %>"<% } %><% if (client === 'pjs') { %>,
     "@polkadot/api": "<%= polkadotJsApi %>",
     "@polkadot/types": "<%= polkadotJsApi %>"<% } %><% if (client === 'dedot') { %>,
     "dedot": "<%= dedot %>"<% } %>
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/node": "^22.15.21",
-    "tsx": "^4.19.4",
-    "typescript": "^6.0.2"
+    "@types/express": "<%= typesExpress %>",
+    "@types/node": "<%= typesNode %>",
+    "tsx": "<%= tsx %>",
+    "typescript": "<%= typescript %>"
   }
 }

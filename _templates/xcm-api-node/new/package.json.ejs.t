@@ -12,7 +12,7 @@ to: package.json
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "axios": "^1.15.0",
+    "axios": "<%= axios %>",
     "polkadot-api": "<%= polkadotApi %>",
     "@polkadot/keyring": "<%= polkadotKeyring %>",
     "@polkadot/util-crypto": "<%= polkadotUtilCrypto %>",
@@ -21,9 +21,9 @@ to: package.json
     "viem": "<%= viem %>"<% } %>
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/node": "^22.15.21",
-    "tsx": "^4.19.4",
-    "typescript": "^6.0.2"
+    "@types/express": "<%= typesExpress %>",
+    "@types/node": "<%= typesNode %>",
+    "tsx": "<%= tsx %>",
+    "typescript": "<%= typescript %>"
   }
 }

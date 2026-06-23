@@ -15,14 +15,13 @@ to: package.json
   },
   "dependencies": {
     "<%= sdkPackage %>": "<%= sdkVersion %>",
-    "vue": "^3.5.13"<% if (swap) { %>,
+    "vue": "<%= vue %>"<% if (swap) { %>,
     "@paraspell/swap": "<%= sdkVersion %>"<% } %><% if (evm) { %>,
     "@paraspell/evm": "<%= sdkVersion %>"<% } %><% if (evmWallet) { %>,
     "mipd": "<%= mipd %>",
     "viem": "<%= viem %>"<% } %><% if (snowbridge) { %>,
     "@paraspell/evm-snowbridge": "<%= sdkVersion %>"<% } %><% if (client === 'papi') { %>,
-    "polkadot-api": "<%= polkadotApi %>"<% if (swap) { %>,
-    "@galacticcouncil/api-augment": "<%= galacticcouncilApiAugment %>"<% } %><% } %><% if (client === 'pjs') { %>,
+    "polkadot-api": "<%= polkadotApi %>"<% } %><% if (client === 'pjs') { %>,
     "@polkadot/api": "<%= polkadotJsApi %>",
     "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>"<% } %><% if (client === 'dedot') { %>,
     "dedot": "<%= dedot %>",
@@ -30,16 +29,16 @@ to: package.json
     "@polkadot/extension-dapp": "<%= polkadotExtensionDapp %>"<% } %>
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@vitejs/plugin-vue": "^6.0.1",
-    "eslint": "^10.2.0",
-    "eslint-plugin-vue": "^10.0.0",
-    "globals": "^17.5.0",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8",
-    "vite-plugin-wasm": "^3.6.0",
-    "vue-eslint-parser": "^10.0.0",
-    "vue-tsc": "^2.2.10"
+    "@eslint/js": "<%= eslintJs %>",
+    "@vitejs/plugin-vue": "<%= vitejsPluginVue %>",
+    "eslint": "<%= eslint %>",
+    "eslint-plugin-vue": "<%= eslintPluginVue %>",
+    "globals": "<%= globals %>",
+    "typescript": "<%= typescript %>",
+    "typescript-eslint": "<%= typescriptEslint %>",
+    "vite": "<%= vite %>",
+    "vite-plugin-wasm": "<%= vitePluginWasm %>",
+    "vue-eslint-parser": "<%= vueEslintParser %>",
+    "vue-tsc": "<%= vueTsc %>"
   }
 }

@@ -173,7 +173,7 @@ pnpm generate:xcm-api -- vue --name my-api --package-manager npm
 **Updating dependency versions**
 
 To edit package versions see `shared/versions.cjs` (`SDK_VERSION`, `PACKAGE_VERSIONS`).
-More generic packages such as typescript transpiler and node types can be adjusted for each project separately inside the `_templates` folder.
+All scaffolded dependency versions — runtime and dev — are centralized there.
 
 **Publish:**
 

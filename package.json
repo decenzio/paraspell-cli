@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Scaffold ParaSpell XCM SDK and XCM API starter apps",
   "type": "module",
+  "packageManager": "pnpm@10.19.0",
   "license": "MIT",
   "author": "ParaSpell",
   "bin": {
@@ -18,7 +19,7 @@
     "README.md"
   ],
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": ">=24"
   },
   "repository": {
     "type": "git",
@@ -57,14 +58,14 @@
     "@inquirer/prompts": "^8.4.3",
     "hygen": "^6.2.11",
     "terminal-image": "^4.3.0",
-    "validate-npm-package-name": "^7.0.2"
+    "validate-npm-package-name": "^8.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.7.0",
+    "@types/node": "^24.0.0",
     "@types/validate-npm-package-name": "^4.0.2",
-    "tsdown": "^0.22.1",
+    "tsdown": "^0.22.3",
     "tsx": "^4.19.4",
     "typescript": "^6.0.3",
-    "vitest": "^3.2.6"
+    "vitest": "^4.1.9"
   }
 }
