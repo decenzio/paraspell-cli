@@ -13,10 +13,10 @@ import {
 } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
 import type { UseWalletReturn } from "../../types";
-import { DedotWalletControls } from "./DedotWalletControls";
+import { SubstrateWalletControls } from "../shared/SubstrateWalletControls";
 import { useDedotWallet } from "./useDedotWallet";
 
-export const WalletControls = createWalletControls(DedotWalletControls);
+export const WalletControls = createWalletControls(SubstrateWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
   const dedot = useDedotWallet();

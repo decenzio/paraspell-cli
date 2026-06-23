@@ -1,11 +1,7 @@
----
-to: src/wallet/dedot/DedotWalletControls.tsx
-skip_if: <%= (client !== 'dedot').toString() %>
----
 import type { FC } from "react";
 import type { WalletControlsSubstrateProps } from "../../types";
 
-export const DedotWalletControls: FC<WalletControlsSubstrateProps> = ({
+export const SubstrateWalletControls: FC<WalletControlsSubstrateProps> = ({
   extensionNames,
   selectedExtensionName,
   accounts,
@@ -20,7 +16,10 @@ export const DedotWalletControls: FC<WalletControlsSubstrateProps> = ({
         <h4>Select extension:</h4>
         <select
           value={selectedExtensionName}
-          onChange={(e) => onExtensionChange(e.target.value)}
+          onChange={(e) => {
+            const name = e.target.value;
+            if (name) onExtensionChange(name);
+          }}
         >
           <option disabled value="">
             -- select an option --

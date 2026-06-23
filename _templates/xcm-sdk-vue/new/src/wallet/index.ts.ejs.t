@@ -8,9 +8,9 @@ to: src/wallet/<%= clientDir %>/index.ts
 export { WalletKindSelector } from "../evm";
 export type { UseWalletReturn, WalletKind, WalletKindSelectorProps } from "../../types";
 <% } else if (client === 'pjs') { %>export { usePjsWallet } from "./usePjsWallet";
-export { default as PjsWalletControls } from "./PjsWalletControls.vue";
+export { default as SubstrateWalletControls } from "../shared/SubstrateWalletControls.vue";
 <% } else if (client === 'papi') { %>export { usePapiWallet } from "./usePapiWallet";
-export { default as PapiWalletControls } from "./PapiWalletControls.vue";
+export { default as SubstrateWalletControls } from "../shared/SubstrateWalletControls.vue";
 <% } else { %>export { useDedotWallet } from "./useDedotWallet";
-export { default as DedotWalletControls } from "./DedotWalletControls.vue";
+export { default as SubstrateWalletControls } from "../shared/SubstrateWalletControls.vue";
 <% } %>

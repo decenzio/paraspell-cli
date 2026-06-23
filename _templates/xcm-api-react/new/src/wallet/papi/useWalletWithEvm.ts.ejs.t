@@ -10,10 +10,10 @@ import { createWalletControls } from "../shared/createWalletControls";
 import { connectWalletAlert } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
 import type { UseWalletReturn } from "../../types";
-import { PapiWalletControls } from "./PapiWalletControls";
+import { SubstrateWalletControls } from "../shared/SubstrateWalletControls";
 import { usePapiWallet } from "./usePapiWallet";
 
-export const WalletControls = createWalletControls(PapiWalletControls);
+export const WalletControls = createWalletControls(SubstrateWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
   const papi = usePapiWallet();

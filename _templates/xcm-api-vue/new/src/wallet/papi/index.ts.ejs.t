@@ -2,7 +2,7 @@
 to: src/wallet/papi/index.ts
 ---
 export { usePapiWallet } from "./usePapiWallet";
-export { default as PapiWalletControls } from "./PapiWalletControls.vue";
+export { default as SubstrateWalletControls } from "../shared/SubstrateWalletControls.vue";
 <% if (evmWallet) { %>
 export {
   useWalletWithEvm as useWallet,

@@ -12,7 +12,7 @@ import {
   WalletKindSelector,
 } from "./wallet/papi";
 <% } else { %>
-import { PapiWalletControls, usePapiWallet } from "./wallet/papi";
+import { SubstrateWalletControls, usePapiWallet } from "./wallet/papi";
 import { submitUsingApi } from "./submit/submitUsingApi";
 <% } -%>
 
@@ -90,7 +90,7 @@ const XcmTransfer: FC = () => {
       </div>
       <% } else { %>
       <div className="formHeader">
-      <PapiWalletControls
+      <SubstrateWalletControls
         extensionNames={wallet.extensionNames}
         selectedExtensionName={wallet.selectedExtensionName}
         accounts={wallet.accounts}

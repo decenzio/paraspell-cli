@@ -9,10 +9,8 @@ import type { TChain } from "<%= sdkPackage %>";
 import {
   <% if (evmWallet) { %>useWallet,
   WalletControls,
-  WalletKindSelector,<% } else if (client === 'pjs') { %>usePjsWallet,
-  PjsWalletControls,<% } else if (client === 'papi') { %>usePapiWallet,
-  PapiWalletControls,<% } else { %>useDedotWallet,
-  DedotWalletControls,<% } %>
+  WalletKindSelector,<% } else { %>use<%= client === 'pjs' ? 'Pjs' : client === 'papi' ? 'Papi' : 'Dedot' %>Wallet,
+  SubstrateWalletControls,<% } %>
 } from "./wallet/<%= clientDir %>";<% if (!evmWallet) { %>
 import { submitUsingSdk } from "./xcm/<%= client %>";<% } -%>
 
@@ -111,33 +109,9 @@ const onSubmit = async (formValues: FormValues) => {
       />
       <WalletControls :wallet="wallet" />
     </div>
-    <% } else if (client === 'pjs') { %>
-    <div class="formHeader">
-    <PjsWalletControls
-      :extension-names="extensionNames"
-      :selected-extension-name="selectedExtensionName"
-      :accounts="accounts"
-      :selected-address="selectedAddress"
-      @connect-click="() => { void discoverExtensions(); }"
-      @extension-change="(name: string) => { void selectExtension(name); }"
-      @account-change="selectAccountByAddress"
-    />
-    </div>
-    <% } else if (client === 'papi') { %>
-    <div class="formHeader">
-    <PapiWalletControls
-      :extension-names="extensionNames"
-      :selected-extension-name="selectedExtensionName"
-      :accounts="accounts"
-      :selected-address="selectedAddress"
-      @connect-click="() => { void discoverExtensions(); }"
-      @extension-change="(name: string) => { void selectExtension(name); }"
-      @account-change="selectAccountByAddress"
-    />
-    </div>
     <% } else { %>
     <div class="formHeader">
-    <DedotWalletControls
+    <SubstrateWalletControls
       :extension-names="extensionNames"
       :selected-extension-name="selectedExtensionName"
       :accounts="accounts"

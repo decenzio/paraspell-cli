@@ -13,8 +13,7 @@ import {
   WalletKindSelector,
 } from "./wallet/papi";
 <% } else { %>
-import { usePapiWallet } from "./wallet/papi";
-import PapiWalletControls from "./wallet/papi/PapiWalletControls.vue";
+import { usePapiWallet, SubstrateWalletControls } from "./wallet/papi";
 import { submitUsingApi } from "./submit/submitUsingApi";
 <% } -%>
 
@@ -90,7 +89,7 @@ const onSubmit = async (formValues: FormValues) => {
     </div>
     <% } else { %>
     <div class="formHeader">
-    <PapiWalletControls
+    <SubstrateWalletControls
       :extension-names="extensionNames"
       :selected-extension-name="selectedExtensionName"
       :accounts="accounts"

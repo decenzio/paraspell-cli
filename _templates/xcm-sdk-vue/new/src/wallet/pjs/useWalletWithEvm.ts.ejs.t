@@ -13,10 +13,10 @@ import {
 } from "../shared/submitTransfer";
 import { useWalletWithEvmCore } from "../shared/useWalletWithEvmCore";
 import type { UseWalletReturn } from "../../types";
-import PjsWalletControls from "./PjsWalletControls.vue";
+import SubstrateWalletControls from "../shared/SubstrateWalletControls.vue";
 import { usePjsWallet } from "./usePjsWallet";
 
-export const WalletControls = createWalletControls(PjsWalletControls);
+export const WalletControls = createWalletControls(SubstrateWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
   const pjs = usePjsWallet();
