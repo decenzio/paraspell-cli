@@ -237,6 +237,23 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
         }
       }
     }
+
+    if (variant.kind === 'api') {
+      const swapFiles = [
+        'src/swap/exchangeChains.ts',
+        'src/swap/index.ts',
+        'src/swap/useExchangeChains.ts',
+      ];
+      for (const rel of swapFiles) {
+        if (variant.swap !== fileExists(root, rel)) {
+          errors.push(
+            variant.swap
+              ? `Missing ${rel}`
+              : `Unexpected ${rel} when swap is disabled`,
+          );
+        }
+      }
+    }
   }
 
   return errors;

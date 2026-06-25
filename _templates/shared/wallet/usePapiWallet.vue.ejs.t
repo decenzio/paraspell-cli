@@ -11,8 +11,10 @@ import type { SubstrateWalletConnection } from "../../types";
 export const usePapiWallet = () => {
   const extensionNames = ref<string[]>([]);
   const selectedExtension = ref<InjectedExtension | null>(null);
+  const selectedExtensionName = ref<string>();
   const accounts = ref<InjectedPolkadotAccount[]>([]);
   const selectedAccount = ref<InjectedPolkadotAccount>();
+  const selectedAddress = ref<string>();
 
   const connection = computed((): SubstrateWalletConnection<PolkadotSigner> | null => {
     if (!selectedAccount.value) return null;
@@ -25,9 +27,11 @@ export const usePapiWallet = () => {
   const selectExtension = async (name: string) => {
     const injected = await connectInjectedExtension(name);
     selectedExtension.value = injected;
+    selectedExtensionName.value = name;
     const nextAccounts = injected.getAccounts();
     accounts.value = nextAccounts;
     selectedAccount.value = nextAccounts[0];
+    selectedAddress.value = nextAccounts[0]?.address;
   };
 
   const discoverExtensions = async () => {
@@ -42,15 +46,18 @@ export const usePapiWallet = () => {
 
   const selectAccountByAddress = (address: string) => {
     const acc = accounts.value.find((a) => a.address === address);
-    if (acc) selectedAccount.value = acc;
+    if (acc) {
+      selectedAccount.value = acc;
+      selectedAddress.value = acc.address;
+    }
   };
 
   return {
     extensionNames,
-    selectedExtensionName: computed(() => selectedExtension.value?.name),
+    selectedExtensionName,
     selectedExtension,
     accounts,
-    selectedAddress: computed(() => selectedAccount.value?.address),
+    selectedAddress,
     selectedAccount,
     connection,
     discoverExtensions,

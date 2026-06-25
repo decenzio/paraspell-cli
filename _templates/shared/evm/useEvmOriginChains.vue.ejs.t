@@ -5,9 +5,9 @@ import {
   isEvmOrigin,
 } from "./evmOrigins";
 
-const chains = ref<readonly string[]>(getEvmOriginChains());
-
 export const useEvmOriginChains = () => {
+  const chains = ref<readonly string[]>(getEvmOriginChains());
+
   onMounted(() => {
     void fetchEvmOriginChains().then((result) => {
       chains.value = result;
