@@ -10,7 +10,7 @@ export const WalletKindSelector: FC<WalletKindSelectorProps> = ({
   setActiveWalletKind,
 }) => (
   <div>
-    <h4>Wallet type:</h4>
+    <h4>Select wallet type:</h4>
     <select
       value={activeWalletKind}
       onChange={(event) =>

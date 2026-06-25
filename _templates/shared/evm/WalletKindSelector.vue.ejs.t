@@ -20,7 +20,7 @@ const onWalletKindChange = (event: Event) => {
 
 <template>
   <div>
-    <h4>Wallet type:</h4>
+    <h4>Select wallet type:</h4>
     <select :value="activeWalletKind" @change="onWalletKindChange">
       <option
         v-for="{ value, label } in WALLET_KIND_OPTIONS"
