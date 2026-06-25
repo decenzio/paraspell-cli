@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@inquirer/ansi':
+        specifier: ^2.0.7
+        version: 2.0.7
+      '@inquirer/core':
+        specifier: ^11.2.1
+        version: 11.2.1(@types/node@24.13.2)
+      '@inquirer/figures':
+        specifier: ^2.0.7
+        version: 2.0.7
       '@inquirer/prompts':
         specifier: ^8.4.3
         version: 8.5.2(@types/node@24.13.2)
