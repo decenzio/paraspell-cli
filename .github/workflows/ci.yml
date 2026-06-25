@@ -44,5 +44,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: All template tests
-        run: pnpm test:all
+      - name: Structure tests
+        run: pnpm test
+
+      - name: Typecheck tests
+        run: pnpm test:typecheck
+
+      - name: Build tests
+        run: pnpm test:build
