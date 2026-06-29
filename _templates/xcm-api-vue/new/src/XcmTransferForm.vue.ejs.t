@@ -241,7 +241,6 @@ const handleSubmit = (e: Event) => {
     </label>
 
     <% if (swap) { %>
-    <template>
       <button
         type="button"
         class="secondary"
@@ -292,7 +291,6 @@ const handleSubmit = (e: Event) => {
           </select>
         </label>
       </template>
-    </template>
     <% } %>
 
     <button
