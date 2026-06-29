@@ -3,13 +3,11 @@ import { loadExchangeChains } from "./exchangeChains";
 
 export const useExchangeChains = () => {
   const [chains, setChains] = useState<readonly string[]>([]);
-  const chainsRef = useRef(chains);
-  chainsRef.current = chains;
   const fetchPromiseRef = useRef<Promise<readonly string[]> | null>(null);
 
   const ensureExchangeChains = useCallback(async (): Promise<readonly string[]> => {
-    if (chainsRef.current.length > 0) {
-      return chainsRef.current;
+    if (chains.length > 0) {
+      return chains;
     }
 
     fetchPromiseRef.current ??= loadExchangeChains();
@@ -20,7 +18,7 @@ export const useExchangeChains = () => {
     } finally {
       fetchPromiseRef.current = null;
     }
-  }, []);
+  }, [chains]);
 
   useEffect(() => {
     void ensureExchangeChains();

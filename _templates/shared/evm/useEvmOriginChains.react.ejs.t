@@ -3,13 +3,11 @@ import { loadEvmOriginChains } from "./evmOrigins";
 
 export const useEvmOriginChains = () => {
   const [chains, setChains] = useState<readonly string[]>([]);
-  const chainsRef = useRef(chains);
-  chainsRef.current = chains;
   const fetchPromiseRef = useRef<Promise<readonly string[]> | null>(null);
 
   const ensureEvmOriginChains = useCallback(async (): Promise<readonly string[]> => {
-    if (chainsRef.current.length > 0) {
-      return chainsRef.current;
+    if (chains.length > 0) {
+      return chains;
     }
 
     fetchPromiseRef.current ??= loadEvmOriginChains();
@@ -20,7 +18,7 @@ export const useEvmOriginChains = () => {
     } finally {
       fetchPromiseRef.current = null;
     }
-  }, []);
+  }, [chains]);
 
   useEffect(() => {
     void ensureEvmOriginChains();

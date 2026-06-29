@@ -23,13 +23,7 @@ export const useWalletWithEvmCore = <TSigner>(
     const name =
       substrate.selectedExtensionName ?? substrate.extensionNames[0];
     void substrate.selectExtension(name);
-  }, [
-    activeWalletKind,
-    substrate.accounts.length,
-    substrate.extensionNames,
-    substrate.selectedExtensionName,
-    substrate.selectExtension,
-  ]);
+  }, [activeWalletKind, substrate]);
 
   const buildSubmitOptions = useCallback(
     (from: <%= projectKind === 'sdk' ? 'TChain' : 'string' %>): WalletSubmitOptions<TSigner> | null => {
