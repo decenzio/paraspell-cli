@@ -6,7 +6,6 @@ import { ref } from "vue";
 import TransferForm from "./XcmTransferForm.vue";
 import type { FormValues } from "./types";
 <% if (evmWallet) { %>
-import { useEvmOriginChains } from "./evm/useEvmOriginChains";
 import {
   useWallet,
   WalletControls,
@@ -28,7 +27,6 @@ const handleOriginChange = (origin: string) => {
 };
 
 <% if (evmWallet) { %>
-useEvmOriginChains();
 const wallet = useWallet();
 
 const setWalletKind = (kind: typeof wallet.activeWalletKind.value) => {

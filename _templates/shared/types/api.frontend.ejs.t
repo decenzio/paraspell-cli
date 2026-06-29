@@ -22,5 +22,10 @@ export type FormValues = {
 };
 
 <% if (evmWallet) { %>
+export type EvmOriginHelpers = {
+  ensureEvmOriginChains: () => Promise<readonly string[]>;
+  isEvmOrigin: (chain: string) => boolean;
+};
+
 <%- h.includeShared('shared/types/wallet.evm.ejs.t') %>
 <% } %>

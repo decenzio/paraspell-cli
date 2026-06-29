@@ -5,13 +5,14 @@ import { createWsClient } from "polkadot-api/ws";
 import { API_URL } from "../consts";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "../fetchFromApi";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
-<% if (evmWallet) { %>import { fetchEvmOriginChains, isEvmOrigin } from "../evm";
+<% if (evmWallet) { %>import type { EvmOriginHelpers } from "../types";
 import { submitEvmTx } from "./submitEvmTx";
 <% } %>import { submitTransaction } from "../utils";
 import type {
   ApiParams,
   ApiTransaction,
   FormValues<% if (evmWallet) { %>,
+  EvmOriginHelpers,
   WalletSubmitOptions<% } %>,
 } from "../types";
 
@@ -39,6 +40,7 @@ const submitApiTransaction = async (
 export const submitUsingApi = async (
   formValues: FormValues,
   options: WalletSubmitOptions<PolkadotSigner>,
+  evmOrigins: EvmOriginHelpers,
 ): Promise<void> => {
   const currency = requireCurrency(formValues.currency);
 <% if (swap) { %>  const swapCurrencyTo = requireSwapCurrencyTo(
@@ -47,9 +49,9 @@ export const submitUsingApi = async (
   );
 <% } %>
 
-  await fetchEvmOriginChains();
+  await evmOrigins.ensureEvmOriginChains();
 
-  if (isEvmOrigin(formValues.from)) {
+  if (evmOrigins.isEvmOrigin(formValues.from)) {
     if (options.kind !== "evm") {
       throw new Error("EVM origin requires a connected EVM wallet.");
     }

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import type { PolkadotSigner } from "polkadot-api";
 import type { FormValues } from "../../types";
+import { useEvmOriginChains } from "../../evm/useEvmOriginChains";
 import { submitUsingApi } from "../../submit/submitUsingApi";
 import { createWalletControls } from "../shared/createWalletControls";
 import { connectWalletAlert } from "../shared/submitTransfer";
@@ -12,6 +13,7 @@ import { usePapiWallet } from "./usePapiWallet";
 export const WalletControls = createWalletControls(SubstrateWalletControls);
 
 export const useWalletWithEvm = (): UseWalletReturn => {
+  const { ensureEvmOriginChains, isEvmOrigin } = useEvmOriginChains();
   const papi = usePapiWallet();
 
   const core = useWalletWithEvmCore<PolkadotSigner>({
@@ -33,10 +35,13 @@ export const useWalletWithEvm = (): UseWalletReturn => {
         return false;
       }
 
-      await submitUsingApi(formValues, options);
+      await submitUsingApi(formValues, options, {
+        ensureEvmOriginChains,
+        isEvmOrigin,
+      });
       return true;
     },
-    [core],
+    [core, ensureEvmOriginChains, isEvmOrigin],
   );
 
   return { ...core, submitTransfer };

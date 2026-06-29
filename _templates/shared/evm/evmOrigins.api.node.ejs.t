@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL } from "<% if (framework === 'node') { %>./consts.js<% } else { %>../consts<% } %>";
+import { API_URL } from "./consts.js";
 
 let cachedEvmOriginChains: readonly string[] = [];
 let fetchPromise: Promise<readonly string[]> | null = null;
