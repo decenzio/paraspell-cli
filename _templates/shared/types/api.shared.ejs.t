@@ -7,9 +7,7 @@ export type AssetInfo = {
 export type ApiParams = {
   from?: string;
   to?: string;
-  currency:
-    | { location: object; amount: string }
-    | { symbol: string; amount: string };
+  currency: { location: object; amount: string };
   recipient: string;
   sender: string;<% if (swap) { %>
   swapOptions?: {

@@ -4,6 +4,7 @@ const SDK_VERSION = '13.9.0';
 const PACKAGE_VERSIONS = {
   polkadotApi: '^2.1.6',
   polkadotKeyring: '^14.0.3',
+  polkadotUtil: '^14.0.3',
   polkadotUtilCrypto: '^14.0.3',
   dotenv: '^17.4.2',
   express: '^5.2.1',
