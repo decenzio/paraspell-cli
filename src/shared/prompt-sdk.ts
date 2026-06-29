@@ -6,6 +6,11 @@ import {
   SNOWBRIDGE_EXTENSION,
   SWAP_EXTENSION,
 } from './feature-extensions-checkbox.js';
+import { logArgvResolvedPrompts } from './log-resolved-prompt.js';
+import {
+  argvHasAnyFeatureFlag,
+  argvHasFlag,
+} from './parse-cli-args.js';
 import { promptEvmPrivateKey } from './prompt-evm-private-key.js';
 import { promptSubstrateMnemonic } from './prompt-substrate-mnemonic.js';
 import type { SdkGenerateOptions } from './types.js';
@@ -14,9 +19,19 @@ import { validateNameInput } from './validate.js';
 
 type NameValidator = (name: string) => true | string | Promise<true | string>;
 
+type PromptProvided = {
+  framework?: boolean;
+};
+
+type PromptSdkOptions = {
+  validateName?: NameValidator;
+  argv?: string[];
+  provided?: PromptProvided;
+};
+
 export async function promptSdkOptions(
   partial: Partial<SdkGenerateOptions>,
-  options: { validateName?: NameValidator } = {},
+  options: PromptSdkOptions = {},
 ): Promise<
   Pick<
     SdkGenerateOptions,
@@ -30,51 +45,84 @@ export async function promptSdkOptions(
     | 'substrateMnemonic'
   >
 > {
-  const packageManager = await select({
-    message: 'Select the desired package manager',
-    choices: [
-      new Separator(),
-      ...PACKAGE_MANAGERS.map((packageManager) => ({
-        name: packageManager,
-        value: packageManager,
-      })),
-    ],
-    default: partial.packageManager ?? 'pnpm',
+  const argv = options.argv ?? [];
+
+  logArgvResolvedPrompts({
+    argv,
+    partial,
+    provided: options.provided,
+    kind: 'sdk',
+    defaultName: 'my-xcm-app',
   });
 
-  const client = await select({
-    message: 'Select the desired JS client type',
-    choices: [
-      new Separator(),
-      { name: 'Polkadot API', value: 'papi' },
-      { name: 'Polkadot JS', value: 'pjs' },
-      { name: 'Dedot', value: 'dedot' },
-    ],
-    default: partial.client ?? 'pjs',
-  });
+  const name = argvHasFlag(argv, 'name')
+    ? (partial.name ?? 'my-xcm-app')
+    : await input({
+        message: 'Enter the project name',
+        default: partial.name ?? 'my-xcm-app',
+        validate: options.validateName ?? validateNameInput,
+      });
 
-  const additionalFeatures = await promptFeatureExtensions();
-  const featureFlags = applyFeatureFlags({
-    evm: additionalFeatures.includes(EVM_EXTENSION),
-    swap: additionalFeatures.includes(SWAP_EXTENSION),
-    snowbridge: additionalFeatures.includes(SNOWBRIDGE_EXTENSION),
-  });
+  const packageManager = argvHasFlag(argv, 'package-manager')
+    ? (partial.packageManager ?? 'pnpm')
+    : await select({
+        message: 'Select the desired package manager',
+        choices: [
+          new Separator(),
+          ...PACKAGE_MANAGERS.map((packageManager) => ({
+            name: packageManager,
+            value: packageManager,
+          })),
+        ],
+        default: partial.packageManager ?? 'pnpm',
+      });
+
+  const client = argvHasFlag(argv, 'client')
+    ? (partial.client ?? 'pjs')
+    : await select({
+        message: 'Select the desired JS client type',
+        choices: [
+          new Separator(),
+          { name: 'Polkadot API', value: 'papi' },
+          { name: 'Polkadot JS', value: 'pjs' },
+          { name: 'Dedot', value: 'dedot' },
+        ],
+        default: partial.client ?? 'pjs',
+      });
+
+  let featureFlags: ReturnType<typeof applyFeatureFlags>;
+  if (argvHasAnyFeatureFlag(argv)) {
+    featureFlags = applyFeatureFlags({
+      evm: partial.evm ?? false,
+      swap: partial.swap ?? false,
+      snowbridge: partial.snowbridge ?? false,
+    });
+  } else {
+    const additionalFeatures = await promptFeatureExtensions({
+      evm: partial.evm,
+      swap: partial.swap,
+      snowbridge: partial.snowbridge,
+    });
+    featureFlags = applyFeatureFlags({
+      evm: additionalFeatures.includes(EVM_EXTENSION),
+      swap: additionalFeatures.includes(SWAP_EXTENSION),
+      snowbridge: additionalFeatures.includes(SNOWBRIDGE_EXTENSION),
+    });
+  }
 
   const substrateMnemonic =
-    partial.framework === 'node'
-      ? await promptSubstrateMnemonic()
-      : undefined;
+    partial.framework !== 'node'
+      ? undefined
+      : argvHasFlag(argv, 'substrate-mnemonic')
+        ? partial.substrateMnemonic
+        : await promptSubstrateMnemonic();
 
   const privateKey =
-    partial.framework === 'node' && featureFlags.evmWallet
-      ? await promptEvmPrivateKey()
-      : undefined;
-
-  const name = await input({
-    message: 'package.json name',
-    default: partial.name ?? 'my-xcm-app',
-    validate: options.validateName ?? validateNameInput,
-  });
+    partial.framework !== 'node' || !featureFlags.evmWallet
+      ? undefined
+      : argvHasFlag(argv, 'private-key')
+        ? partial.privateKey
+        : await promptEvmPrivateKey();
 
   return {
     name,
@@ -86,8 +134,29 @@ export async function promptSdkOptions(
   };
 }
 
-export function sdkNeedsInteractive(argv: string[]): boolean {
+export function sdkNeedsInteractive(
+  argv: string[],
+  partial: Partial<SdkGenerateOptions>,
+): boolean {
   if (!process.stdin.isTTY) return false;
-  const flags = argv.filter((a) => a.startsWith('--'));
-  return !flags.some((a) => a.startsWith('--name')) || !flags.some((a) => a.startsWith('--client'));
+  if (!argvHasFlag(argv, 'package-manager')) return true;
+  if (!argvHasFlag(argv, 'client')) return true;
+  if (!argvHasAnyFeatureFlag(argv)) return true;
+  if (!argvHasFlag(argv, 'name')) return true;
+  if (partial.framework === 'node' && !argvHasFlag(argv, 'substrate-mnemonic')) {
+    return true;
+  }
+  const featureFlags = applyFeatureFlags({
+    evm: partial.evm ?? false,
+    swap: partial.swap ?? false,
+    snowbridge: partial.snowbridge ?? false,
+  });
+  if (
+    partial.framework === 'node' &&
+    featureFlags.evmWallet &&
+    !argvHasFlag(argv, 'private-key')
+  ) {
+    return true;
+  }
+  return false;
 }

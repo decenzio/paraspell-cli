@@ -97,7 +97,7 @@ Use `sdk` or `api` as the first argument (or `--type`), plus `--name`. SDK proje
 ```bash
 npx create-paraspell@latest sdk react --name my-app --client pjs --package-manager pnpm
 npx create-paraspell@latest api vue --name my-api --package-manager npm
-npx create-paraspell@latest --type sdk --framework node --name my-node --client dedot --evm true
+npx create-paraspell@latest --type sdk --framework node --name my-node --client dedot --evm
 ```
 
 ```bash
@@ -113,7 +113,7 @@ On a TTY, omitting `--name` or `--client` (SDK) opens prompts. Without a TTY, se
 | `--type` | `sdk`, `api` | required when not using `sdk`/`api` subcommand |
 | `--framework` | `react`, `vue`, `node` | `react` |
 | `--client` (SDK only) | `papi`, `pjs`, `dedot` | `pjs` |
-| `--evm`, `--swap`, `--snowbridge` | `true` / `false` | `false` |
+| `--evm`, `--swap`, `--snowbridge` | bare flag enables feature | `false` |
 | `--package-manager` | `npm`, `yarn`, `pnpm`, `bun` | `pnpm` |
 | `--name`, `--out` | | `./<name>` in the current directory |
 | `--substrate-mnemonic` | (Node only) seed the generated `.env` | — |

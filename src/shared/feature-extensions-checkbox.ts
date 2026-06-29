@@ -1,6 +1,5 @@
 /**
- * Checkbox prompt where selecting Snowbridge checks EVM immediately,
- * and unchecking EVM unchecks Snowbridge.
+ * Checkbox prompt for optional XCM feature extensions.
  */
 import {
   createPrompt,
@@ -76,50 +75,22 @@ function toggle(item: ExtensionChoice | Separator): ExtensionChoice | Separator 
   return isSelectable(item) ? { ...item, checked: !item.checked } : item;
 }
 
-function setChecked(
-  items: Array<ExtensionChoice | Separator>,
-  value: ExtensionValue,
-  checked: boolean,
-): Array<ExtensionChoice | Separator> {
-  return items.map((item) =>
-    !Separator.isSeparator(item) && item.value === value ? { ...item, checked } : item,
-  );
-}
-
-/** Keep Snowbridge ⇒ EVM and ¬EVM ⇒ ¬Snowbridge in sync after a toggle. */
-function linkExtensionChoices(
+function toggleAt(
   items: Array<ExtensionChoice | Separator>,
   toggledIndex: number,
 ): Array<ExtensionChoice | Separator> {
-  let next = items.map((choice, i) => (i === toggledIndex ? toggle(choice) : choice));
-  const toggled = next[toggledIndex];
-  if (!toggled || Separator.isSeparator(toggled) || toggled.disabled) {
-    return next;
-  }
-
-  if (toggled.value === SNOWBRIDGE_EXTENSION && toggled.checked) {
-    next = setChecked(next, EVM_EXTENSION, true);
-  }
-  if (toggled.value === EVM_EXTENSION && !toggled.checked) {
-    next = setChecked(next, SNOWBRIDGE_EXTENSION, false);
-  }
-  return next;
+  return items.map((choice, i) => (i === toggledIndex ? toggle(choice) : choice));
 }
 
-function sanitizeExtensionChoices(
-  items: Array<ExtensionChoice | Separator>,
+export type FeatureExtensionsDefaults = {
+  evm?: boolean;
+  swap?: boolean;
+  snowbridge?: boolean;
+};
+
+function defaultChoices(
+  defaults: FeatureExtensionsDefaults = {},
 ): Array<ExtensionChoice | Separator> {
-  const snow = items.find(
-    (item): item is ExtensionChoice =>
-      !Separator.isSeparator(item) && item.value === SNOWBRIDGE_EXTENSION,
-  );
-  if (snow?.checked) {
-    return setChecked(items, EVM_EXTENSION, true);
-  }
-  return items;
-}
-
-function defaultChoices(): Array<ExtensionChoice | Separator> {
   return [
     new Separator(),
     {
@@ -128,7 +99,7 @@ function defaultChoices(): Array<ExtensionChoice | Separator> {
       checkedName: 'Swap extension',
       short: 'Swap',
       disabled: false,
-      checked: false,
+      checked: defaults.swap ?? false,
       description: 'Cross-chain swaps via @paraspell/swap',
     },
     {
@@ -137,7 +108,7 @@ function defaultChoices(): Array<ExtensionChoice | Separator> {
       checkedName: 'EVM extension',
       short: 'EVM',
       disabled: false,
-      checked: false,
+      checked: defaults.evm ?? false,
       description: 'Enables EVM chains to be used as origin chains',
     },
     {
@@ -146,8 +117,8 @@ function defaultChoices(): Array<ExtensionChoice | Separator> {
       checkedName: 'Snowbridge extension',
       short: 'Snowbridge',
       disabled: false,
-      checked: false,
-      description: 'Extends EVM origin chains to Snowbridge',
+      checked: defaults.snowbridge ?? false,
+      description: 'Snowbridge cross-chain transfers',
     },
   ];
 }
@@ -156,17 +127,18 @@ type FeatureExtensionsConfig = {
   message: string;
   pageSize?: number;
   loop?: boolean;
+  defaults?: FeatureExtensionsDefaults;
 };
 
 const featureExtensionsCheckbox = createPrompt<ExtensionValue[], FeatureExtensionsConfig>(
   (config, done) => {
-  const { message, pageSize = 7, loop = true } = config;
+  const { message, pageSize = 7, loop = true, defaults } = config;
   const theme = makeTheme(checkboxTheme);
   const { keybindings } = theme;
 
   const [status, setStatus] = useState<'idle' | 'done'>('idle');
   const prefix = usePrefix({ status, theme });
-  const [items, setItems] = useState(sanitizeExtensionChoices(defaultChoices()));
+  const [items, setItems] = useState(defaultChoices(defaults));
 
   const bounds = useMemo(() => {
     const first = items.findIndex(isNavigable);
@@ -217,7 +189,7 @@ const featureExtensionsCheckbox = createPrompt<ExtensionValue[], FeatureExtensio
           setError(theme.i18n.disabledError);
         } else {
           setError(undefined);
-          setItems(sanitizeExtensionChoices(linkExtensionChoices(items, active)));
+          setItems(toggleAt(items, active));
         }
       }
       return;
@@ -234,7 +206,7 @@ const featureExtensionsCheckbox = createPrompt<ExtensionValue[], FeatureExtensio
       const selectedItem = items[position];
       if (selectedItem && isSelectable(selectedItem)) {
         setActive(position);
-        setItems(sanitizeExtensionChoices(linkExtensionChoices(items, position)));
+        setItems(toggleAt(items, position));
       }
     }
   });
@@ -295,8 +267,11 @@ const featureExtensionsCheckbox = createPrompt<ExtensionValue[], FeatureExtensio
   },
 );
 
-export async function promptFeatureExtensions(): Promise<ExtensionValue[]> {
+export async function promptFeatureExtensions(
+  defaults?: FeatureExtensionsDefaults,
+): Promise<ExtensionValue[]> {
   return featureExtensionsCheckbox({
     message: 'Select the desired additional features',
+    defaults,
   }) as Promise<ExtensionValue[]>;
 }

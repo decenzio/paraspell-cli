@@ -25,6 +25,28 @@ export function getArgvFlag(
   return parseArgv(argv)[key];
 }
 
+const FLAG_ALIASES: Readonly<Record<string, readonly string[]>> = {
+  'package-manager': ['package-manager', 'packageManager'],
+  'private-key': ['private-key', 'privateKey'],
+  'substrate-mnemonic': ['substrate-mnemonic', 'substrateMnemonic'],
+};
+
+export function argvHasFlag(argv: string[], flag: string): boolean {
+  const names = new Set(FLAG_ALIASES[flag] ?? [flag]);
+  return argv.some((arg) => {
+    if (!arg.startsWith('--')) return false;
+    return names.has(arg.slice(2).split('=')[0]!);
+  });
+}
+
+export function argvHasAnyFeatureFlag(argv: string[]): boolean {
+  return (
+    argvHasFlag(argv, 'evm') ||
+    argvHasFlag(argv, 'swap') ||
+    argvHasFlag(argv, 'snowbridge')
+  );
+}
+
 function parseArgv(argv: string[]): ArgRecord {
   const opts: ArgRecord = {};
   for (let i = 0; i < argv.length; i++) {
@@ -242,7 +264,7 @@ export function shiftPositionalFramework(argv: string[]): {
 
 const SHARED_OPTIONS = `  --framework <id>        react | vue | node
   --name <string>
-  --evm, --swap, --snowbridge <bool>  (EVM and Snowbridge are independent)
+  --evm, --swap, --snowbridge  include flag to enable (omit for false; explicit true|false also accepted)
   --substrate-mnemonic <secret>  optional Substrate mnemonic or //Dev URI for node (non-interactive)
   --private-key <hex>     optional wallet key for node when using EVM or Snowbridge origins
   --package-manager <id>  npm | yarn | pnpm | bun
@@ -273,7 +295,7 @@ Options:
   --framework <id>        react | vue | node
   --name <string>
   --client <id>           papi | pjs | dedot
-  --evm, --swap, --snowbridge <bool>  (EVM and Snowbridge are independent)
+  --evm, --swap, --snowbridge  include flag to enable (omit for false; explicit true|false also accepted)
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>
   --help
@@ -286,7 +308,7 @@ export function printApiHelp(command = 'npm run generate:xcm-api'): void {
 Options:
   --framework <id>        react | vue | node
   --name <string>
-  --evm, --swap, --snowbridge <bool>  (EVM and Snowbridge are independent)
+  --evm, --swap, --snowbridge  include flag to enable (omit for false; explicit true|false also accepted)
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>
   --help

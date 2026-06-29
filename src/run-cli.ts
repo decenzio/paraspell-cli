@@ -6,6 +6,7 @@ import { generateApiApp, generateSdkApp } from './shared/hygen-runner.js';
 import { printNextSteps } from './shared/next-steps.js';
 import {
   assertNoStrayPositional,
+  argvHasFlag,
   getArgvFlag,
   parseApiArgv,
   parseSdkArgv,
@@ -101,15 +102,24 @@ async function runFromArgv(
   }
 
   const needsInteractive =
-    kind === 'sdk' ? sdkNeedsInteractive(argv) : apiNeedsInteractive(argv);
+    kind === 'sdk'
+      ? sdkNeedsInteractive(argv, opts as SdkGenerateOptions)
+      : apiNeedsInteractive(argv, opts);
   if (needsInteractive) {
     const validateName = ctx.consumer
       ? consumerNameValidator(argv, ctx.root, opts.out)
       : undefined;
+    const provided = {
+      framework: positional !== null || argvHasFlag(argv, 'framework'),
+    };
     const answers =
       kind === 'sdk'
-        ? await promptSdkOptions(opts as SdkGenerateOptions, { validateName })
-        : await promptApiOptions(opts, { validateName });
+        ? await promptSdkOptions(opts as SdkGenerateOptions, {
+            validateName,
+            argv,
+            provided,
+          })
+        : await promptApiOptions(opts, { validateName, argv, provided });
     opts = { ...opts, ...answers };
   }
 
