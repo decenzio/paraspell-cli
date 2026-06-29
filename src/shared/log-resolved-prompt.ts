@@ -3,6 +3,7 @@ import { styleText } from 'node:util';
 import { applyFeatureFlags } from './feature-flags.js';
 import {
   argvHasAnyFeatureFlag,
+  argvHasAcceptedName,
   argvHasFlag,
 } from './parse-cli-args.js';
 import type { ApiGenerateOptions, FeatureFlags, Framework, SdkClient, SdkGenerateOptions } from './types.js';
@@ -61,7 +62,7 @@ export function buildArgvResolvedLogs(input: LogArgvResolvedInput): ResolvedLogL
   const { argv, partial, provided, kind, defaultName } = input;
   const lines: ResolvedLogLine[] = [];
 
-  if (argvHasFlag(argv, 'name')) {
+  if (argvHasAcceptedName(argv, partial.name)) {
     lines.push({
       message: 'Enter the project name',
       answer: partial.name ?? defaultName,

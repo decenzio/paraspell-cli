@@ -9,7 +9,9 @@ import {
 import { logArgvResolvedPrompts } from './log-resolved-prompt.js';
 import {
   argvHasAnyFeatureFlag,
+  argvHasAcceptedName,
   argvHasFlag,
+  argvNameRejected,
 } from './parse-cli-args.js';
 import { promptEvmPrivateKey } from './prompt-evm-private-key.js';
 import { promptSubstrateMnemonic } from './prompt-substrate-mnemonic.js';
@@ -55,11 +57,20 @@ export async function promptSdkOptions(
     defaultName: 'my-xcm-app',
   });
 
-  const name = argvHasFlag(argv, 'name')
-    ? (partial.name ?? 'my-xcm-app')
+  const defaultName = 'my-xcm-app';
+
+  if (argvNameRejected(argv, partial.name)) {
+    const reason = validateNameInput(partial.name ?? '');
+    if (reason !== true) {
+      console.warn(`Warning: ignoring invalid --name. ${reason}`);
+    }
+  }
+
+  const name = argvHasAcceptedName(argv, partial.name)
+    ? (partial.name ?? defaultName)
     : await input({
         message: 'Enter the project name',
-        default: partial.name ?? 'my-xcm-app',
+        default: defaultName,
         validate: options.validateName ?? validateNameInput,
       });
 
@@ -142,7 +153,7 @@ export function sdkNeedsInteractive(
   if (!argvHasFlag(argv, 'package-manager')) return true;
   if (!argvHasFlag(argv, 'client')) return true;
   if (!argvHasAnyFeatureFlag(argv)) return true;
-  if (!argvHasFlag(argv, 'name')) return true;
+  if (!argvHasAcceptedName(argv, partial.name)) return true;
   if (partial.framework === 'node' && partial.substrateMnemonic === undefined) {
     return true;
   }

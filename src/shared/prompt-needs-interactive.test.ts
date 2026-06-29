@@ -45,6 +45,25 @@ describe('sdkNeedsInteractive', () => {
     });
   });
 
+  it('returns true when --name has an invalid value on a TTY', () => {
+    withTty(true, () => {
+      expect(
+        sdkNeedsInteractive(
+          [
+            '--package-manager',
+            'npm',
+            '--client',
+            'pjs',
+            '--evm',
+            '--name',
+            'Invalid Name',
+          ],
+          { framework: 'react', name: 'Invalid Name' },
+        ),
+      ).toBe(true);
+    });
+  });
+
   it('returns false when stdin is not a TTY even if flags are missing', () => {
     withTty(false, () => {
       expect(sdkNeedsInteractive([], { framework: 'react' })).toBe(false);

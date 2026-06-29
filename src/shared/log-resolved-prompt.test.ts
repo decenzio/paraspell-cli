@@ -111,6 +111,16 @@ describe('buildArgvResolvedLogs', () => {
         [],
       );
     });
+
+    it('does not log name when the flag has an invalid value', () => {
+      expectResolvedLogs(
+        sdkInput({
+          argv: ['--name', 'Invalid Name'],
+          partial: { name: 'Invalid Name' },
+        }),
+        [],
+      );
+    });
   });
 
   describe('framework', () => {

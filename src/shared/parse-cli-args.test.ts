@@ -3,8 +3,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { UserError } from './errors.js';
 import {
   assertNoStrayPositional,
+  argvHasAcceptedName,
   argvHasAnyFeatureFlag,
   argvHasFlag,
+  argvNameRejected,
   hasRejectedCliSecrets,
   parseApiArgv,
   parseSdkArgv,
@@ -28,6 +30,24 @@ describe('argvHasFlag', () => {
     expect(argvHasFlag(['--name'], 'name')).toBe(false);
     expect(argvHasFlag(['--name='], 'name')).toBe(false);
     expect(argvHasFlag(['--client', 'pjs'], 'package-manager')).toBe(false);
+  });
+});
+
+describe('argvHasAcceptedName', () => {
+  it('accepts valid CLI names and rejects invalid ones', () => {
+    expect(argvHasAcceptedName(['--name', 'my-app'], 'my-app')).toBe(true);
+    expect(argvHasAcceptedName(['--name=my-app'], 'my-app')).toBe(true);
+    expect(argvHasAcceptedName(['--name', 'Invalid Name'], 'Invalid Name')).toBe(
+      false,
+    );
+    expect(argvHasAcceptedName(['--name'], 'my-xcm-app')).toBe(false);
+    expect(argvHasAcceptedName([], 'my-app')).toBe(false);
+  });
+
+  it('detects rejected names', () => {
+    expect(argvNameRejected(['--name', 'Invalid Name'], 'Invalid Name')).toBe(true);
+    expect(argvNameRejected(['--name', 'my-app'], 'my-app')).toBe(false);
+    expect(argvNameRejected([], 'my-app')).toBe(false);
   });
 });
 

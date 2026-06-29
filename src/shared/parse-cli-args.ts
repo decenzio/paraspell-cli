@@ -11,6 +11,7 @@ import { parseFramework } from './frameworks.js';
 import {
   parseSecretFlag,
   validateEvmPrivateKey,
+  validateNameInput,
   validateSubstrateMnemonic,
 } from './validate.js';
 import type {
@@ -82,6 +83,27 @@ export function argvHasAnyFeatureFlag(argv: string[]): boolean {
     argvHasFlag(argv, 'swap') ||
     argvHasFlag(argv, 'snowbridge')
   );
+}
+
+export function argvHasAcceptedName(
+  argv: string[],
+  name: string | undefined,
+): boolean {
+  if (!argvHasFlag(argv, 'name')) return false;
+  const resolved =
+    name ??
+    (() => {
+      const value = getArgvFlag(argv, 'name');
+      return typeof value === 'string' ? value : undefined;
+    })();
+  return validateNameInput(resolved ?? '') === true;
+}
+
+export function argvNameRejected(
+  argv: string[],
+  name: string | undefined,
+): boolean {
+  return argvHasFlag(argv, 'name') && !argvHasAcceptedName(argv, name);
 }
 
 export function argvSecretRejected(

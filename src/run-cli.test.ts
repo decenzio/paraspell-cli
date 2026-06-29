@@ -204,6 +204,37 @@ describe('runSdkFromArgv', () => {
     });
   });
 
+  it('prompts for name when an invalid --name is passed on a TTY', async () => {
+    stubTty(true);
+    promptSdkOptions.mockResolvedValue({
+      name: 'fixed-app',
+      packageManager: 'npm',
+      client: 'pjs',
+      evm: true,
+      swap: false,
+      snowbridge: false,
+    });
+
+    await runSdkFromArgv(
+      [
+        'react',
+        '--name',
+        'Invalid Name',
+        '--package-manager',
+        'npm',
+        '--client',
+        'pjs',
+        '--evm',
+      ],
+      consumerCtx(tmpRoot),
+    );
+
+    expect(promptSdkOptions).toHaveBeenCalledOnce();
+    expect(generateSdkApp.mock.calls[0]?.[0]).toMatchObject({
+      opts: expect.objectContaining({ name: 'fixed-app' }),
+    });
+  });
+
   it('throws on invalid CLI secrets when stdin is not a TTY', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const argv = [

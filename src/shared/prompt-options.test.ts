@@ -157,6 +157,25 @@ describe('promptSdkOptions', () => {
     expect(mockedInput).toHaveBeenCalledOnce();
     expect(mockedSelect).toHaveBeenCalledTimes(2);
   });
+
+  it('prompts when --name has an invalid value', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mockedInput.mockResolvedValue('valid-app');
+    mockedSelect.mockResolvedValueOnce('pnpm').mockResolvedValueOnce('pjs');
+    mockedFeatureExtensions.mockResolvedValue([]);
+
+    const result = await promptSdkOptions(
+      { framework: 'react', name: 'Invalid Name' },
+      { argv: ['--name', 'Invalid Name', '--evm'] },
+    );
+
+    expect(result.name).toBe('valid-app');
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/ignoring invalid --name/),
+    );
+    expect(mockedInput).toHaveBeenCalledOnce();
+    vi.restoreAllMocks();
+  });
 });
 
 describe('promptApiOptions', () => {
