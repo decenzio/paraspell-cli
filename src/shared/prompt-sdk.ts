@@ -113,14 +113,14 @@ export async function promptSdkOptions(
   const substrateMnemonic =
     partial.framework !== 'node'
       ? undefined
-      : argvHasFlag(argv, 'substrate-mnemonic')
+      : partial.substrateMnemonic !== undefined
         ? partial.substrateMnemonic
         : await promptSubstrateMnemonic();
 
   const privateKey =
     partial.framework !== 'node' || !featureFlags.evmWallet
       ? undefined
-      : argvHasFlag(argv, 'private-key')
+      : partial.privateKey !== undefined
         ? partial.privateKey
         : await promptEvmPrivateKey();
 
@@ -143,7 +143,7 @@ export function sdkNeedsInteractive(
   if (!argvHasFlag(argv, 'client')) return true;
   if (!argvHasAnyFeatureFlag(argv)) return true;
   if (!argvHasFlag(argv, 'name')) return true;
-  if (partial.framework === 'node' && !argvHasFlag(argv, 'substrate-mnemonic')) {
+  if (partial.framework === 'node' && partial.substrateMnemonic === undefined) {
     return true;
   }
   const featureFlags = applyFeatureFlags({
@@ -154,7 +154,7 @@ export function sdkNeedsInteractive(
   if (
     partial.framework === 'node' &&
     featureFlags.evmWallet &&
-    !argvHasFlag(argv, 'private-key')
+    partial.privateKey === undefined
   ) {
     return true;
   }

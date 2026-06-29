@@ -5,6 +5,7 @@ import {
   assertNoStrayPositional,
   argvHasAnyFeatureFlag,
   argvHasFlag,
+  hasRejectedCliSecrets,
   parseApiArgv,
   parseSdkArgv,
   printApiHelp,
@@ -74,6 +75,9 @@ describe('assertNoStrayPositional', () => {
   });
 });
 
+const VALID_PRIVATE_KEY =
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+
 describe('parseSdkArgv', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -127,13 +131,45 @@ describe('parseSdkArgv', () => {
   it('parses node secrets', () => {
     expect(
       parseSdkArgv(
-        ['--substrate-mnemonic', 'seed', '--private-key', '0xabc'],
+        ['--substrate-mnemonic', '//Alice', '--private-key', VALID_PRIVATE_KEY],
         { ...ctx, framework: 'node' },
       ),
     ).toMatchObject({
-      substrateMnemonic: 'seed',
-      privateKey: '0xabc',
+      substrateMnemonic: '//Alice',
+      privateKey: VALID_PRIVATE_KEY,
     });
+  });
+
+  it('ignores invalid node secrets and warns', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(
+      parseSdkArgv(['--private-key', '0xabc'], { ...ctx, framework: 'node' }),
+    ).not.toHaveProperty('privateKey');
+    expect(
+      parseSdkArgv(['--substrate-mnemonic', 'seed'], { ...ctx, framework: 'node' }),
+    ).not.toHaveProperty('substrateMnemonic');
+    expect(warn).toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
+
+  it('detects rejected CLI secrets', () => {
+    const argv = [
+      '--substrate-mnemonic',
+      'seed',
+      '--private-key',
+      '0xabc',
+    ];
+    const opts = parseSdkArgv(argv, { ...ctx, framework: 'node' });
+    expect(hasRejectedCliSecrets(argv, opts)).toBe(true);
+    expect(
+      hasRejectedCliSecrets(
+        ['--substrate-mnemonic', '//Alice', '--private-key', VALID_PRIVATE_KEY],
+        {
+          substrateMnemonic: '//Alice',
+          privateKey: VALID_PRIVATE_KEY,
+        },
+      ),
+    ).toBe(false);
   });
 
   it('sets help when --help is present', () => {

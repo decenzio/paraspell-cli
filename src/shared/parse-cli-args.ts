@@ -8,6 +8,11 @@ import {
   type PackageManager,
 } from './package-manager.js';
 import { parseFramework } from './frameworks.js';
+import {
+  parseSecretFlag,
+  validateEvmPrivateKey,
+  validateSubstrateMnemonic,
+} from './validate.js';
 import type {
   ApiGenerateOptions,
   Framework,
@@ -76,6 +81,24 @@ export function argvHasAnyFeatureFlag(argv: string[]): boolean {
     argvHasFlag(argv, 'evm') ||
     argvHasFlag(argv, 'swap') ||
     argvHasFlag(argv, 'snowbridge')
+  );
+}
+
+export function argvSecretRejected(
+  argv: string[],
+  flag: 'private-key' | 'substrate-mnemonic',
+  value: string | undefined,
+): boolean {
+  return argvHasFlag(argv, flag) && value === undefined;
+}
+
+export function hasRejectedCliSecrets(
+  argv: string[],
+  opts: Pick<ApiGenerateOptions, 'privateKey' | 'substrateMnemonic'>,
+): boolean {
+  return (
+    argvSecretRejected(argv, 'private-key', opts.privateKey) ||
+    argvSecretRejected(argv, 'substrate-mnemonic', opts.substrateMnemonic)
   );
 }
 
@@ -218,11 +241,21 @@ function applyCommonFlags(
   if (out !== undefined) opts.out = resolveOut(ctx.root, out);
 
   const privateKey = valueFlag(flags, 'private-key') ?? valueFlag(flags, 'privateKey');
-  if (privateKey !== undefined) opts.privateKey = privateKey;
+  if (privateKey !== undefined) {
+    const parsed = parseSecretFlag('--private-key', privateKey, validateEvmPrivateKey);
+    if (parsed !== undefined) opts.privateKey = parsed;
+  }
 
   const substrateMnemonic =
     valueFlag(flags, 'substrate-mnemonic') ?? valueFlag(flags, 'substrateMnemonic');
-  if (substrateMnemonic !== undefined) opts.substrateMnemonic = substrateMnemonic;
+  if (substrateMnemonic !== undefined) {
+    const parsed = parseSecretFlag(
+      '--substrate-mnemonic',
+      substrateMnemonic,
+      validateSubstrateMnemonic,
+    );
+    if (parsed !== undefined) opts.substrateMnemonic = parsed;
+  }
 }
 
 export function parseSdkArgv(argv: string[], ctx: ParseCtx): SdkGenerateOptions {

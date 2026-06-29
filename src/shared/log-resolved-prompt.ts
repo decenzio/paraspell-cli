@@ -102,7 +102,7 @@ export function buildArgvResolvedLogs(input: LogArgvResolvedInput): ResolvedLogL
     });
   }
 
-  if (partial.framework === 'node' && argvHasFlag(argv, 'substrate-mnemonic')) {
+  if (partial.framework === 'node' && partial.substrateMnemonic !== undefined) {
     lines.push({
       message: 'Your Substrate wallet mnemonic for setup',
       answer: SECRET_ANSWER,
@@ -117,7 +117,7 @@ export function buildArgvResolvedLogs(input: LogArgvResolvedInput): ResolvedLogL
   if (
     partial.framework === 'node' &&
     featureFlags.evmWallet &&
-    argvHasFlag(argv, 'private-key')
+    partial.privateKey !== undefined
   ) {
     lines.push({
       message: 'Your EVM wallet private key for setup',

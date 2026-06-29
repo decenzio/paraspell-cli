@@ -203,6 +203,64 @@ describe('runSdkFromArgv', () => {
       opts: expect.objectContaining({ name: 'prompted-app' }),
     });
   });
+
+  it('throws on invalid CLI secrets when stdin is not a TTY', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const argv = [
+      'node',
+      '--name',
+      'node-app',
+      '--package-manager',
+      'pnpm',
+      '--client',
+      'papi',
+      '--evm',
+      '--private-key',
+      'incorrect',
+      '--substrate-mnemonic',
+      'bad-mnemonic',
+    ];
+
+    await expect(runSdkFromArgv(argv, consumerCtx(tmpRoot))).rejects.toThrow(UserError);
+    await expect(runSdkFromArgv(argv, consumerCtx(tmpRoot))).rejects.toThrow(
+      /Invalid --private-key or --substrate-mnemonic/,
+    );
+    expect(promptSdkOptions).not.toHaveBeenCalled();
+    expect(generateSdkApp).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalled();
+  });
+
+  it('prompts for secrets when invalid CLI secrets are passed on a TTY', async () => {
+    stubTty(true);
+    promptSdkOptions.mockResolvedValue({
+      ...defaultSdkPromptAnswers,
+      name: 'node-app',
+      substrateMnemonic: '//Alice',
+      privateKey:
+        '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+    });
+
+    await runSdkFromArgv(
+      [
+        'node',
+        '--name',
+        'node-app',
+        '--package-manager',
+        'pnpm',
+        '--client',
+        'papi',
+        '--evm',
+        '--private-key',
+        'incorrect',
+        '--substrate-mnemonic',
+        'wrong',
+      ],
+      consumerCtx(tmpRoot),
+    );
+
+    expect(promptSdkOptions).toHaveBeenCalledOnce();
+    expect(generateSdkApp).toHaveBeenCalledOnce();
+  });
 });
 
 describe('runApiFromArgv', () => {

@@ -8,6 +8,7 @@ import {
   assertNoStrayPositional,
   argvHasFlag,
   getArgvFlag,
+  hasRejectedCliSecrets,
   parseApiArgv,
   parseSdkArgv,
   printApiHelp,
@@ -101,10 +102,18 @@ async function runFromArgv(
     return;
   }
 
+  const rejectedSecrets = hasRejectedCliSecrets(argv, opts);
+  if (rejectedSecrets && !process.stdin.isTTY) {
+    throw new UserError(
+      'Invalid --private-key or --substrate-mnemonic value. Fix the flag value, or omit it and run on a TTY to enter secrets interactively.',
+    );
+  }
+
   const needsInteractive =
-    kind === 'sdk'
+    rejectedSecrets ||
+    (kind === 'sdk'
       ? sdkNeedsInteractive(argv, opts as SdkGenerateOptions)
-      : apiNeedsInteractive(argv, opts);
+      : apiNeedsInteractive(argv, opts));
   if (needsInteractive) {
     const validateName = ctx.consumer
       ? consumerNameValidator(argv, ctx.root, opts.out)

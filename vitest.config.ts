@@ -17,6 +17,7 @@ export default defineConfig({
             'src/shared/feature-flags.test.ts',
             'src/shared/log-resolved-prompt.test.ts',
             'src/shared/parse-cli-args.test.ts',
+            'src/shared/validate.test.ts',
             'src/shared/prompt-needs-interactive.test.ts',
             'src/shared/prompt-options.test.ts',
             'src/run-cli.test.ts',

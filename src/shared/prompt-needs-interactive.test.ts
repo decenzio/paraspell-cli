@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { apiNeedsInteractive } from './prompt-api.js';
 import { sdkNeedsInteractive } from './prompt-sdk.js';
 
+const VALID_PRIVATE_KEY =
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+
 function withTty(isTTY: boolean, run: () => void): void {
   vi.stubGlobal('process', { ...process, stdin: { isTTY } });
   run();
@@ -100,6 +103,29 @@ describe('sdkNeedsInteractive', () => {
             '0xabc',
           ],
           nodePartial,
+        ),
+      ).toBe(true);
+
+      expect(
+        sdkNeedsInteractive(
+          [
+            '--package-manager',
+            'npm',
+            '--client',
+            'pjs',
+            '--evm',
+            '--name',
+            'node-app',
+            '--substrate-mnemonic',
+            '//Alice',
+            '--private-key',
+            VALID_PRIVATE_KEY,
+          ],
+          {
+            ...nodePartial,
+            substrateMnemonic: '//Alice',
+            privateKey: VALID_PRIVATE_KEY,
+          },
         ),
       ).toBe(false);
     });
