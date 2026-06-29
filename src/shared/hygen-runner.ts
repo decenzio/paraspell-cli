@@ -5,6 +5,7 @@ import ejs from 'ejs';
 import { applyFeatureFlags } from './feature-flags.js';
 import { UserError } from './errors.js';
 import { createInquirerPrompter } from './inquirer-prompter.js';
+import { normalizeBlankLinesInDir } from './normalize-blank-lines.js';
 import { shouldWriteNodeEnv, writeNodeEnv } from './write-node-env.js';
 import type {
   ApiGenerateOptions,
@@ -131,6 +132,8 @@ async function generateApp(params: {
       substrateMnemonic: opts.substrateMnemonic,
     });
   }
+
+  await normalizeBlankLinesInDir(flags.out);
 
   const label = kind === 'sdk' ? 'XCM SDK' : 'XCM API';
   console.log(`\nGenerated ${meta.label} ${label} app at ${flags.out}`);

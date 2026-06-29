@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { hasExtraBlankLines } from '../shared/normalize-blank-lines.js';
 import type { GeneratedVariant } from './variants.js';
 
 export interface StructureResult {
@@ -27,6 +28,20 @@ async function walkSourceFiles(
     }
   }
   return files;
+}
+
+async function assertNoExtraBlankLines(root: string): Promise<string[]> {
+  const errors: string[] = [];
+  const files = await walkSourceFiles(root);
+  for (const file of files) {
+    const content = await fs.promises.readFile(file, 'utf8');
+    if (hasExtraBlankLines(content)) {
+      errors.push(
+        `Multiple consecutive blank lines in ${path.relative(root, file)}`,
+      );
+    }
+  }
+  return errors;
 }
 
 async function assertNoTemplateArtifacts(root: string): Promise<string[]> {
@@ -327,6 +342,7 @@ export async function assertVariantStructure(
   }
 
   errors.push(...(await assertNoTemplateArtifacts(root)));
+  errors.push(...(await assertNoExtraBlankLines(root)));
   errors.push(...(await assertNodeEnv(variant, root)));
 
   return { variant, ok: errors.length === 0, errors };

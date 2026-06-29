@@ -15,6 +15,7 @@ export default defineConfig({
           name: 'structure',
           include: [
             'src/shared/feature-flags.test.ts',
+            'src/shared/normalize-blank-lines.test.ts',
             'src/shared/log-resolved-prompt.test.ts',
             'src/shared/parse-cli-args.test.ts',
             'src/shared/validate.test.ts',
