@@ -5,8 +5,7 @@ import { createWsClient } from "polkadot-api/ws";
 import { API_URL } from "../consts";
 import { fetchFromApi<% if (evmWallet) { %>, fetchFromEvmApi<% } %> } from "../fetchFromApi";
 import { requireCurrency<% if (swap) { %>, requireSwapCurrencyTo<% } %> } from "../requireAsset";
-<% if (evmWallet) { %>import type { EvmOriginHelpers } from "../types";
-import { submitEvmTx } from "./submitEvmTx";
+<% if (evmWallet) { %>import { submitEvmTx } from "./submitEvmTx";
 <% } %>import { submitTransaction } from "../utils";
 import type {
   ApiParams,
