@@ -209,6 +209,7 @@ function assertConditionalFiles(variant: GeneratedVariant, root: string): string
       for (const rel of [
         'src/evm/eip6963.ts',
         'src/evm/getViemChain.ts',
+        'src/evm/utils.ts',
         'src/requireAsset.ts',
       ]) {
         if (!fileExists(root, rel)) {

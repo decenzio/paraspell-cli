@@ -5,25 +5,12 @@ import { createWalletClient, custom } from "viem";
 import { evmProviderStore, getEip6963Providers } from "../../evm/eip6963";
 import { createEvmWalletClient } from "../../evm/evmWalletClient";
 import { getViemChainForOrigin } from "../../evm/getViemChain";
+import {
+  parseRequestedAccounts,
+  toProviderOptions,
+  truncateAddress,
+} from "../../evm/utils";
 import type { EvmAccountOption, EvmProviderOption } from "../../types";
-
-const truncateAddress = (address: string) =>
-  `${address.slice(0, 6)}…${address.slice(-4)}`;
-
-const toProviderOptions = (
-  availableProviders: readonly EIP6963ProviderDetail[],
-): EvmProviderOption[] =>
-  availableProviders.map((entry) => ({
-    uuid: entry.info.uuid,
-    label: entry.info.name,
-  }));
-
-const parseRequestedAccounts = (result: unknown): string[] => {
-  if (!Array.isArray(result)) {
-    throw new Error("Wallet returned an invalid accounts response.");
-  }
-  return result.filter((value): value is string => typeof value === "string");
-};
 
 export const useEvmWallet = () => {
   const providers = ref<readonly EIP6963ProviderDetail[]>(getEip6963Providers());
