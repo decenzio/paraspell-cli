@@ -31,12 +31,44 @@ const FLAG_ALIASES: Readonly<Record<string, readonly string[]>> = {
   'substrate-mnemonic': ['substrate-mnemonic', 'substrateMnemonic'],
 };
 
+const VALUE_FLAGS = new Set([
+  'name',
+  'framework',
+  'client',
+  'package-manager',
+  'packageManager',
+  'out',
+  'private-key',
+  'privateKey',
+  'substrate-mnemonic',
+  'substrateMnemonic',
+]);
+
+function isValueFlag(flag: string): boolean {
+  return VALUE_FLAGS.has(flag) || flag in FLAG_ALIASES;
+}
+
+function argvEntryHasValue(argv: string[], index: number): boolean {
+  const arg = argv[index]!;
+  const [, inlineValue] = arg.slice(2).split('=', 2);
+  if (inlineValue !== undefined) return inlineValue !== '';
+  const next = argv[index + 1];
+  return next !== undefined && !next.startsWith('--');
+}
+
 export function argvHasFlag(argv: string[], flag: string): boolean {
   const names = new Set(FLAG_ALIASES[flag] ?? [flag]);
-  return argv.some((arg) => {
-    if (!arg.startsWith('--')) return false;
-    return names.has(arg.slice(2).split('=')[0]!);
-  });
+  const needsValue = isValueFlag(flag);
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (!arg.startsWith('--')) continue;
+    const flagKey = arg.slice(2).split('=')[0]!;
+    if (!names.has(flagKey)) continue;
+    if (needsValue) return argvEntryHasValue(argv, i);
+    return true;
+  }
+  return false;
 }
 
 export function argvHasAnyFeatureFlag(argv: string[]): boolean {
@@ -90,10 +122,11 @@ function parseClient(value: string): SdkClient | null {
 
 function valueFlag(flags: ArgRecord, key: string): string | undefined {
   const value = flags[key];
-  if (value === undefined) return undefined;
+  if (value === undefined || value === true) return undefined;
   if (typeof value !== 'string') {
     throw new UserError(`Option --${key} requires a value.`);
   }
+  if (value === '') return undefined;
   return value;
 }
 

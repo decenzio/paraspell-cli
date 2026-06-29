@@ -138,6 +138,25 @@ describe('promptSdkOptions', () => {
     expect(mockedSubstrateMnemonic).toHaveBeenCalledOnce();
     expect(mockedEvmPrivateKey).toHaveBeenCalledOnce();
   });
+
+  it('prompts when value flags are present without values', async () => {
+    mockedInput.mockResolvedValue('prompted-name');
+    mockedSelect.mockResolvedValueOnce('pnpm').mockResolvedValueOnce('pjs');
+    mockedFeatureExtensions.mockResolvedValue([]);
+
+    const result = await promptSdkOptions(
+      { framework: 'react' },
+      { argv: ['--name', '--package-manager', '--client'] },
+    );
+
+    expect(result).toMatchObject({
+      name: 'prompted-name',
+      packageManager: 'pnpm',
+      client: 'pjs',
+    });
+    expect(mockedInput).toHaveBeenCalledOnce();
+    expect(mockedSelect).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('promptApiOptions', () => {

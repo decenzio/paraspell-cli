@@ -99,14 +99,8 @@ describe('buildArgvResolvedLogs', () => {
       );
     });
 
-    it('falls back to defaultName when the flag is present without a parsed value', () => {
-      expectResolvedLogs(
-        sdkInput({ argv: ['--name'], partial: {} }),
-        [{ message: PROMPTS.name, answer: 'my-xcm-app' }],
-      );
-    });
-
-    it('uses the api defaultName for api projects', () => {
+    it('does not log name when the flag is present without a value', () => {
+      expectResolvedLogs(sdkInput({ argv: ['--name'], partial: {} }), []);
       expectResolvedLogs(
         {
           argv: ['--name'],
@@ -114,7 +108,7 @@ describe('buildArgvResolvedLogs', () => {
           kind: 'api',
           defaultName: 'my-xcm-api-app',
         },
-        [{ message: PROMPTS.name, answer: 'my-xcm-api-app' }],
+        [],
       );
     });
   });
@@ -157,11 +151,8 @@ describe('buildArgvResolvedLogs', () => {
       );
     });
 
-    it('defaults to pnpm when the flag is present without a parsed value', () => {
-      expectResolvedLogs(
-        sdkInput({ argv: ['--package-manager'], partial: {} }),
-        [{ message: PROMPTS.packageManager, answer: 'pnpm' }],
-      );
+    it('does not log package manager when the flag is present without a value', () => {
+      expectResolvedLogs(sdkInput({ argv: ['--package-manager'], partial: {} }), []);
     });
   });
 
@@ -176,11 +167,8 @@ describe('buildArgvResolvedLogs', () => {
       );
     });
 
-    it('defaults to pjs when the flag is present without a parsed value', () => {
-      expectResolvedLogs(
-        sdkInput({ argv: ['--client'], partial: {} }),
-        [{ message: PROMPTS.client, answer: 'Polkadot JS' }],
-      );
+    it('does not log client when the flag is present without a value', () => {
+      expectResolvedLogs(sdkInput({ argv: ['--client'], partial: {} }), []);
     });
 
     it('does not log the client prompt for api projects', () => {

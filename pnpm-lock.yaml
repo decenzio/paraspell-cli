@@ -20,6 +20,9 @@ importers:
       '@inquirer/prompts':
         specifier: ^8.4.3
         version: 8.5.2(@types/node@24.13.2)
+      ejs:
+        specifier: ^6.0.1
+        version: 6.0.1
       hygen:
         specifier: ^6.2.11
         version: 6.2.11
@@ -1131,6 +1134,11 @@ packages:
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
     engines: {node: '>=0.10.0'}
+    hasBin: true
+
+  ejs@6.0.1:
+    resolution: {integrity: sha512-UaaM14yby8U3k02ihS1Bmj5Kz2d7CCQM1scxpgs4Mhkq8F1wR2gl3+Ts4h5Ne4Mnt7M9m4Dw7jsuMr3+xO4vZA==}
+    engines: {node: '>=0.12.18'}
     hasBin: true
 
   empathic@2.0.1:
@@ -2777,6 +2785,8 @@ snapshots:
   ejs@3.1.10:
     dependencies:
       jake: 10.9.4
+
+  ejs@6.0.1: {}
 
   empathic@2.0.1: {}
 

@@ -23,7 +23,9 @@ describe('argvHasFlag', () => {
     expect(argvHasFlag(['--packageManager=npm'], 'package-manager')).toBe(true);
     expect(argvHasFlag(['--client', 'pjs'], 'client')).toBe(true);
     expect(argvHasFlag(['--name=my-app'], 'name')).toBe(true);
-    expect(argvHasFlag(['--package-manager'], 'package-manager')).toBe(true);
+    expect(argvHasFlag(['--package-manager'], 'package-manager')).toBe(false);
+    expect(argvHasFlag(['--name'], 'name')).toBe(false);
+    expect(argvHasFlag(['--name='], 'name')).toBe(false);
     expect(argvHasFlag(['--client', 'pjs'], 'package-manager')).toBe(false);
   });
 });
@@ -166,10 +168,19 @@ describe('parseSdkArgv', () => {
     );
   });
 
-  it('rejects value flags without values', () => {
-    expect(() => parseSdkArgv(['--name'], ctx)).toThrow(
-      /Option --name requires a value/,
-    );
+  it('ignores value flags without values and keeps defaults', () => {
+    expect(parseSdkArgv(['--name'], ctx)).toMatchObject({
+      name: 'my-xcm-app',
+      packageManager: 'pnpm',
+    });
+    expect(parseSdkArgv(['--client', '--evm'], ctx)).toMatchObject({
+      client: 'pjs',
+      evm: true,
+    });
+    expect(parseSdkArgv(['--name=', '--package-manager='], ctx)).toMatchObject({
+      name: 'my-xcm-app',
+      packageManager: 'pnpm',
+    });
   });
 
   it('warns on unknown options instead of failing', () => {
