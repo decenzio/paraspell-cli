@@ -2,8 +2,11 @@
 to: src/index.ts
 ---
 import "dotenv/config";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 import express from "express";
 import { transferViaApi } from "./transfer.js";
+
+await cryptoWaitReady();
 
 const app = express();
 app.use(express.json());

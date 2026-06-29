@@ -8,12 +8,10 @@ import { getPolkadotSigner } from "polkadot-api/signer";
 export const getSubstrateSenderAddress = async (
   secret: string,
 ): Promise<string> => {
-  await ensureCryptoReady();
   return createKeyringPair(secret).address;
 };
 
 export const getSignerFromSecret = async (secret: string) => {
-  await ensureCryptoReady();
   const pair = createKeyringPair(secret);
   return getPolkadotSigner(
     pair.publicKey,

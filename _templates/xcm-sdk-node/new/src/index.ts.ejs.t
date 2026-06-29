@@ -2,8 +2,11 @@
 to: src/index.ts
 ---
 import "dotenv/config";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 <%- h.includeShared('shared/paraspell-side-effects.ejs.t') %>import express from "express";
 import { transferAsset } from "./transfer.js";
+
+await cryptoWaitReady();
 
 const app = express();
 app.use(express.json());

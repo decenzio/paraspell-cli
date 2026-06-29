@@ -45,7 +45,6 @@ const keyringPairToPjsSigner = (pair: KeyringPair): TPjsSigner => {
 <% } %>
 
 export const getSubstrateSigner = async (): Promise<<%= client === 'papi' ? 'PolkadotSigner' : client === 'pjs' ? 'TPjsSigner' : 'KeyringPair' %>> => {
-  await ensureCryptoReady();
   const pair = createKeyringPair(getSubstrateMnemonic());
 <% if (client === 'papi') { %>
   return getPolkadotSigner(

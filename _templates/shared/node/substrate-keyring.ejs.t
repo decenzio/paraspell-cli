@@ -1,15 +1,5 @@
 import { Keyring } from "@polkadot/keyring";
-import { cryptoWaitReady } from "@polkadot/util-crypto";
 import type { KeyringPair } from "@polkadot/keyring/types";
-
-let cryptoReady: Promise<boolean> | null = null;
-
-export const ensureCryptoReady = async (): Promise<void> => {
-  if (!cryptoReady) {
-    cryptoReady = cryptoWaitReady();
-  }
-  await cryptoReady;
-};
 
 export const getSubstrateMnemonic = (): string => {
   const secret = process.env.SUBSTRATE_MNEMONIC;
