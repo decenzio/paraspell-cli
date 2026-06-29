@@ -65,6 +65,7 @@
     "validate-npm-package-name": "^8.0.0"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.5",
     "@types/node": "^24.0.0",
     "@types/validate-npm-package-name": "^4.0.2",
     "tsdown": "^0.22.3",

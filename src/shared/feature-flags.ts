@@ -3,19 +3,13 @@ import { createRequire } from 'node:module';
 import { getPackageRoot } from '../package-root.js';
 import type { FeatureFlags } from './types.js';
 
+type FeatureFlagsModule = typeof import('../../shared/feature-flags.cjs');
+
 const require = createRequire(import.meta.url);
 const packageRoot = getPackageRoot();
 
-const { resolveFeatureFlags } = require(path.join(
-  packageRoot,
-  'shared/feature-flags.cjs',
-)) as {
-  resolveFeatureFlags: (input: {
-    evm: unknown;
-    swap: unknown;
-    snowbridge: unknown;
-  }) => FeatureFlags & { evmWallet: boolean };
-};
+const { resolveFeatureFlags }: Pick<FeatureFlagsModule, 'resolveFeatureFlags'> =
+  require(path.join(packageRoot, 'shared/feature-flags.cjs'));
 
 export { resolveFeatureFlags };
 

@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import ejs from 'ejs';
 import { applyFeatureFlags } from './feature-flags.js';
 import { UserError } from './errors.js';
 import { createInquirerPrompter } from './inquirer-prompter.js';
@@ -11,22 +12,14 @@ import type {
   ProjectType,
   SdkGenerateOptions,
 } from './types.js';
+import type { RunnerConfig } from 'hygen/dist/types.js';
+
+type HygenModule = typeof import('hygen');
+type HygenContext = typeof import('hygen/dist/context.js')['default'];
 
 const require = createRequire(import.meta.url);
-const ejs = require('ejs') as {
-  render: (template: string, locals: Record<string, unknown>) => string;
-};
-const hygenContext = require('hygen/dist/context.js').default as (
-  locals: Record<string, unknown>,
-  config: Record<string, unknown>,
-) => Record<string, unknown>;
-const { runner, Logger } = require('hygen') as {
-  runner: (
-    args: string[],
-    config: Record<string, unknown>,
-  ) => Promise<{ success: boolean }>;
-  Logger: new (log: (msg: string) => void) => unknown;
-};
+const hygenContext: HygenContext = require('hygen/dist/context.js').default;
+const { runner, Logger }: Pick<HygenModule, 'runner' | 'Logger'> = require('hygen');
 
 function createHygenHelpers(): (
   locals: Record<string, unknown>,
@@ -68,7 +61,7 @@ async function runHygen(
     logger: new Logger(console.log.bind(console)),
     debug: false,
     helpers: createHygenHelpers(),
-  });
+  } as RunnerConfig);
   return result.success;
 }
 
