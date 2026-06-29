@@ -4,26 +4,36 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserError } from './shared/errors.js';
 
-const generateSdkApp = vi.fn<() => Promise<void>>();
-const generateApiApp = vi.fn<() => Promise<void>>();
-const runInteractiveGenerate = vi.fn<() => Promise<void>>();
-const promptSdkOptions = vi.fn<() => Promise<Record<string, unknown>>>();
-const promptApiOptions = vi.fn<() => Promise<Record<string, unknown>>>();
+type GenerateSdkApp = typeof import('./shared/hygen-runner.js').generateSdkApp;
+type GenerateApiApp = typeof import('./shared/hygen-runner.js').generateApiApp;
+type RunInteractiveGenerate = typeof import('./interactive.js').runInteractiveGenerate;
+type PromptSdkOptions = typeof import('./shared/prompt-sdk.js').promptSdkOptions;
+type PromptApiOptions = typeof import('./shared/prompt-api.js').promptApiOptions;
+
+const generateSdkApp = vi.fn<GenerateSdkApp>();
+const generateApiApp = vi.fn<GenerateApiApp>();
+const runInteractiveGenerate = vi.fn<RunInteractiveGenerate>();
+const promptSdkOptions = vi.fn<PromptSdkOptions>();
+const promptApiOptions = vi.fn<PromptApiOptions>();
 
 vi.mock('./shared/hygen-runner.js', () => ({
-  generateSdkApp: (...args: unknown[]) => generateSdkApp(...args),
-  generateApiApp: (...args: unknown[]) => generateApiApp(...args),
+  generateSdkApp: (params: Parameters<GenerateSdkApp>[0]) => generateSdkApp(params),
+  generateApiApp: (params: Parameters<GenerateApiApp>[0]) => generateApiApp(params),
 }));
 
 vi.mock('./interactive.js', () => ({
-  runInteractiveGenerate: (...args: unknown[]) => runInteractiveGenerate(...args),
+  runInteractiveGenerate: (templatesRoot: Parameters<RunInteractiveGenerate>[0]) =>
+    runInteractiveGenerate(templatesRoot),
 }));
 
 vi.mock('./shared/prompt-sdk.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./shared/prompt-sdk.js')>();
   return {
     ...actual,
-    promptSdkOptions: (...args: unknown[]) => promptSdkOptions(...args),
+    promptSdkOptions: (
+      partial: Parameters<PromptSdkOptions>[0],
+      options?: Parameters<PromptSdkOptions>[1],
+    ) => promptSdkOptions(partial, options),
   };
 });
 
@@ -31,7 +41,10 @@ vi.mock('./shared/prompt-api.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./shared/prompt-api.js')>();
   return {
     ...actual,
-    promptApiOptions: (...args: unknown[]) => promptApiOptions(...args),
+    promptApiOptions: (
+      partial: Parameters<PromptApiOptions>[0],
+      options?: Parameters<PromptApiOptions>[1],
+    ) => promptApiOptions(partial, options),
   };
 });
 
@@ -58,6 +71,23 @@ const SDK_FLAGS = [
   '--evm',
 ] as const;
 
+const defaultSdkPromptAnswers: Awaited<ReturnType<PromptSdkOptions>> = {
+  name: 'my-app',
+  client: 'pjs',
+  evm: false,
+  swap: false,
+  snowbridge: false,
+  packageManager: 'pnpm',
+};
+
+const defaultApiPromptAnswers: Awaited<ReturnType<PromptApiOptions>> = {
+  name: 'my-api-app',
+  evm: false,
+  swap: false,
+  snowbridge: false,
+  packageManager: 'pnpm',
+};
+
 function stubTty(isTTY: boolean): void {
   vi.stubGlobal('process', { ...process, stdin: { isTTY } });
 }
@@ -70,8 +100,8 @@ describe('runSdkFromArgv', () => {
     vi.clearAllMocks();
     generateSdkApp.mockResolvedValue(undefined);
     generateApiApp.mockResolvedValue(undefined);
-    promptSdkOptions.mockResolvedValue({});
-    promptApiOptions.mockResolvedValue({});
+    promptSdkOptions.mockResolvedValue(defaultSdkPromptAnswers);
+    promptApiOptions.mockResolvedValue(defaultApiPromptAnswers);
     vi.spyOn(fs, 'existsSync').mockReturnValue(false);
     stubTty(false);
   });
@@ -182,7 +212,7 @@ describe('runApiFromArgv', () => {
     tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'paraspell-run-cli-'));
     vi.clearAllMocks();
     generateApiApp.mockResolvedValue(undefined);
-    promptApiOptions.mockResolvedValue({});
+    promptApiOptions.mockResolvedValue(defaultApiPromptAnswers);
     vi.spyOn(fs, 'existsSync').mockReturnValue(false);
     stubTty(false);
   });
