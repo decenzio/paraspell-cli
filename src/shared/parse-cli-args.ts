@@ -350,11 +350,13 @@ export function shiftPositionalFramework(argv: string[]): {
   return { argv: rest, framework: null };
 }
 
+const SECRET_OPTIONS = `  --substrate-mnemonic <secret>  optional Substrate mnemonic or //Dev URI for node (non-interactive)
+  --private-key <hex>     optional wallet key for node when using EVM or Snowbridge origins`;
+
 const SHARED_OPTIONS = `  --framework <id>        react | vue | node
   --name <string>
   --evm, --swap, --snowbridge  include flag to enable (omit for false; explicit true|false also accepted)
-  --substrate-mnemonic <secret>  optional Substrate mnemonic or //Dev URI for node (non-interactive)
-  --private-key <hex>     optional wallet key for node when using EVM or Snowbridge origins
+${SECRET_OPTIONS}
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>            default: ./<name> in cwd
   --help`;
@@ -384,6 +386,7 @@ Options:
   --name <string>
   --client <id>           papi | pjs | dedot
   --evm, --swap, --snowbridge  include flag to enable (omit for false; explicit true|false also accepted)
+${SECRET_OPTIONS}
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>
   --help
@@ -397,6 +400,7 @@ Options:
   --framework <id>        react | vue | node
   --name <string>
   --evm, --swap, --snowbridge  include flag to enable (omit for false; explicit true|false also accepted)
+${SECRET_OPTIONS}
   --package-manager <id>  npm | yarn | pnpm | bun
   --out <path>
   --help

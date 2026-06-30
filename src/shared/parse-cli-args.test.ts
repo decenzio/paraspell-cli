@@ -291,6 +291,8 @@ describe('help printers', () => {
     printSdkHelp('create-paraspell sdk');
     expect(log.mock.calls[0]?.[0]).toContain('create-paraspell sdk');
     expect(log.mock.calls[0]?.[0]).toContain('--client');
+    expect(log.mock.calls[0]?.[0]).toContain('--substrate-mnemonic');
+    expect(log.mock.calls[0]?.[0]).toContain('--private-key');
   });
 
   it('prints api help with a custom command label', () => {
@@ -298,5 +300,7 @@ describe('help printers', () => {
     printApiHelp('create-paraspell api');
     expect(log.mock.calls[0]?.[0]).toContain('create-paraspell api');
     expect(log.mock.calls[0]?.[0]).not.toContain('--client');
+    expect(log.mock.calls[0]?.[0]).toContain('--substrate-mnemonic');
+    expect(log.mock.calls[0]?.[0]).toContain('--private-key');
   });
 });

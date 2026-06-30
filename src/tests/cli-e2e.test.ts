@@ -49,6 +49,8 @@ describe('CLI subprocess', () => {
     expect(result.ok).toBe(true);
     expect(result.output).toContain('create-paraspell sdk');
     expect(result.output).toContain('--client');
+    expect(result.output).toContain('--substrate-mnemonic');
+    expect(result.output).toContain('--private-key');
   });
 
   it('prints api help without generating a project', async () => {
@@ -56,6 +58,8 @@ describe('CLI subprocess', () => {
     expect(result.ok).toBe(true);
     expect(result.output).toContain('create-paraspell api');
     expect(result.output).not.toContain('--client');
+    expect(result.output).toContain('--substrate-mnemonic');
+    expect(result.output).toContain('--private-key');
   });
 
   it('exits with code 1 for orphan flags without sdk|api', async () => {
