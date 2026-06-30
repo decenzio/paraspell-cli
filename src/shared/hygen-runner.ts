@@ -1,7 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { createRequire } from 'node:module';
 import ejs from 'ejs';
+import { runner, Logger } from 'hygen';
+import contextModule from 'hygen/dist/context.js';
 import { applyFeatureFlags } from './feature-flags.js';
 import { UserError } from './errors.js';
 import { createInquirerPrompter } from './inquirer-prompter.js';
@@ -15,12 +16,7 @@ import type {
 } from './types.js';
 import type { RunnerConfig } from 'hygen/dist/types.js';
 
-type HygenModule = typeof import('hygen');
-type HygenContext = typeof import('hygen/dist/context.js')['default'];
-
-const require = createRequire(import.meta.url);
-const hygenContext: HygenContext = require('hygen/dist/context.js').default;
-const { runner, Logger }: Pick<HygenModule, 'runner' | 'Logger'> = require('hygen');
+const hygenContext = contextModule.default;
 
 function createHygenHelpers(): (
   locals: Record<string, unknown>,
